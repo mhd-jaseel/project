@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store - Checkout</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>:root {
+    --primary-green: #2ecc71;
+    /* Adjust to match image */
+    --dark-green: #27ae60;
+    --light-green-bg: #d4efdf;
+    --yellow-accent: #f1c40f;
+    --text-dark: #333;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;
+    color: var(--text-dark);
+}
+
+/* Custom Colors */
+.bg-primary-custom {
+    background-color: var(--primary-green) !important;
+}
+
+.text-primary-custom {
+    color: var(--primary-green) !important;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--dark-green);
+    border-color: var(--dark-green);
+}
+
+/* Header */
+header {
+    position: relative;
+    padding-bottom: 50px;
+    /* Space for the curve */
+}
+
+.header-curve {
+    position: absolute;
+    bottom: -1px;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.header-curve svg {
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 60px;
+}
+
+.header-curve path {
+    fill: #ffffff;
+}
+
+/* Hero Section */
+.bg-light-green {
+    background-color: #a8e6cf;
+    /* Lighter mint green */
+}
+
+.yellow-circle {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background-color: #f7dc6f;
+    border-radius: 50%;
+    bottom: -50px;
+    right: -50px;
+    z-index: 0;
+}
+
+.hero-img {
+    position: relative;
+    z-index: 1;
+}
+
+/* Categories */
+.category-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.category-circle:hover {
+    transform: scale(1.05);
+}
+
+/* Product Cards */
+.product-card {
+    border-radius: 15px;
+    /* Softer rounded corners */
+    transition: box-shadow 0.3s ease;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    /* Subtle border */
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.product-card img.card-img-top {
+    height: 180px;
+    /* Fixed height for consistency */
+    object-fit: contain;
+}
+
+.product-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+    color: #000;
+}
+
+.product-weight {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.product-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+}
+
+/* Wishlist Styles */
+.wishlist-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.wishlist-card:hover {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+
+.wishlist-img-wrapper {
+    height: 200px;
+    /* Fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.wishlist-img-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.btn-remove-wishlist {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: white;
+}
+
+.btn-remove-wishlist:hover {
+    background-color: #f8d7da;
+    color: #dc3545;
+}
+
+.btn-add-cart-wishlist {
+    background-color: black;
+    color: white;
+    border: none;
+    transition: all 0.3s;
+}
+
+.btn-add-cart-wishlist:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Checkout Styles */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #db4444;
+    /* Match the red accent */
+}
+
+.checkout-item-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.product-price-old {
+    text-decoration: line-through;
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-left: 8px;
+}
+
+/* Badges */
+.badge-best-deal {
+    background-color: #a8e6cf;
+    /* Light green from image */
+    color: #2c3e50;
+    font-weight: 500;
+    border-radius: 4px 0 10px 0;
+    /* Stylized corner if needed, or simple rounded */
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    z-index: 2;
+}
+
+/* Action Buttons */
+.btn-wishlist {
+    width: 45px;
+    height: 45px;
+    border: 1px solid var(--primary-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.btn-wishlist:hover {
+    background-color: #f0fff4;
+}
+
+.btn-add-cart {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 0;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.btn-add-cart:hover {
+    background-color: var(--dark-green);
+    color: white;
+}
+
+/* Single Product Page Styles */
+.thumbnail-img {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.thumbnail-img:hover {
+    border-color: var(--primary-green) !important;
+}
+
+.quantity-selector input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.btn-add-cart-lg {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-add-cart-lg:hover {
+    background-color: var(--dark-green);
+    color: white;
+}
+
+
+/* Features Info Section */
+.icon-circle {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e8f5e9 !important;
+    /* Very light green */
+    color: var(--dark-green) !important;
+}
+
+/* Scrollbar hiding for horizontal scrolls if added later */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.form-check-label {
+    cursor: pointer;
+}
+
+
+
+
+.btn-outline-custom {
+    color: var(--dark-green);
+    border-color: var(--primary-green);
+    background-color: #fff;
+}
+
+.btn-outline-custom:hover {
+    background-color: var(--primary-green);
+    color: white;
+}
+
+/* Cart Page Styles */
+.cart-img-wrapper {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+}
+
+.cart-img-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.quantity-selector-sm {
+    width: fit-content;
+}
+
+.table> :not(caption)>*>* {
+    background-color: transparent;
+    /* Fix default BS table bg */
+}
+
+thead th {
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* Account Page Styles */
+.active-link {
+    color: var(--primary-green) !important;
+    font-weight: 600;
+}
+
+.account-sidebar a:hover {
+    color: var(--primary-green) !important;
+}</style>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header class="bg-primary-custom text-white">
+        <div class="container py-2">
+            <div class="row align-items-center">
+                <!-- Logo -->
+                <div class="col-md-3">
+                    <a href="homepage.html" class="navbar-brand fw-bold fs-3 text-white">
+                        <i class="fas fa-leaf me-2"></i>KM Store
+                    </a>
+                </div>
+                <!-- Search Bar -->
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control border-0" placeholder="Search for products...">
+                        <button class="btn btn-light text-primary-custom" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- User Actions -->
+                <div class="col-md-4 text-end">
+                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
+                            class="fas fa-heart me-1"></i>
+                        Wishlist</a>
+                    <a href="cart.html" class="text-white text-decoration-none me-3"><i
+                            class="fas fa-shopping-cart me-1"></i>
+                        Cart</a>
+                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                            class="fas fa-sign-in-alt me-1"></i>
+                        Login</a>
+                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
+                        Account</a>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-dark p-0 mt-2">
+                <div class="container-fluid p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="homepage.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                            <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
+
+                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Curve SVG at the bottom -->
+        <div class="header-curve">
+            <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#ffffff"
+                    d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+                </path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="container my-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small text-muted">
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Account</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">My Account</a></li>
+                <li class="breadcrumb-item"><a href="product.html" class="text-decoration-none text-muted">Product</a>
+                </li>
+                <li class="breadcrumb-item"><a href="cart.html" class="text-decoration-none text-muted">View Cart</a>
+                </li>
+                <li class="breadcrumb-item active text-dark" aria-current="page">CheckOut</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <section class="container my-5">
+        <h2 class="fw-bold mb-5">Billing Details</h2>
+        <div class="row">
+            <!-- Billing Form -->
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <form id="billing-form">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label text-muted small">First Name <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-light border-0 py-3" id="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label text-muted small">Company Name</label>
+                        <input type="text" class="form-control bg-light border-0 py-3" id="companyName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="streetAddress" class="form-label text-muted small">Street Address <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-light border-0 py-3" id="streetAddress" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apartment" class="form-label text-muted small">Apartment, floor, etc.
+                            (optional)</label>
+                        <input type="text" class="form-control bg-light border-0 py-3" id="apartment">
+                    </div>
+                    <div class="mb-3">
+                        <label for="townCity" class="form-label text-muted small">Town/City <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-light border-0 py-3" id="townCity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label text-muted small">Phone Number <span
+                                class="text-danger">*</span></label>
+                        <input type="tel" class="form-control bg-light border-0 py-3" id="phoneNumber" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="emailAddress" class="form-label text-muted small">Email Address <span
+                                class="text-danger">*</span></label>
+                        <input type="email" class="form-control bg-light border-0 py-3" id="emailAddress" required>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input bg-danger border-0" type="checkbox" value="" id="saveInfo">
+                        <label class="form-check-label small" for="saveInfo">
+                            Save this information for faster check-out next time
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-5 offset-lg-1">
+                <div class="p-2">
+                    <!-- Dynamic Product List -->
+                    <div id="checkout-product-list" class="mb-4">
+                        <!-- Items will be injected here -->
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <span class="text-dark">Subtotal:</span>
+                        <span class="text-dark" id="checkout-subtotal">₹0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <span class="text-dark">Shipping:</span>
+                        <span class="text-dark">Free</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="text-dark">Total:</span>
+                        <span class="text-dark fw-bold" id="checkout-total">₹0</span>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input border-dark" type="radio" name="paymentMethod" id="bank">
+                            <label class="form-check-label" for="bank">
+                                Bank
+                            </label>
+                        </div>
+                        <div>
+                            <!-- Payment Icons Placeholder -->
+                            <i class="fab fa-cc-visa fa-lg me-1 text-primary"></i>
+                            <i class="fab fa-cc-mastercard fa-lg me-1 text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input border-dark" type="radio" name="paymentMethod" id="cod"
+                                checked>
+                            <label class="form-check-label" for="cod">
+                                Cash on delivery
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Coupon -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-8">
+                            <input type="text" class="form-control py-3 border-secondary" placeholder="Coupon Code">
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-danger w-100 py-3">Apply Coupon</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-danger w-100 py-3 rounded text-white fw-bold mb-4" id="place-order-btn">Place
+                        Order</button>
+
+                    <div class="small text-muted">
+                        <p class="fw-bold mb-1">Cancellation Policy</p>
+                        <p>Orders cannot be cancelled once packed for delivery. In case of unexpected delays, a refund
+                            will be provided, if applicable.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-light pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold text-primary-custom mb-3">KM Store</h5>
+                    <p class="small text-muted">Best products at your doorstep. Fresh and organic directly from farmers
+                        to your kitchen.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-secondary"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold">Account</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><a href="#" class="text-decoration-none text-muted">Profile</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Orders</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Addresses</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold">Useful Links</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><a href="about.html" class="text-decoration-none text-muted">About Us</a></li>
+                        <li><a href="contact.html" class="text-decoration-none text-muted">Contact</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold">Help Center</h6>
+                    <p class="small text-muted">Email: support@kmstore.com<br>Phone: +1 234 567 890</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center small text-muted">
+                &copy; 2024 KM Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - All Products</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="sales-offers.html" class="nav-link">
+            <i class="fas fa-percentage"></i> Sales Offers
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+        <div class="menu-label mt-3">Products</div>
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link active">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <!-- User Profile -->
+                <button class="icon-btn"><i class="far fa-bell"></i><span
+                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold m-0">All Products</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-info text-white btn-sm"><i class="fas fa-boxes me-1"></i> Stock Info</button>
+                    <a href="add-product.html" class="btn btn-primary-custom btn-sm"><i class="fas fa-plus"></i> Add New
+                        Product</a>
+                </div>
+            </div>
+
+            <div class="card-custom">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Hot Deal</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><img src="https://placehold.co/50x50/png?text=Tom" class="rounded" width="50"
+                                        height="50"></td>
+                                <td class="fw-bold">Tomato (Hybrid)</td>
+                                <td>Vegetables</td>
+                                <td>$3.50</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">In
+                                        Stock</span></td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="hotDeal1">
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-info btn-stock-update"
+                                        title="Stock Info"><i class="fas fa-boxes"></i></button>
+                                    <a href="add-product.html" class="btn btn-sm btn-light text-primary"><i
+                                            class="fas fa-edit"></i></a>
+                                    <button class="btn btn-sm btn-light text-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://placehold.co/50x50/png?text=App" class="rounded" width="50"
+                                        height="50"></td>
+                                <td class="fw-bold">Apple (Fuji)</td>
+                                <td>Fruits</td>
+                                <td>$5.00</td>
+                                <td><span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">Low
+                                        Stock</span></td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="hotDeal2" checked>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-info btn-stock-update"
+                                        title="Stock Info"><i class="fas fa-boxes"></i></button>
+                                    <a href="add-product.html" class="btn btn-sm btn-light text-primary"><i
+                                            class="fas fa-edit"></i></a>
+                                    <button class="btn btn-sm btn-light text-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="https://placehold.co/50x50/png?text=Brd" class="rounded" width="50"
+                                        height="50"></td>
+                                <td class="fw-bold">Whole Wheat Bread</td>
+                                <td>Bakery</td>
+                                <td>$2.00</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">Out
+                                        of Stock</span></td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="hotDeal3">
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-info btn-stock-update"
+                                        title="Stock Info"><i class="fas fa-boxes"></i></button>
+                                    <a href="add-product.html" class="btn btn-sm btn-light text-primary"><i
+                                            class="fas fa-edit"></i></a>
+                                    <button class="btn btn-sm btn-light text-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Stock Update Logic
+        document.querySelectorAll('.btn-stock-update').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Find the closest row and stock element
+                const row = this.closest('tr');
+                const stockBadge = row.querySelector('td:nth-child(5) span');
+                const currentStatus = stockBadge.innerText;
+
+                Swal.fire({
+                    title: 'Update Stock',
+                    html: `
+                        <p>Current Status: <strong>${currentStatus}</strong></p>
+                        <select id="swal-stock-status" class="form-select mb-3">
+                            <option value="In Stock" ${currentStatus === 'In Stock' ? 'selected' : ''}>In Stock</option>
+                            <option value="Low Stock" ${currentStatus === 'Low Stock' ? 'selected' : ''}>Low Stock</option>
+                            <option value="Out of Stock" ${currentStatus === 'Out of Stock' ? 'selected' : ''}>Out of Stock</option>
+                        </select>
+                        <input type="number" id="swal-stock-qty" class="form-control" placeholder="Enter Quantity" value="50">
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    confirmButtonColor: '#0f9d58',
+                    preConfirm: () => {
+                        const status = document.getElementById('swal-stock-status').value;
+                        const qty = document.getElementById('swal-stock-qty').value;
+                        if (!qty) {
+                            Swal.showValidationMessage('Please enter quantity');
+                        }
+                        return { status, qty };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const { status, qty } = result.value;
+
+                        // Update UI
+                        let badgeClass = 'bg-success text-success';
+                        if (status === 'Low Stock') badgeClass = 'bg-warning text-warning';
+                        if (status === 'Out of Stock') badgeClass = 'bg-danger text-danger';
+
+                        stockBadge.className = `badge ${badgeClass} bg-opacity-10 rounded-pill px-3 py-2`;
+                        stockBadge.innerText = status;
+
+                        Swal.fire('Updated!', `Stock updated to ${status} (${qty} items).`, 'success');
+                    }
+                });
+            });
+        });
+
+        // Global Delete Confirmation
+        document.body.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.btn.text-danger');
+            if (deleteBtn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The item has been deleted.',
+                            'success'
+                        ).then(() => {
+                            // Optional: Remove row from DOM
+                            const row = deleteBtn.closest('tr');
+                            if (row) row.remove();
+                            // If it's a card (like in categories)
+                            const card = deleteBtn.closest('.card-custom');
+                            if (card && !row) card.parentElement.remove();
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

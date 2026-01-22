@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Add Product</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="sales-offers.html" class="nav-link">
+            <i class="fas fa-percentage"></i> Sales Offers
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+
+        <div class="menu-label mt-3">Products</div>
+        <a href="add-product.html" class="nav-link active">
+            <i class="fas fa-plus-circle"></i> Add Product
+        </a>
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <button class="icon-btn"><i class="far fa-bell"></i><span
+                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0">Add New Product</h5>
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="width: 200px;">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <form>
+                <div class="row g-3">
+                    <!-- Col 1: Essentials (Data) -->
+                    <div class="col-lg-4">
+                        <div class="card-custom p-3 h-100">
+                            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Product Data</h6>
+
+                            <div class="mb-2">
+                                <label class="form-label fw-bold x-small mb-1">Product Name</label>
+                                <input type="text" class="form-control form-control-sm"
+                                    placeholder="e.g. Basmathi Rice">
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold x-small mb-0">Company Name</label>
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                                            id="btnGenerateCompany" title="AI Generate"><i
+                                                class="fas fa-wand-magic-sparkles text-secondary"
+                                                style="font-size: 0.7rem;"></i></button>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm" id="companyNameInput">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold x-small mb-1">Stock Qty</label>
+                                    <input type="number" class="form-control form-control-sm" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold x-small mb-1">Price ($)</label>
+                                    <input type="number" class="form-control form-control-sm" placeholder="0.00">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold x-small mb-1">Discount ($)</label>
+                                    <input type="number" class="form-control form-control-sm" placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label fw-bold x-small mb-1">Expiration</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="date" class="form-control" placeholder="Start">
+                                    <span class="input-group-text px-1">-</span>
+                                    <input type="date" class="form-control" placeholder="End">
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mt-3">
+                                <input class="form-check-input" type="checkbox" id="unlimitedStock" checked>
+                                <label class="form-check-label x-small fw-bold" for="unlimitedStock">Unlimited
+                                    Stock</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: Media (Visuals) -->
+                    <div class="col-lg-4">
+                        <div class="card-custom p-3 h-100">
+                            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Product Images</h6>
+
+                            <div class="border rounded p-2 mb-2 text-center position-relative bg-light"
+                                style="height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                <img src="https://m.media-amazon.com/images/I/71Zt4Kk2l8L._SL1500_.jpg"
+                                    class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="Product"
+                                    id="mainProductImage">
+                                <input type="file" id="productImageInput" accept="image/*" style="display: none;">
+
+                                <div class="position-absolute bottom-0 end-0 p-2">
+                                    <button type="button"
+                                        class="btn btn-white bg-white border btn-sm shadow-sm rounded-circle"
+                                        id="btnBrowseImage" title="Browse"><i class="fas fa-camera"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-3">
+                                    <div class="border rounded ratio ratio-1x1 bg-light position-relative"
+                                        style="background-image: url('https://placehold.co/60x60/png'); background-size: cover;">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="border rounded ratio ratio-1x1 bg-light"></div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="border rounded ratio ratio-1x1 bg-light"></div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="border rounded ratio ratio-1x1 border-dashed d-flex align-items-center justify-content-center text-success"
+                                        style="border-style: dashed !important; cursor: pointer;">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: Details (Meta & Actions) -->
+                    <div class="col-lg-4">
+                        <div class="card-custom p-3 h-100 d-flex flex-column">
+                            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Organization & Publish</h6>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold x-small mb-1">Category</label>
+                                    <select class="form-select form-select-sm">
+                                        <option>Vegetables</option>
+                                        <option>Fruits</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold x-small mb-1">Status</label>
+                                    <select class="form-select form-select-sm">
+                                        <option>In Stock</option>
+                                        <option>Out Stock</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <label class="form-label fw-bold x-small mb-1">Tags</label>
+                                <select class="form-select form-select-sm">
+                                    <option>Organic</option>
+                                    <option>Fresh</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-bold x-small mb-0">Description</label>
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                                        id="btnGenerateDescription" title="AI Generate"><i
+                                            class="fas fa-wand-magic-sparkles text-primary"></i></button>
+                                </div>
+                                <textarea class="form-control form-control-sm" id="productDescription" rows="4"
+                                    placeholder="Short description..."></textarea>
+                            </div>
+
+                            <div class="mt-3 pt-3 border-top">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="featuredCheck" checked>
+                                    <label class="form-check-label x-small" for="featuredCheck">Featured Product</label>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-primary-custom btn-sm"
+                                        id="btnPublishProduct">Publish Product</button>
+                                    <button type="button" class="btn btn-light btn-sm border" id="btnSaveDraft">Save
+                                        Draft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <style>
+                .x-small {
+                    font-size: 0.75rem;
+                }
+
+                .card-custom {
+                    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                    border: 0;
+                    background: #fff;
+                    border-radius: 0.5rem;
+                }
+            </style>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Mock AI Description Generator
+        const btnGenerate = document.getElementById('btnGenerateDescription');
+        const txtDescription = document.getElementById('productDescription');
+        const btnGenerateCompany = document.getElementById('btnGenerateCompany');
+        const txtCompany = document.getElementById('companyNameInput');
+
+        if (btnGenerateCompany && txtCompany) {
+            btnGenerateCompany.addEventListener('click', () => {
+                // Show loading (spin icon)
+                const originalIcon = btnGenerateCompany.innerHTML;
+                btnGenerateCompany.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 0.7rem;"></i>';
+                btnGenerateCompany.disabled = true;
+
+                setTimeout(() => {
+                    const companies = ["Green Valley Organics", "Nature's Harvest", "Fresh Fields Co.", "Organic Roots", "Pure Farm Essentials"];
+                    const randomCompany = companies[Math.floor(Math.random() * companies.length)];
+                    txtCompany.value = randomCompany;
+
+                    btnGenerateCompany.innerHTML = originalIcon;
+                    btnGenerateCompany.disabled = false;
+                }, 800);
+            });
+        }
+
+        if (btnGenerate && txtDescription) {
+            btnGenerate.addEventListener('click', () => {
+                // Show loading state
+                const originalIcon = btnGenerate.innerHTML;
+                btnGenerate.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btnGenerate.disabled = true;
+
+                // Simulate API delay
+                setTimeout(() => {
+                    const descriptions = [
+                        "Experience the finest quality with our premium selection. Sourced from the best farms, this product ensures freshness and superior taste in every bite. Perfect for your daily needs and special recipes.",
+                        "Direct from nature to your home. Our organically grown produce is free from harmful chemicals and packed with essential nutrients. Enjoy the authentic flavor of nature.",
+                        "A must-have for every kitchen! This high-quality ingredient adds a rich aroma and delightful taste to your dishes. carefully processed to retain its natural goodness."
+                    ];
+                    const randomDesc = descriptions[Math.floor(Math.random() * descriptions.length)];
+                    txtDescription.value = randomDesc;
+
+                    // Restore button
+                    btnGenerate.innerHTML = originalIcon;
+                    btnGenerate.disabled = false;
+                }, 1000);
+            });
+        }
+    </script>
+    <script>
+        // Image Upload & Preview Logic
+        const btnBrowse = document.getElementById('btnBrowseImage');
+        const btnReplace = document.getElementById('btnReplaceImage');
+        const fileInput = document.getElementById('productImageInput');
+        const mainImage = document.getElementById('mainProductImage');
+
+        if (btnBrowse && fileInput) {
+            btnBrowse.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+
+        if (btnReplace && fileInput) {
+            btnReplace.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+
+        if (fileInput && mainImage) {
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        mainImage.src = e.target.result;
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+    </script>
+    <script>
+        // SweetAlert2 Confirmation Logic
+        const btnPublish = document.getElementById('btnPublishProduct');
+        const btnSaveDraft = document.getElementById('btnSaveDraft');
+
+        if (btnPublish) {
+            btnPublish.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent form submission if it was a submit button
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to publish this product!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745', // Success color (Green)
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, publish it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Published!',
+                            'Your product has been published successfully.',
+                            'success'
+                        ).then(() => {
+                            // Optionally submit form here
+                            // document.querySelector('form').submit();
+                        });
+                    }
+                });
+            });
+        }
+
+        if (btnSaveDraft) {
+            btnSaveDraft.addEventListener('click', function () {
+                Swal.fire({
+                    title: 'Save to Drafts?',
+                    text: "This product will be saved as a draft.",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff', // Primary color
+                    confirmButtonText: 'Yes, save it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Saved!',
+                            'Product saved to drafts.',
+                            'success'
+                        );
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

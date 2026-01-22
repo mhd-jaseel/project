@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Customers</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link active">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="sales-offers.html" class="nav-link">
+            <i class="fas fa-percentage"></i> Sales Offers
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+        <div class="menu-label mt-3">Products</div>
+        <!-- ... rest of sidebar ... -->
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header (Simplified Reuse) -->
+        <header class="top-header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-bar d-none d-md-block">
+                    <input type="text" placeholder="Search customers...">
+                </div>
+            </div>
+            <div class="user-profile">
+                <!-- Same profile block as dashboard -->
+                <button class="icon-btn"><i class="far fa-bell"></i><span
+                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <h4 class="fw-bold mb-4">All Customers</h4>
+
+            <div class="card-custom">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#ID</th>
+                                <th>Avatar</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Orders</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>101</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Md+Rimel&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">Md
+                                        Rimel</a></td>
+                                <td>rimel1111@gmail.com</td>
+                                <td>+1 234 567 890</td>
+                                <td>New York</td>
+                                <td>15</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>102</td>
+                                <td><img src="https://ui-avatars.com/api/?name=John+Doe&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">John
+                                        Doe</a></td>
+                                <td>johndoe@example.com</td>
+                                <td>+1 987 654 321</td>
+                                <td>London</td>
+                                <td>3</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>103</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Sarah+Smith&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">Sarah
+                                        Smith</a></td>
+                                <td>sarah.smith@example.com</td>
+                                <td>+1 555 123 456</td>
+                                <td>California</td>
+                                <td>8</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>104</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Emily+Davis&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">Emily
+                                        Davis</a></td>
+                                <td>emily.davis@example.com</td>
+                                <td>+1 555 987 654</td>
+                                <td>Toronto</td>
+                                <td>12</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>105</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Michael+Brown&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html"
+                                        class="text-decoration-none text-dark fw-bold">Michael
+                                        Brown</a></td>
+                                <td>michael.b@example.com</td>
+                                <td>+49 123 456 789</td>
+                                <td>Berlin</td>
+                                <td>5</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>106</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Jessica+Wilson&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html"
+                                        class="text-decoration-none text-dark fw-bold">Jessica
+                                        Wilson</a></td>
+                                <td>jessica.w@example.com</td>
+                                <td>+33 1 23 45 67 89</td>
+                                <td>Paris</td>
+                                <td>20</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>107</td>
+                                <td><img src="https://ui-avatars.com/api/?name=David+Martinez&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">David
+                                        Martinez</a></td>
+                                <td>david.m@example.com</td>
+                                <td>+34 91 123 45 67</td>
+                                <td>Madrid</td>
+                                <td>7</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>108</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Sophia+Taylor&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html"
+                                        class="text-decoration-none text-dark fw-bold">Sophia
+                                        Taylor</a></td>
+                                <td>sophia.t@example.com</td>
+                                <td>+39 06 1234 5678</td>
+                                <td>Rome</td>
+                                <td>2</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>109</td>
+                                <td><img src="https://ui-avatars.com/api/?name=James+Anderson&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html" class="text-decoration-none text-dark fw-bold">James
+                                        Anderson</a></td>
+                                <td>james.a@example.com</td>
+                                <td>+61 2 1234 5678</td>
+                                <td>Sydney</td>
+                                <td>9</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>110</td>
+                                <td><img src="https://ui-avatars.com/api/?name=Olivia+Thomas&background=random"
+                                        class="rounded-circle" width="30" height="30"></td>
+                                <td><a href="customer-details.html"
+                                        class="text-decoration-none text-dark fw-bold">Olivia
+                                        Thomas</a></td>
+                                <td>olivia.t@example.com</td>
+                                <td>+81 3 1234 5678</td>
+                                <td>Tokyo</td>
+                                <td>18</td>
+                                <td>
+                                    <a href="customer-details.html" class="btn btn-sm btn-light text-primary"
+                                        title="View"><i class="fas fa-eye"></i></a>
+                                    <button class="btn btn-sm btn-light text-warning" title="Block"><i
+                                            class="fas fa-ban"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4 px-3 pb-3">
+                    <ul class="pagination justification-content-end mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Global Delete Confirmation
+        document.body.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.btn.text-danger');
+            if (deleteBtn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The item has been deleted.',
+                            'success'
+                        ).then(() => {
+                            // Optional: Remove row from DOM
+                            const row = deleteBtn.closest('tr');
+                            if (row) row.remove();
+                        });
+                    }
+                });
+            }
+        });
+
+        // Global Block Confirmation
+        document.body.addEventListener('click', function (e) {
+            const blockBtn = e.target.closest('.btn.text-warning');
+            if (blockBtn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Block User?',
+                    text: "Are you sure you want to block this user?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ffc107', // Warning color
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, block user!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Blocked!',
+                            'User has been blocked successfully.',
+                            'success'
+                        ).then(() => {
+                            // Optional: Change UI to reflect blocked state
+                            // For now just disabling the button or row style could be done
+                            // blockBtn.classList.remove('text-warning');
+                            // blockBtn.classList.add('text-muted');
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Categories</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="sales-offers.html" class="nav-link">
+            <i class="fas fa-percentage"></i> Sales Offers
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+        <div class="menu-label mt-3">Products</div>
+        <a href="categories.html" class="nav-link active">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <h4 class="fw-bold m-0 text-dark">Categories</h4>
+            <div class="d-flex align-items-center gap-4">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search data, users, or reports" class="bg-light border-0">
+                </div>
+                <div class="user-profile">
+                    <button class="icon-btn"><i class="far fa-bell"></i><span
+                            class="badge bg-danger rounded-circle">3</span></button>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                                alt="mdo">
+                        </a>
+                        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-dark m-0">Discover</h5>
+                <div class="d-flex gap-2">
+                    <a href="add-category.html" class="btn btn-primary-custom px-4"><i class="fas fa-plus me-2"></i> Add
+                        Categories</a>
+                    <button class="btn btn-light bg-white border px-3">More Action <i
+                            class="fas fa-ellipsis-v ms-2"></i></button>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+                <!-- Vegetable Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://placehold.co/60x60/png?text=Veg" class="rounded" alt="Icon">
+                            <h6 class="fw-bold m-0 text-dark">Vegetables</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Bakery Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://placehold.co/60x60/png?text=Bky" class="rounded" alt="Icon">
+                            <h6 class="fw-bold m-0 text-dark">Bakery</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Beverages Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://placehold.co/60x60/png?text=Bev" class="rounded" alt="Icon">
+                            <h6 class="fw-bold m-0 text-dark">Beverages</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Rice Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://placehold.co/60x60/png?text=Rice" class="rounded" alt="Icon">
+                            <h6 class="fw-bold m-0 text-dark">Rice</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Sauces & Oils Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-oil-can text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Sauces & Oils</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Frozen Foods Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-snowflake text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Frozen Foods</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Personal Care Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-pump-soap text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Personal Care</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Dairy Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-cheese text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Dairy</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Snacks Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-cookie-bite text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Snacks</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Fruits Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-apple-alt text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Fruits</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <!-- Household Card -->
+                <div class="col">
+                    <div
+                        class="card-custom p-3 d-flex align-items-center justify-content-between flex-row h-100 category-card">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-home text-muted fs-4"></i>
+                            </div>
+                            <h6 class="fw-bold m-0 text-dark">Household</h6>
+                        </div>
+                        <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Global Delete Confirmation
+        document.body.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.btn.text-danger');
+            if (deleteBtn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The item has been deleted.',
+                            'success'
+                        ).then(() => {
+                            // Handle Grid Column/Card Removal
+                            const cardCol = deleteBtn.closest('.col');
+                            if (cardCol) cardCol.remove();
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

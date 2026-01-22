@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Banner</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link active">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+        <div class="menu-label mt-3">Products</div>
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <!-- User Profile -->
+                <button class="icon-btn"><i class="far fa-bell"></i><span
+                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold m-0">Banner Management</h4>
+                <a href="add-offer.html" class="btn btn-primary-custom btn-sm"><i class="fas fa-plus"></i> Create New
+                    Banner</a>
+            </div>
+
+            <div class="row">
+                <!-- Offer Card 1 -->
+                <div class="col-md-6 mb-4">
+                    <div class="card-custom h-100 p-0 overflow-hidden">
+                        <div class="bg-warning p-4 text-center text-dark position-relative overflow-hidden">
+                            <h3 class="fw-bold position-relative z-1">SUMMER SALE</h3>
+                            <p class="lead position-relative z-1">Up to 50% Off</p>
+                            <img src="https://placehold.co/400x300/png?text=Fresh+Vegetables"
+                                class="position-absolute top-50 start-50 translate-middle opacity-25"
+                                style="width: 120%;" alt="Bg">
+                        </div>
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="badge bg-success">Active</span>
+                                <small class="text-muted">Ends: 30 Aug, 2026</small>
+                            </div>
+                            <h5 class="fw-bold">Summer Vegetables Festival</h5>
+                            <p class="text-muted small">Special discounts on all organic vegetables.</p>
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="add-offer.html" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <button class="btn btn-sm btn-outline-danger">End Sale</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Offer Card 2 -->
+                <div class="col-md-6 mb-4">
+                    <div class="card-custom h-100 p-0 overflow-hidden">
+                        <div class="bg-primary p-4 text-center text-white">
+                            <h3 class="fw-bold">WINTER DELIGHTS</h3>
+                            <p class="lead">Flat 20% Off</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="badge bg-secondary">Draft</span>
+                                <small class="text-muted">Starts: 01 Dec, 2026</small>
+                            </div>
+                            <h5 class="fw-bold">Winter Fruits Bonanza</h5>
+                            <p class="text-muted small">Exclusive offers on apples, oranges and dry fruits.</p>
+                            <hr>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                <button class="btn btn-sm btn-outline-success">Publish</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+    </script>
+</body>
+
+</html>

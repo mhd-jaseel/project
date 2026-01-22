@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Order Management</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        <a href="order-management.html" class="nav-link active">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="coupon.html" class="nav-link">
+            <i class="fas fa-ticket-alt"></i> Coupon Code
+        </a>
+        <a href="banner.html" class="nav-link">
+            <i class="fas fa-image"></i> Banner
+        </a>
+        <a href="sales-offers.html" class="nav-link">
+            <i class="fas fa-percentage"></i> Sales Offers
+        </a>
+        <a href="transaction.html" class="nav-link">
+            <i class="fas fa-wallet"></i> Transaction
+        </a>
+
+        <div class="menu-label mt-3">Products</div>
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+        <a href="feature-brands.html" class="nav-link">
+            <i class="fas fa-star"></i> Featured Brands
+        </a>
+
+        <div class="menu-label mt-3">Admin</div>
+        <a href="admin-role.html" class="nav-link">
+            <i class="fas fa-user-shield"></i> Admin Role
+        </a>
+
+        <div class="mt-auto p-4">
+            <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
+                    class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-bar d-none d-md-block">
+                    <input type="text" placeholder="Search orders...">
+                </div>
+            </div>
+
+            <div class="user-profile">
+                <!-- Same profile block as dashboard -->
+                <button class="icon-btn"><i class="far fa-bell"></i><span
+                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                        <div class="ms-2 d-none d-sm-block text-start">
+                            <div class="fw-bold small">Admin User</div>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-wrapper">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold m-0">Order Management</h4>
+                <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm" style="width: 150px;">
+                        <option>All Status</option>
+                        <option>Pending</option>
+                        <option>Completed</option>
+                        <option>Cancelled</option>
+                    </select>
+                    <button class="btn btn-primary-custom btn-sm"><i class="fas fa-file-export me-1"></i>
+                        Export</button>
+                </div>
+            </div>
+
+            <div class="card-custom">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Customer Name</th>
+                                <th>Location</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-001</td>
+                                <td>20 Jan, 2026</td>
+                                <td>Md Rimel</td>
+                                <td>New York, USA</td>
+                                <td>$120.00</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-002</td>
+                                <td>19 Jan, 2026</td>
+                                <td>John Doe</td>
+                                <td>London, UK</td>
+                                <td>$45.50</td>
+                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-003</td>
+                                <td>19 Jan, 2026</td>
+                                <td>Sarah Smith</td>
+                                <td>California, USA</td>
+                                <td>$15.00</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Cancelled</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-004</td>
+                                <td>18 Jan, 2026</td>
+                                <td>Emily Davis</td>
+                                <td>Toronto, Canada</td>
+                                <td>$210.75</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-005</td>
+                                <td>18 Jan, 2026</td>
+                                <td>Michael Brown</td>
+                                <td>Berlin, Germany</td>
+                                <td>$85.00</td>
+                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-006</td>
+                                <td>17 Jan, 2026</td>
+                                <td>Jessica Wilson</td>
+                                <td>Paris, France</td>
+                                <td>$320.40</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-007</td>
+                                <td>17 Jan, 2026</td>
+                                <td>David Martinez</td>
+                                <td>Madrid, Spain</td>
+                                <td>$65.20</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Cancelled</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-008</td>
+                                <td>16 Jan, 2026</td>
+                                <td>Sophia Taylor</td>
+                                <td>Rome, Italy</td>
+                                <td>$150.00</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-009</td>
+                                <td>15 Jan, 2026</td>
+                                <td>James Anderson</td>
+                                <td>Sydney, Australia</td>
+                                <td>$95.50</td>
+                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-010</td>
+                                <td>14 Jan, 2026</td>
+                                <td>Olivia Thomas</td>
+                                <td>Tokyo, Japan</td>
+                                <td>$215.00</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
+                                            class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
+                                            class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justification-content-end mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Order Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted small">Order Information</h6>
+                            <p class="mb-1"><strong>Order ID:</strong> <span id="modalOrderId">#ORD-001</span></p>
+                            <p class="mb-1"><strong>Date:</strong> 20 Jan, 2026</p>
+                            <p class="mb-1"><strong>Total Amount:</strong> <span
+                                    class="text-success fw-bold">$120.00</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted small">Customer Details</h6>
+                            <p class="mb-1"><strong>Name:</strong> Md Rimel</p>
+                            <p class="mb-1"><strong>Email:</strong> rimel@example.com</p>
+                            <p class="mb-0"><strong>Phone:</strong> +1 234 567 890</p>
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted small mb-3">Order Items</h6>
+                    <div class="card bg-light border-0 p-3 mb-4 rounded-3">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://placehold.co/50x50/png?text=Veg" class="rounded me-3" alt="Product">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0">Fresh Organic Vegetables</h6>
+                                <small class="text-muted">Qty: 2 x $60.00</small>
+                            </div>
+                            <span class="fw-bold">$120.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="orderStatusSelect" class="form-label fw-bold">Change Order Status</label>
+                        <select class="form-select" id="orderStatusSelect">
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary-custom" data-bs-dismiss="modal">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Global Delete Confirmation
+        document.body.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.btn.text-danger');
+            if (deleteBtn) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire(
+                            'Deleted!',
+                            'The item has been deleted.',
+                            'success'
+                        ).then(() => {
+                            // Optional: Remove row from DOM
+                            const row = deleteBtn.closest('tr');
+                            if (row) row.remove();
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
