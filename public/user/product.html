@@ -124,11 +124,10 @@ header {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
-.product-card img.card-img-top {
+/* .product-card img.card-img-top {
     height: 180px;
-    /* Fixed height for consistency */
     object-fit: contain;
-}
+} */
 
 .product-title {
     font-weight: 700;
@@ -389,7 +388,32 @@ thead th {
 
 .account-sidebar a:hover {
     color: var(--primary-green) !important;
-}</style>
+}
+/* ✅ FIX CARD STRUCTURE */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ✅ IMAGE AREA CONTROLS SIZE */
+.product-img-wrapper
+ {
+  height: 280px;           
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;        
+}
+
+/* ✅ IMAGE ADAPTS INSIDE */
+.product-img-wrapper img
+ {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+</style>
 </head>
 
 <body>
@@ -594,362 +618,8 @@ thead th {
                     </div>
                 </div>
 
-                <div class="row row-cols-2 row-cols-md-4 g-4">
-                    <!-- Product 1 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <span
-                                class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                                deal</span>
-                            <a href="single-product.html">
-                                <img src="../project images/chicken.jfif" class="card-img-top" alt="Product">
-                            </a>
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Chicken Breast</h6>
-                                <p class="product-weight">(500g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹259</span>
-                                    <span class="product-price-old">₹337</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 2 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <a href="single-product.html">
-                                <img src="../project images/harpic.jfif" class="card-img-top" alt="Harpic">
-                            </a>
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Harpic</h6>
-                                <p class="product-weight">(650ml)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹130</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 3 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/fish masal.jfif" class="card-img-top" alt="Masala">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Fish Masala</h6>
-                                <p class="product-weight">(50g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹35</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 4 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/tomato single.jpg" class="card-img-top" alt="Tomato">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Tomato</h6>
-                                <p class="product-weight">(1kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹30</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 5 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/Surf Excel.jfif" class="card-img-top" alt="Surf">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Surf Excel</h6>
-                                <p class="product-weight">(1kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹120</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 6 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/Sunflower Oil.jfif" class="card-img-top" alt="Oil">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Sunflower Oil</h6>
-                                <p class="product-weight">(1L)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹150</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 7 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/egg.jfif" class="card-img-top" alt="Eggs">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Farm Eggs</h6>
-                                <p class="product-weight">(6 pcs)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹40</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 8 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/milk.jfif" class="card-img-top" alt="Milk">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Toned Milk</h6>
-                                <p class="product-weight">(500ml)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹30</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product 9 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/apple.jfif" class="card-img-top" alt="Apple">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Red Apple</h6>
-                                <p class="product-weight">(1kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹180</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 10 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/pottatto.jfif" class="card-img-top" alt="Potato">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Potato</h6>
-                                <p class="product-weight">(1kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹40</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 11 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/bakery.jfif" class="card-img-top" alt="Bread">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Whole Wheat Bread</h6>
-                                <p class="product-weight">(400g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹45</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 12 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/milma curd.jfif" class="card-img-top" alt="Curd">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Milma Curd</h6>
-                                <p class="product-weight">(500g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹30</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 13 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/santoor.jfif" class="card-img-top" alt="Soap">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Santoor Soap</h6>
-                                <p class="product-weight">(100g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹40</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 14 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/cooldrinks.jfif" class="card-img-top" alt="Drinks">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Assorted Drinks</h6>
-                                <p class="product-weight">(1L)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹80</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 15 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/malli podi.jfif" class="card-img-top" alt="Coriander">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Coriander Powder</h6>
-                                <p class="product-weight">(250g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹60</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 16 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <span
-                                class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                                deal</span>
-                            <img src="../project images/basmathi rice.jfif" class="card-img-top" alt="Rice">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Basmati Rice</h6>
-                                <p class="product-weight">(5kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹550</span>
-                                    <span class="product-price-old">₹700</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 17 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/rice.jfif" class="card-img-top" alt="Rice">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">White Rice</h6>
-                                <p class="product-weight">(1kg)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹55</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 18 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/shampoo.jfif" class="card-img-top" alt="Shampoo">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Herbal Shampoo</h6>
-                                <p class="product-weight">(340ml)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹220</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 19 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/shampoo clinic plus.jfif" class="card-img-top"
-                                alt="Clinic Plus">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Clinic Plus Shampoo</h6>
-                                <p class="product-weight">(180ml)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹140</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Product 20 -->
-                    <div class="col">
-                        <div class="card product-card h-100">
-                            <img src="../project images/tiger biscut.jfif" class="card-img-top" alt="Biscuit">
-                            <div class="card-body text-center p-2">
-                                <h6 class="product-title">Tiger Biscuit</h6>
-                                <p class="product-weight">(100g)</p>
-                                <div class="mb-3 text-start ps-2">
-                                    <span class="product-price">₹10</span>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                    <button class="btn btn-add-cart">Add to cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="row row-cols-2 row-cols-md-4 g-4" id="productGrid">  </div>
+                                  
 
                 <!-- Pagination -->
                 <nav class="mt-5 d-flex justify-content-center">
@@ -1088,6 +758,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
 
 // Cart Functionality
 document.addEventListener('DOMContentLoaded', function () {
@@ -1897,6 +1568,72 @@ document.addEventListener('DOMContentLoaded', function () {
         printWindow.document.close();
     }
 });
+
+async function loadUserProducts() {
+  try {
+    const res = await fetch("/api/products");
+    const products = await res.json();
+
+    const grid = document.getElementById("productGrid");
+    grid.innerHTML = "";
+
+    if (!products.length) {
+      grid.innerHTML = `
+        <p class="text-center text-muted">No products available</p>
+      `;
+      return;
+    }
+
+   products.forEach(p => {
+  grid.innerHTML += `
+    <div class="col">
+      <div class="card product-card h-100 position-relative">
+
+        ${p.featured ? `<span class="badge-best-deal position-absolute top-0 start-0 m-2">Best deal</span>` : ''}
+
+        <div class="p-3 text-center">
+          <img
+            src="${p.image || 'https://placehold.co/500x500'}"
+            class="card-img-top"
+            alt="${p.name}"
+          />
+        </div>
+
+        <div class="card-body text-center pt-0">
+          <h6 class="product-title">${p.name}</h6>
+          <div class="product-weight">${p.description || ''}</div>
+
+          <div class="mb-2">
+            <span class="product-price">₹${p.price}</span>
+            ${
+              p.oldPrice
+                ? `<span class="product-price-old">₹${p.oldPrice}</span>`
+                : ''
+            }
+          </div>
+
+          <div class="d-flex gap-2 align-items-center justify-content-center mt-3">
+            <button class="btn btn-wishlist">
+              <i class="far fa-heart"></i>
+            </button>
+
+            <button class="btn btn-add-cart">
+              Add to cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+});
+
+
+  } catch (err) {
+    console.error("Failed to load products", err);
+  }
+}
+
+loadUserProducts();
 </script>
 </body>
 

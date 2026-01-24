@@ -397,7 +397,7 @@ thead th {
     <!-- Header Section (Simplified) -->
     <header class="bg-primary-custom text-white py-3">
         <div class="container text-center">
-            <a href="homepage.html" class="navbar-brand fw-bold fs-3 text-white">
+            <a href="/user/homepage.html" class="navbar-brand fw-bold fs-3 text-white">
                 <i class="fas fa-leaf me-2"></i>KM Store
             </a>
         </div>
@@ -411,7 +411,7 @@ thead th {
                 <p class="text-muted small">Login to your account to continue</p>
             </div>
 
-            <form action="homepage.html" onsubmit="localStorage.setItem('isLoggedIn', 'true')">
+            <form id="loginForm">
                 <div class="mb-3">
                     <label for="email" class="form-label small text-muted">Email Address</label>
                     <div class="input-group">
@@ -453,7 +453,7 @@ thead th {
 
                 <div class="text-center small">
                     <span class="text-muted">Don't have an account?</span>
-                    <a href="signup.html" class="text-primary-custom fw-bold text-decoration-none">Sign Up</a>
+                    <a href="/user/signup.html" class="text-primary-custom fw-bold text-decoration-none">Sign Up</a>
                 </div>
             </form>
         </div>
@@ -466,6 +466,53 @@ thead th {
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!--loginlogic js-->
+    <script>
+  const form = document.getElementById("loginForm");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+
+      // Save JWT + role
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
+      // Redirect based on role
+      if (data.role === "admin") {
+        window.location.href = "/admin/dashboard.html";
+      } else {
+        window.location.href = "/user/homepage.html";
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
+  });
+</script>
+
+
+
 </body>
 
 </html>

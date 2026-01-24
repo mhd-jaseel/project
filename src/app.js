@@ -1,9 +1,20 @@
 const express = require("express");
 const path = require("path");
+const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const productRoutes = require("./routes/productRoutes")
 
 const app = express();
 
 app.use(express.json());
+
+
+
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/products", productRoutes);
+
+
 
 // serve static files (css, js, images)
 app.use(express.static(path.join(__dirname, "../public")));
@@ -25,5 +36,8 @@ app.get("/admin/login", (req, res) => {
 app.get("/admin/add-product", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/admin/add-product.html"));
 });
+
+
+
 
 module.exports = app;

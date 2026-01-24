@@ -56,3 +56,26 @@ exports.getAllProducts = async (req, res) => {
   const products = await Product.find().sort({ createdAt: -1 });
   res.json(products);
 };
+// ADMIN: Delete Product
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    await Product.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Product deleted successfully"
+    });
+
+  } catch (err) {
+    console.error("❌ Delete product error:", err);
+    res.status(500).json({ message: "Delete failed" });
+  }
+};
+

@@ -414,6 +414,15 @@
 </head>
 
 <body>
+<script>
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (!token || role !== "user") {
+            window.location.href = "/user/login.html";
+        }
+</script>
+
 
     <!-- Header Section -->
     <header class="bg-primary-custom text-white">
@@ -1114,59 +1123,22 @@
         }
 
         // Check Login Status and Update Navbar
-        document.addEventListener('DOMContentLoaded', function () {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const signupLink = document.querySelector('a[href="signup.html"]');
-            const accountLink = document.querySelector('a[href="account.html"]');
-            const headerLoginBtn = document.getElementById('headerLoginBtn');
+       
+            document.addEventListener("DOMContentLoaded", () => {
+                const token = localStorage.getItem("token");
+                const role = localStorage.getItem("role");
 
-            if (isLoggedIn) {
-                // User IS logged in
-                if (signupLink) {
-                    signupLink.closest('li').style.display = 'none';
-                }
+                const loginBtn = document.getElementById("headerLoginBtn");
 
-                if (headerLoginBtn) {
-                    headerLoginBtn.style.display = 'none';
+                if (token && role === "user") {
+                if (loginBtn) loginBtn.style.display = "none";
+                } else {
+                if (loginBtn) loginBtn.style.display = "inline";
                 }
+            });
+            
 
-                if (accountLink) {
-                    // Create Dropdown
-                    const dropdownHTML = `
-                <div class="dropdown d-inline-block">
-                    <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user me-1"></i> Account
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                        <li><a class="dropdown-item" href="account.html">Account</a></li>
-                        <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
-                    </ul>
-                </div>
-            `;
-                    accountLink.outerHTML = dropdownHTML;
 
-                    // Logout Functionality
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            localStorage.removeItem('isLoggedIn');
-                            window.location.href = 'homepage.html';
-                        });
-                    }
-                }
-            } else {
-                // User is NOT logged in
-                if (accountLink) {
-                    accountLink.style.display = 'none';
-                }
-                if (headerLoginBtn) {
-                    headerLoginBtn.style.display = 'inline';
-                }
-            }
-        });
 
         // Cart Functionality
         document.addEventListener('DOMContentLoaded', function () {
@@ -1974,6 +1946,15 @@
                 const printWindow = window.open('', '', 'height=600,width=800');
                 printWindow.document.write(invoiceHTML);
                 printWindow.document.close();
+            }
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.id === "logoutBtn") {
+             e.preventDefault();
+             localStorage.removeItem("token");
+             localStorage.removeItem("role");
+             window.location.href = "/user/login.html";
             }
         });
     </script>
