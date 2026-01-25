@@ -475,8 +475,12 @@
                                     <label class="form-check-label x-small" for="featuredCheck">Featured Product</label>
                                 </div>
                                 <div class="d-grid gap-2">
-                                    <button type="button" class="btn btn-primary-custom btn-sm"
-                                        id="btnPublishProduct">Publish Product</button>
+                                <button type="button"
+                                            class="btn btn-primary-custom btn-sm"
+                                            id="btnPublishProduct">
+                                    Publish Product
+                                 </button>
+
                                     <button type="button" class="btn btn-light btn-sm border" id="btnSaveDraft">Save
                                         Draft</button>
                                 </div>
@@ -592,51 +596,63 @@
         }
 
 
-     document.addEventListener("DOMContentLoaded", () => {
+    
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnPublishProduct");
 
-        const btn = document.getElementById("btnPublishProduct");
+  if (!btn) {
+    console.error("❌ Publish button not found");
+    return;
+  }
 
-        if (!btn) {
-            console.error("❌ Publish button not found");
-            return;
-        }
+  btn.addEventListener("click", async () => {
+    const token = localStorage.getItem("token");
 
-        console.log("✅ Publish button found");
+    if (!token) {
+      Swal.fire("Error", "Please login again", "error");
+      return;
+    }
 
-        btn.addEventListener("click", async () => {
-            console.log("🔥 Publish clicked");
+    const product = {
+      name: document.getElementById("productName").value.trim(),
+      company: document.getElementById("companyNameInput").value.trim(),
+      price: Number(document.getElementById("productPrice").value),
+      description: document.getElementById("productDescription").value.trim()
+    };
 
-            const token = localStorage.getItem("token");
+    if (!product.name || !product.price) {
+      Swal.fire("Error", "Name and price are required", "warning");
+      return;
+    }
 
-            if (!token) {
-            alert("No token found. Please login again.");
-            return;
-            }
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(product)
+      });
 
-            const product = {
-            name: document.querySelector('input[placeholder="e.g. Basmathi Rice"]').value,
-            company: document.getElementById("companyNameInput").value,
-            price: document.querySelector('input[placeholder="0.00"]').value,
-            description: document.getElementById("productDescription").value
-            };
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to add product");
+      }
 
-            const res = await fetch("/api/products", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(product)
-            });
-
-            if (res.ok) {
-            alert("✅ Product added");
-            } else {
-            alert("❌ Failed to add product");
-            }
+      Swal.fire("Success", "Product added successfully", "success")
+        .then(() => {
+          window.location.href = "all-products.html";
         });
 
-        });
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", err.message, "error");
+    }
+  });
+});
+
+
 </script>
 
    

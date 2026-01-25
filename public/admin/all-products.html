@@ -407,38 +407,7 @@
             });
         });
 
-        // Global Delete Confirmation
-        document.body.addEventListener('click', function (e) {
-            const deleteBtn = e.target.closest('.btn.text-danger');
-            if (deleteBtn) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The item has been deleted.',
-                            'success'
-                        ).then(() => {
-                            // Optional: Remove row from DOM
-                            const row = deleteBtn.closest('tr');
-                            if (row) row.remove();
-                            // If it's a card (like in categories)
-                            const card = deleteBtn.closest('.card-custom');
-                            if (card && !row) card.parentElement.remove();
-                        });
-                    }
-                });
-            }
-        });
-
+        
 
 async function loadProducts() {
     try {
@@ -471,11 +440,13 @@ async function loadProducts() {
                 <td>${p.status}</td>
                 <td>${p.featured ? "Yes" : "No"}</td>
                 <td>
-                 <button class="btn btn-sm btn-danger"
-                            onclick="deleteProduct('${p._id}', this)">
+                <button 
+                    class="btn btn-sm btn-danger"
+                    onclick="confirmDelete('${p._id}', this)">
                     Delete
-                 </button>
+                </button>
                 </td>
+
             </tr>
             `;
         });
@@ -485,33 +456,52 @@ async function loadProducts() {
 }
 
 loadProducts();
-async function deleteProduct(productId, btn) {
-  const result = await Swal.fire({
+async function deleteProduct(productId) {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire("Error", "Admin not logged in", "error");
+      return;
+    }
+
+    const res = await fetch(`/api/products/${productId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || "Delete failed");
+    }
+
+    Swal.fire("Deleted!", "Product deleted successfully", "success");
+
+    // 🔁 reload table
+    loadProducts();
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire("Error", err.message, "error");
+  }
+}
+
+function confirmDelete(productId) {
+  Swal.fire({
     title: "Are you sure?",
     text: "This product will be permanently deleted!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
     confirmButtonText: "Yes, delete it!"
-  });
-
-  if (!result.isConfirmed) return;
-
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`/api/products/${productId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteProduct(productId);
     }
   });
-
-  if (res.ok) {
-    btn.closest("tr").remove();
-    Swal.fire("Deleted!", "Product deleted successfully", "success");
-  } else {
-    Swal.fire("Error", "Delete failed", "error");
-  }
 }
 
 
