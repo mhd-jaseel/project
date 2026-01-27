@@ -321,20 +321,46 @@
                         <form>
                             <div class="mb-3">
                                 <label class="form-label text-muted small">Category Name</label>
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="mb-3">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="categoryName"
+                                    placeholder="e.g. Vegetables"
+                                    required
+                                >
+                                </div>
+
+                                <div class="mb-3">
                                 <label class="form-label text-muted small">Description</label>
-                                <textarea class="form-control" rows="3"
-                                    placeholder="Category description..."></textarea>
-                            </div>
-                            <div class="mb-4">
+                                <textarea
+                                    class="form-control"
+                                    id="categoryDescription"
+                                    rows="3"
+                                    placeholder="Category description..."
+                                ></textarea>
+                                </div>
+
+                                <div class="mb-4">
                                 <label class="form-label text-muted small">Category Image</label>
-                                <input type="file" class="form-control">
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary-custom">Save Category</button>
-                            </div>
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    id="categoryImage"
+                                    accept="image/*"
+                                    required
+                                >
+                                </div>
+
+                                <div class="d-grid">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary-custom"
+                                    id="btnSaveCategory"
+                                >
+                                    Save Category
+                                </button>
+                                </div>
+
                         </form>
                     </div>
                 </div>
@@ -343,23 +369,9 @@
                 <div class="col-lg-6">
                     <div class="card-custom">
                         <h5 class="fw-bold mb-4">Existing Categories</h5>
-                        <ul class="list-group list-group-flush">
-                            <li
-                                class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 p-2 bg-light rounded">
-                                <span><i class="fas fa-carrot me-2 text-warning"></i> Vegetables</span>
-                                <button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
-                            </li>
-                            <li
-                                class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 p-2 bg-light rounded">
-                                <span><i class="fas fa-apple-alt me-2 text-danger"></i> Fruits</span>
-                                <button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
-                            </li>
-                            <li
-                                class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 p-2 bg-light rounded">
-                                <span><i class="fas fa-bread-slice me-2 text-warning"></i> Bakery</span>
-                                <button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
-                            </li>
-                        </ul>
+                        <ul class="list-group list-group-flush"  id="categoryList"></ul>
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -369,14 +381,63 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('show');
-            });
-        }
-    </script>
+document.querySelector("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login as admin");
+    return;
+  }
+
+  const name = document.getElementById("categoryName").value.trim();
+  const description = document.getElementById("categoryDescription").value.trim();
+  const imageInput = document.getElementById("categoryImage");
+
+  if (!name) {
+    alert("Category name is required");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("description", description);
+
+  if (imageInput.files.length > 0) {
+    formData.append("image", imageInput.files[0]);
+  }
+
+  try {
+    const res = await fetch("/api/categories", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      data = {};
+    }
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to add category");
+    }
+
+    alert("✅ Category added successfully");
+    location.reload();
+
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+});
+
+</script>
+
 </body>
 
 </html>

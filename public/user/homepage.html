@@ -548,52 +548,16 @@
 
     <!-- Categories Section -->
     <section class="container my-5">
-        <h3 class="text-center fw-bold mb-4">Category</h3>
-        <div class="row justify-content-center text-center">
-            <!-- Category Item -->
-            <div class="col-6 col-md-2 mb-3">
-                <a href="product.html" class="text-decoration-none text-dark">
-                    <div class="category-circle mx-auto">
-                        <img src="../project images/veg.jfif" alt="Vegetables" class="img-fluid rounded-circle">
-                    </div>
-                    <p class="mt-2 fw-semibold">Vegetables</p>
-                </a>
-            </div>
-            <div class="col-6 col-md-2 mb-3">
-                <a href="product.html" class="text-decoration-none text-dark">
-                    <div class="category-circle mx-auto">
-                        <img src="../project images/fruits.jfif" alt="Fruits" class="img-fluid rounded-circle">
-                    </div>
-                    <p class="mt-2 fw-semibold">Fruits</p>
-                </a>
-            </div>
-            <div class="col-6 col-md-2 mb-3">
-                <a href="product.html" class="text-decoration-none text-dark">
-                    <div class="category-circle mx-auto">
-                        <img src="../project images/bakery.jfif" alt="Bakery" class="img-fluid rounded-circle">
-                    </div>
-                    <p class="mt-2 fw-semibold">Bakery</p>
-                </a>
-            </div>
-            <div class="col-6 col-md-2 mb-3">
-                <a href="product.html" class="text-decoration-none text-dark">
-                    <div class="category-circle mx-auto">
-                        <img src="../project images/cooldrinks.jfif" alt="Beverages" class="img-fluid rounded-circle">
-                    </div>
-                    <p class="mt-2 fw-semibold">Beverages</p>
-                </a>
-            </div>
-            <div class="col-6 col-md-2 mb-3">
-                <a href="product.html" class="text-decoration-none text-dark">
-                    <div class="category-circle mx-auto">
-                        <img src="../project images/household-items-500x500.webp" alt="Household"
-                            class="img-fluid rounded-circle">
-                    </div>
-                    <p class="mt-2 fw-semibold">Household Items</p>
-                </a>
-            </div>
-        </div>
+    <h3 class="text-center fw-bold mb-4">Category</h3>
+
+    <div
+        class="row justify-content-center text-center"
+        id="categoryContainer"
+    >
+        <!-- Categories will load here dynamically -->
+    </div>
     </section>
+
 
     <!-- Hot Deals Section -->
     <section class="container my-5">
@@ -1364,7 +1328,39 @@
                         addToCart(product);
                     }
                 });
+                
             }
+            async function loadCategories() {
+                try {
+                    const res = await fetch("/api/categories");
+                    const categories = await res.json();
+
+                    const container = document.getElementById("categoryContainer");
+                    container.innerHTML = "";
+
+                    categories.forEach(cat => {
+                    container.innerHTML += `
+                        <div class="col-6 col-md-2 mb-3">
+                        <a href="product.html?category=${cat._id}" class="text-decoration-none text-dark">
+                            <div class="category-circle mx-auto">
+                            <img
+                                src="${cat.image}"
+                                alt="${cat.name}"
+                                class="img-fluid rounded-circle"
+                            >
+                            </div>
+                            <p class="mt-2 fw-semibold">${cat.name}</p>
+                        </a>
+                        </div>
+                    `;
+                    });
+
+                } catch (err) {
+                    console.error("Failed to load categories", err);
+                }
+                }
+
+                loadCategories();
 
             function renderWishlist() {
                 let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];

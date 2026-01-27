@@ -450,9 +450,8 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
                                     <label class="form-label fw-bold x-small mb-1">Category</label>
-                                    <select class="form-select form-select-sm">
-                                        <option>Vegetables</option>
-                                        <option>Fruits</option>
+                                    <select class="form-select form-select-sm" id="categorySelect">
+                                    <option value="">Select category</option>
                                     </select>
                                 </div>
                                 <div class="col-6">
@@ -665,7 +664,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+async function loadCategoriesForDropdown() {
+  try {
+    const res = await fetch("/api/categories");
+    const categories = await res.json();
 
+    const select = document.getElementById("categorySelect");
+    select.innerHTML = `<option value="">Select category</option>`;
+
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat._id;     // IMPORTANT
+      option.textContent = cat.name;
+      select.appendChild(option);
+    });
+
+  } catch (err) {
+    console.error("Failed to load categories", err);
+  }
+}
+document.addEventListener("DOMContentLoaded", loadCategoriesForDropdown);
 
 </script>
 

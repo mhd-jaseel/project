@@ -22,7 +22,8 @@ exports.addProduct = async (req, res) => {
       name,
       company,
       price,
-      description
+      description,
+      category   // 👈 RECEIVE CATEGORY ID
     } = req.body;
 
     const product = new Product({
@@ -30,12 +31,11 @@ exports.addProduct = async (req, res) => {
       company,
       price,
       description,
-
-      // TEMP DEFAULTS
-      category: "General",
+      category,        // 👈 SAVE ObjectId
       stock: 0,
       status: "In Stock",
-      featured: false
+      featured: false,
+       image: req.file ? `/uploads/${req.file.filename}` : null
     });
 
     await product.save();
@@ -50,6 +50,7 @@ exports.addProduct = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // ADMIN + USER: Get All Products
 exports.getAllProducts = async (req, res) => {
@@ -78,4 +79,17 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
+// GET products by category
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const products = await Product.find({
+      category: req.params.categoryId
+    }).populate("category"); 
+
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load products" });
+  }
+};
+
 
