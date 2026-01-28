@@ -5,7 +5,8 @@ const {
   addProduct,
   getAllProducts,
   deleteProduct,
-  getProductsByCategory
+  getProductsByCategory,
+  getProductById
 } = require("../controllers/productController");
 
 const auth = require("../middleware/authMiddleware");
@@ -17,9 +18,12 @@ router.post(
   "/",
   auth,
   adminOnly("admin"),
-  upload.single("image"), // ✅ Multer MUST be here
+  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'extraImages', maxCount: 4 }]),
   addProduct
 );
+
+// ✅ GET SINGLE PRODUCT
+router.get("/:id", getProductById);
 
 // ✅ ADMIN + USER: GET ALL PRODUCTS
 router.get("/", getAllProducts);

@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema(
     },
     description: String,
     image: String,
+    images: [String],
 
     category: {
       type: mongoose.Schema.Types.ObjectId,

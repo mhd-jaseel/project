@@ -20,8 +20,11 @@ exports.addProduct = async (req, res) => {
       weight,
       price,
       description,
-      category, // ObjectId
-      image: req.file ? `/uploads/products/${req.file.filename}` : null
+      category,
+      image: req.files && req.files['image'] ? `/uploads/products/${req.files['image'][0].filename}` : null,
+      images: req.files && req.files['extraImages']
+        ? req.files['extraImages'].map(f => `/uploads/products/${f.filename}`)
+        : []
     });
 
     await product.save();
@@ -94,6 +97,22 @@ exports.getProductsByCategory = async (req, res) => {
   } catch (err) {
     console.error("❌ Category products error:", err);
     res.status(500).json({ message: "Failed to load products" });
+  }
+};
+
+/* ============================
+   GET SINGLE PRODUCT BY ID
+============================ */
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate("category", "name");
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (err) {
+    console.error("❌ Get product error:", err);
+    res.status(500).json({ message: "Failed to load product" });
   }
 };
 
