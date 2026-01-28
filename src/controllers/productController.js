@@ -1,63 +1,62 @@
 const Product = require("../models/Product");
 
-// ADMIN: Add Product
-// exports.addProduct = async (req, res) => {
-//   try {
-//     const product = await Product.create({
-//       ...req.body,
-//       createdBy: req.user.id
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       product
-//     });
-//   } catch (err) {
-//     res.status(500).json({ message: "Product creation failed" });
-//   }
-// };
+/* ============================
+   ADMIN: ADD PRODUCT
+============================ */
 exports.addProduct = async (req, res) => {
   try {
-    const {
-      name,
-      company,
-      price,
-      description,
-      category   // 👈 RECEIVE CATEGORY ID
-    } = req.body;
+    const { name, company, weight, price, description, category } = req.body;
+
+    // ✅ Validation
+    if (!name || !price || !category) {
+      return res.status(400).json({
+        message: "Name, price and category are required"
+      });
+    }
 
     const product = new Product({
       name,
       company,
+      weight,
       price,
       description,
-      category,        // 👈 SAVE ObjectId
-      stock: 0,
-      status: "In Stock",
-      featured: false,
-       image: req.file ? `/uploads/${req.file.filename}` : null
+      category, // ObjectId
+      image: req.file ? `/uploads/products/${req.file.filename}` : null
     });
 
     await product.save();
 
     res.status(201).json({
-      message: "Product created",
+      success: true,
       product
     });
 
   } catch (err) {
     console.error("❌ Add product error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-// ADMIN + USER: Get All Products
+/* ============================
+   ADMIN + USER: GET ALL PRODUCTS
+   ✅ FIXED: POPULATE CATEGORY NAME
+============================ */
 exports.getAllProducts = async (req, res) => {
-  const products = await Product.find().sort({ createdAt: -1 });
-  res.json(products);
+  try {
+    const products = await Product.find()
+      .populate("category", "name") // ⭐ IMPORTANT FIX
+      .sort({ createdAt: -1 });
+
+    res.json(products);
+  } catch (err) {
+    console.error("❌ Get products error:", err);
+    res.status(500).json({ message: "Failed to load products" });
+  }
 };
-// ADMIN: Delete Product
+
+/* ============================
+   ADMIN: DELETE PRODUCT
+============================ */
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -79,17 +78,22 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
-// GET products by category
+
+/* ============================
+   GET PRODUCTS BY CATEGORY
+============================ */
 exports.getProductsByCategory = async (req, res) => {
   try {
-    const products = await Product.find({
-      category: req.params.categoryId
-    }).populate("category"); 
+    const { categoryId } = req.params;
+
+    const products = await Product.find({ category: categoryId })
+      .populate("category", "name")
+      .sort({ createdAt: -1 });
 
     res.json(products);
   } catch (err) {
+    console.error("❌ Category products error:", err);
     res.status(500).json({ message: "Failed to load products" });
   }
 };
-
 

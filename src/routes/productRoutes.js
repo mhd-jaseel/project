@@ -5,22 +5,29 @@ const {
   addProduct,
   getAllProducts,
   deleteProduct,
-  getProductsByCategory   // 👈 ADD THIS
+  getProductsByCategory
 } = require("../controllers/productController");
 
 const auth = require("../middleware/authMiddleware");
 const adminOnly = require("../middleware/roleMiddleware");
+const upload = require("../middleware/upload");
 
-// Admin only
-router.post("/", auth, adminOnly("admin"), addProduct);
+// ✅ ADMIN: ADD PRODUCT (ONLY ONE POST ROUTE)
+router.post(
+  "/",
+  auth,
+  adminOnly("admin"),
+  upload.single("image"), // ✅ Multer MUST be here
+  addProduct
+);
 
-// Admin + User
+// ✅ ADMIN + USER: GET ALL PRODUCTS
 router.get("/", getAllProducts);
 
-// ✅ NEW ROUTE (Category → Products)
+// ✅ GET PRODUCTS BY CATEGORY
 router.get("/category/:categoryId", getProductsByCategory);
 
-// Admin only
+// ✅ ADMIN: DELETE PRODUCT
 router.delete("/:id", auth, adminOnly("admin"), deleteProduct);
 
 module.exports = router;

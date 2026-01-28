@@ -444,6 +444,15 @@ async function deleteCategory(id, btn) {
    INIT
 ========================= */
 loadCategories();
+document.addEventListener("click", (e) => {
+  const link = e.target.closest(".category-link");
+  if (!link) return;
+
+  const categoryId = link.dataset.id;
+
+  // redirect to products page with category
+  window.location.href = `products.html?category=${categoryId}`;
+});
 </script>
 </body>
 

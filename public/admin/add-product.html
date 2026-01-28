@@ -102,9 +102,19 @@
             margin-left: 260px;
             padding: 0;
             min-height: 100vh;
-            transition: all 0.3s;
             display: flex;
             flex-direction: column;
+            background-color: #f4f6f8;
+        }
+
+        /* Responsive Scroll for Mobile */
+        @media (max-width: 992px) {
+            .main-content {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+                margin-left: 0;
+            }
         }
 
         /* Header */
@@ -115,50 +125,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 30px;
-            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
-        }
-
-        .search-bar input {
-            background-color: #f5f8fa;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            width: 300px;
-            color: var(--text-dark);
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            background-color: #ebf0f5;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-profile .icon-btn {
-            background: none;
-            border: none;
-            color: #b5b5c3;
-            font-size: 1.2rem;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .user-profile .icon-btn .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 0.6rem;
-        }
-
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
+            box-shadow: 0 0 20px rgba(76, 87, 125, 0.02);
+            z-index: 10;
         }
 
         /* Content Area */
@@ -167,70 +135,160 @@
             flex-grow: 1;
         }
 
+        .content-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px !important;
+        }
+
+        .content-title-row h6 {
+            font-size: 1.5rem;
+            color: #3f4254;
+            font-weight: 700;
+            margin: 0;
+        }
+
         /* Cards */
         .card-custom {
-            background-color: var(--card-bg);
-            border: none;
-            border-radius: 12px;
+            background-color: #fff;
+            border: 0;
+            border-radius: 10px;
             box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
             padding: 25px;
             height: 100%;
-            margin-bottom: 25px;
-        }
-
-        .stat-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 0;
-        }
-
-        .stat-card .icon-box {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(15, 157, 88, 0.1);
-            color: var(--primary-color);
-            border-radius: 10px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            flex-direction: column;
+            overflow-y: hidden;
         }
 
-        /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar {
-                left: -260px;
+        .card-custom h6 {
+            /* Sections Headers like PRODUCT DATA */
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #5e6278;
+            /* Muted darker grey */
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 0;
+            /* Screenshot does not show a line */
+            padding-bottom: 0;
+        }
+
+        /* Form Controls */
+        label.form-label {
+            font-size: 0.8rem !important;
+            font-weight: 600;
+            margin-bottom: 0.5rem !important;
+            color: #3f4254;
+            /* Darker text for labels */
+        }
+
+        .form-control,
+        .form-select {
+            height: 40px;
+            /* Taller inputs like screenshot */
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: 1px solid #e4e6ef;
+            background-color: #ffffff;
+            color: #3f4254;
+            min-height: 40px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: none;
+            /* Clean focus */
+            background-color: #fbfbfb;
+        }
+
+        .form-control::placeholder {
+            color: #b5b5c3;
+        }
+
+        .input-group-text {
+            background-color: #f3f6f9;
+            border: 1px solid #e4e6ef;
+            color: #b5b5c3;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .form-grid-container {
+            height: auto;
+        }
+
+        /* Desktop Grid */
+        @media (min-width: 993px) {
+            .col-lg-4 {
+                /* Balanced width */
+                height: auto;
             }
 
-            .sidebar.show {
-                left: 0;
+            .img-preview-box {
+                height: 250px !important;
+                background-color: #f3f6f9;
+                border: 0 !important;
+                border-radius: 8px;
+                margin-bottom: 15px !important;
             }
 
-            .main-content {
-                margin-left: 0;
+            textarea#productDescription {
+                height: 120px !important;
+            }
+
+            .row.g-2 {
+                --bs-gutter-y: 0.5rem;
+            }
+
+            .mb-2 {
+                margin-bottom: 20px !important;
             }
         }
 
-        /* Customer Details Profile Header */
-        .profile-header-card {
-            background: linear-gradient(135deg, #0f9d58 0%, #0ba360 100%);
-            color: white;
-            border-radius: 12px 12px 0 0;
-            padding: 30px;
-            margin-bottom: -40px;
+        /* Elements */
+        .search-bar input {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            width: 250px;
         }
 
         .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border: 4px solid #fff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Input focus state refined */
+        /* .form-control:focus ... handled above */
+
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .btn-light {
+            background-color: #f3f6f9;
+            color: #7e8299;
+            font-weight: 600;
+            border: 0;
+            padding: 10px 20px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-light:hover {
+            background-color: #e4e6ef;
+            color: #3f4254;
         }
     </style>
     <!-- SweetAlert2 -->
@@ -319,18 +377,15 @@
 
         <!-- Content Area -->
         <div class="content-wrapper">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold m-0">Add New Product</h5>
+            <div class="d-flex justify-content-between align-items-center mb-2 content-title-row">
+                <h6 class="fw-bold m-0 text-dark">Add New Product</h6>
                 <div class="d-flex gap-2">
-                    <div class="input-group input-group-sm" style="width: 200px;">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
-                    </div>
+                    <!-- Search bar removed to save space or kept minimal -->
                 </div>
             </div>
 
-            <form>
-                <div class="row g-3">
+            <form class="h-100">
+                <div class="row g-3 form-grid-container">
                     <!-- Col 1: Essentials (Data) -->
                     <div class="col-lg-4">
                         <div class="card-custom p-3 h-100">
@@ -338,10 +393,7 @@
 
                             <div class="mb-2">
                                 <label class="form-label fw-bold x-small mb-1">Product Name</label>
-                                <input
-                                    id="productName"
-                                    type="text"
-                                    class="form-control form-control-sm"
+                                <input id="productName" type="text" class="form-control form-control-sm"
                                     placeholder="e.g. Basmathi Rice">
 
                             </div>
@@ -356,151 +408,145 @@
                                                 style="font-size: 0.7rem;"></i></button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm" id="companyNameInput">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label fw-bold x-small mb-1">Stock Qty</label>
-                                    <input type="number" class="form-control form-control-sm" placeholder="0">
-                                </div>
-                            </div>
-
-                            <div class="row g-2 mb-2">
-                                <div class="col-6">
-                                    <label class="form-label fw-bold x-small mb-1">Price ($)</label>
-                                    <input
-                                        id="productPrice"
-                                        type="number"
-                                        class="form-control form-control-sm"
-                                        placeholder="0.00">
-
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label fw-bold x-small mb-1">Discount ($)</label>
-                                    <input
-                                    id="productPrice"
-                                    type="number"
-                                    class="form-control form-control-sm"
-                                    placeholder="0.00">
-
-                                </div>
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="form-label fw-bold x-small mb-1">Expiration</label>
-                                <div class="input-group input-group-sm">
-                                    <input type="date" class="form-control" placeholder="Start">
-                                    <span class="input-group-text px-1">-</span>
-                                    <input type="date" class="form-control" placeholder="End">
-                                </div>
-                            </div>
-
-                            <div class="form-check form-switch mt-3">
-                                <input class="form-check-input" type="checkbox" id="unlimitedStock" checked>
-                                <label class="form-check-label x-small fw-bold" for="unlimitedStock">Unlimited
-                                    Stock</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Col 2: Media (Visuals) -->
-                    <div class="col-lg-4">
-                        <div class="card-custom p-3 h-100">
-                            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Product Images</h6>
-
-                            <div class="border rounded p-2 mb-2 text-center position-relative bg-light"
-                                style="height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                <img src="https://m.media-amazon.com/images/I/71Zt4Kk2l8L._SL1500_.jpg"
-                                    class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="Product"
-                                    id="mainProductImage">
-                                <input type="file" id="productImageInput" accept="image/*" style="display: none;">
-
-                                <div class="position-absolute bottom-0 end-0 p-2">
-                                    <button type="button"
-                                        class="btn btn-white bg-white border btn-sm shadow-sm rounded-circle"
-                                        id="btnBrowseImage" title="Browse"><i class="fas fa-camera"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="row g-2">
-                                <div class="col-3">
-                                    <div class="border rounded ratio ratio-1x1 bg-light position-relative"
-                                        style="background-image: url('https://placehold.co/60x60/png'); background-size: cover;">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold x-small mb-1">Quantity / Unit</label>
+                                        <input type="text" id="productWeight" class="form-control form-control-sm"
+                                            placeholder="e.g. 500g, 1L">
                                     </div>
                                 </div>
-                                <div class="col-3">
-                                    <div class="border rounded ratio ratio-1x1 bg-light"></div>
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold x-small mb-1">Price ($)</label>
+                                        <input id="productPrice" type="number" class="form-control form-control-sm"
+                                            placeholder="0.00">
+
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold x-small mb-1">Discount ($)</label>
+                                        <input id="productPrice" type="number" class="form-control form-control-sm"
+                                            placeholder="0.00">
+
+                                    </div>
                                 </div>
-                                <div class="col-3">
-                                    <div class="border rounded ratio ratio-1x1 bg-light"></div>
+
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold x-small mb-1">Expiration</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="date" class="form-control" placeholder="Start">
+                                        <span class="input-group-text px-1">-</span>
+                                        <input type="date" class="form-control" placeholder="End">
+                                    </div>
                                 </div>
-                                <div class="col-3">
-                                    <div class="border rounded ratio ratio-1x1 border-dashed d-flex align-items-center justify-content-center text-success"
-                                        style="border-style: dashed !important; cursor: pointer;">
-                                        <i class="fas fa-plus"></i>
+
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" type="checkbox" id="unlimitedStock" checked>
+                                    <label class="form-check-label x-small fw-bold" for="unlimitedStock">Unlimited
+                                        Stock</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Media (Visuals) -->
+                        <div class="col-lg-4">
+                            <div class="card-custom p-3 h-100">
+                                <h6 class="fw-bold mb-3 small text-uppercase text-muted">Product Images</h6>
+
+                                <div class="border rounded p-2 mb-2 text-center position-relative bg-light img-preview-box"
+                                    style="height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <img src="https://m.media-amazon.com/images/I/71Zt4Kk2l8L._SL1500_.jpg"
+                                        class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="Product"
+                                        id="mainProductImage">
+                                    <input type="file" id="productImageInput" accept="image/*" style="display: none;">
+
+                                    <div class="position-absolute bottom-0 end-0 p-2">
+                                        <button type="button"
+                                            class="btn btn-white bg-white border btn-sm shadow-sm rounded-circle"
+                                            id="btnBrowseImage" title="Browse"><i class="fas fa-camera"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-3">
+                                        <div class="border rounded ratio ratio-1x1 bg-light position-relative"
+                                            style="background-image: url('https://placehold.co/60x60/png'); background-size: cover;">
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded ratio ratio-1x1 bg-light"></div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded ratio ratio-1x1 bg-light"></div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded ratio ratio-1x1 border-dashed d-flex align-items-center justify-content-center text-success"
+                                            style="border-style: dashed !important; cursor: pointer;">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Col 3: Details (Meta & Actions) -->
-                    <div class="col-lg-4">
-                        <div class="card-custom p-3 h-100 d-flex flex-column">
-                            <h6 class="fw-bold mb-3 small text-uppercase text-muted">Organization & Publish</h6>
+                        <!-- Col 3: Details (Meta & Actions) -->
+                        <div class="col-lg-4">
+                            <div class="card-custom p-3 h-100 d-flex flex-column">
+                                <h6 class="fw-bold mb-3 small text-uppercase text-muted">Organization & Publish</h6>
 
-                            <div class="row g-2 mb-2">
-                                <div class="col-6">
-                                    <label class="form-label fw-bold x-small mb-1">Category</label>
-                                    <select class="form-select form-select-sm" id="categorySelect">
-                                    <option value="">Select category</option>
-                                    </select>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold x-small mb-1">Category</label>
+                                        <select id="categorySelect" class="form-select form-select-sm" required>
+                                            <option value="">Select category</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold x-small mb-1">Status</label>
+                                        <select class="form-select form-select-sm">
+                                            <option>In Stock</option>
+                                            <option>Out Stock</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <label class="form-label fw-bold x-small mb-1">Status</label>
+
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold x-small mb-1">Tags</label>
                                     <select class="form-select form-select-sm">
-                                        <option>In Stock</option>
-                                        <option>Out Stock</option>
+                                        <option>Organic</option>
+                                        <option>Fresh</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="mb-2">
-                                <label class="form-label fw-bold x-small mb-1">Tags</label>
-                                <select class="form-select form-select-sm">
-                                    <option>Organic</option>
-                                    <option>Fresh</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-auto">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <label class="form-label fw-bold x-small mb-0">Description</label>
-                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
-                                        id="btnGenerateDescription" title="AI Generate"><i
-                                            class="fas fa-wand-magic-sparkles text-primary"></i></button>
+                                <div class="mb-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label fw-bold x-small mb-0">Description</label>
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                                            id="btnGenerateDescription" title="AI Generate"><i
+                                                class="fas fa-wand-magic-sparkles text-primary"></i></button>
+                                    </div>
+                                    <textarea class="form-control form-control-sm" id="productDescription" rows="4"
+                                        placeholder="Short description..."></textarea>
                                 </div>
-                                <textarea class="form-control form-control-sm" id="productDescription" rows="4"
-                                    placeholder="Short description..."></textarea>
-                            </div>
 
-                            <div class="mt-3 pt-3 border-top">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="featuredCheck" checked>
-                                    <label class="form-check-label x-small" for="featuredCheck">Featured Product</label>
-                                </div>
-                                <div class="d-grid gap-2">
-                                <button type="button"
-                                            class="btn btn-primary-custom btn-sm"
+                                <div class="mt-3 pt-3 border-top">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="featuredCheck" checked>
+                                        <label class="form-check-label x-small" for="featuredCheck">Featured
+                                            Product</label>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-primary-custom btn-sm"
                                             id="btnPublishProduct">
-                                    Publish Product
-                                 </button>
+                                            Publish Product
+                                        </button>
 
-                                    <button type="button" class="btn btn-light btn-sm border" id="btnSaveDraft">Save
-                                        Draft</button>
+                                        <button type="button" class="btn btn-light btn-sm border" id="btnSaveDraft">Save
+                                            Draft</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
             </form>
 
             <style>
@@ -608,86 +654,139 @@
             });
         }
 
+        // --- Auto-Categorization Logic ---
+        const productNameInput = document.getElementById('productName');
+        const categorySelect = document.getElementById('categorySelect');
 
-    
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnPublishProduct");
+        if (productNameInput && categorySelect) {
+            productNameInput.addEventListener('input', function () {
+                const name = this.value.toLowerCase();
+                const options = Array.from(categorySelect.options);
 
-  if (!btn) {
-    console.error("❌ Publish button not found");
-    return;
-  }
+                // Define keyword mapping
+                const keywords = {
+                    'vegetable': ['tomato', 'potato', 'carrot', 'onion', 'chilli', 'veg', 'spinach', 'bean', 'garlic'],
+                    'fruit': ['apple', 'orange', 'banana', 'grape', 'mango', 'fruit', 'berry', 'melon'],
+                    'bakery': ['bread', 'rusk', 'bun', 'cake', 'biscuit', 'cookie'],
+                    'dairy': ['milk', 'curd', 'cheese', 'butter', 'paneer', 'egg', 'yogurt'],
+                    'household': ['clean', 'soap', 'wash', 'brush', 'broom', 'mop'],
+                    'groceries': ['rice', 'atta', 'dal', 'flour', 'oil', 'sugar', 'salt', 'spice']
+                };
 
-  btn.addEventListener("click", async () => {
-    const token = localStorage.getItem("token");
+                let matchFound = false;
 
-    if (!token) {
-      Swal.fire("Error", "Please login again", "error");
-      return;
-    }
+                for (const [catKey, keyList] of Object.entries(keywords)) {
+                    if (keyList.some(k => name.includes(k))) {
+                        // Find option that contains the category key (case insensitive)
+                        const bestOption = options.find(opt => opt.text.toLowerCase().includes(catKey));
+                        if (bestOption) {
+                            categorySelect.value = bestOption.value;
+                            matchFound = true;
+                            // Visual feedback
+                            categorySelect.classList.add('border-success', 'msg-transition');
+                            setTimeout(() => categorySelect.classList.remove('border-success'), 1000);
+                        }
+                        break; // Stop after first match
+                    }
+                }
+            });
+        }
 
-    const product = {
-      name: document.getElementById("productName").value.trim(),
-      company: document.getElementById("companyNameInput").value.trim(),
-      price: Number(document.getElementById("productPrice").value),
-      description: document.getElementById("productDescription").value.trim()
-    };
 
-    if (!product.name || !product.price) {
-      Swal.fire("Error", "Name and price are required", "warning");
-      return;
-    }
 
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(product)
-      });
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("btnPublishProduct");
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Failed to add product");
-      }
+            if (!btn) {
+                console.error("❌ Publish button not found");
+                return;
+            }
 
-      Swal.fire("Success", "Product added successfully", "success")
-        .then(() => {
-          window.location.href = "all-products.html";
+            btn.addEventListener("click", async () => {
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    Swal.fire("Error", "Please login again", "error");
+                    return;
+                }
+
+                const name = document.getElementById("productName").value.trim();
+                const company = document.getElementById("companyNameInput").value.trim();
+                const weight = document.getElementById("productWeight").value.trim(); // Add this
+                const price = document.getElementById("productPrice").value;
+                const description = document.getElementById("productDescription").value.trim();
+                const category = document.getElementById("categorySelect").value;
+                const imageInput = document.getElementById("productImageInput");
+
+                if (!name || !price || !category) {
+                    Swal.fire("Error", "Name, price, and category are required", "warning");
+                    return;
+                }
+
+                // ✅ USE FORMDATA
+                const formData = new FormData();
+                formData.append("name", name);
+                formData.append("company", company);
+                formData.append("weight", weight); // Add this
+                formData.append("price", price);
+                formData.append("description", description);
+                formData.append("category", category);
+
+                if (imageInput.files.length > 0) {
+                    formData.append("image", imageInput.files[0]);
+                }
+
+                try {
+                    const res = await fetch("/api/products", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}` // ❌ DO NOT set Content-Type
+                        },
+                        body: formData
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.message || "Failed to add product");
+                    }
+
+                    Swal.fire("Success", "Product added successfully", "success")
+                        .then(() => {
+                            window.location.href = "all-products.html";
+                        });
+
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire("Error", err.message, "error");
+                }
+            });
+
         });
+        async function loadCategoriesForDropdown() {
+            try {
+                const res = await fetch("/api/categories");
+                const categories = await res.json();
 
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", err.message, "error");
-    }
-  });
-});
-async function loadCategoriesForDropdown() {
-  try {
-    const res = await fetch("/api/categories");
-    const categories = await res.json();
+                const select = document.getElementById("categorySelect");
+                select.innerHTML = `<option value="">Select category</option>`;
 
-    const select = document.getElementById("categorySelect");
-    select.innerHTML = `<option value="">Select category</option>`;
+                categories.forEach(cat => {
+                    const option = document.createElement("option");
+                    option.value = cat._id;     // IMPORTANT
+                    option.textContent = cat.name;
+                    select.appendChild(option);
+                });
 
-    categories.forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat._id;     // IMPORTANT
-      option.textContent = cat.name;
-      select.appendChild(option);
-    });
+            } catch (err) {
+                console.error("Failed to load categories", err);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", loadCategoriesForDropdown);
 
-  } catch (err) {
-    console.error("Failed to load categories", err);
-  }
-}
-document.addEventListener("DOMContentLoaded", loadCategoriesForDropdown);
+    </script>
 
-</script>
 
-   
 </body>
 
 </html>

@@ -408,54 +408,66 @@
         });
 
         
-
 async function loadProducts() {
-    try {
-        const res = await fetch("/api/products");
-        const products = await res.json(); 
+  try {
+    const res = await fetch("/api/products");
+    const products = await res.json();
 
-        const tbody = document.querySelector("tbody");
-        tbody.innerHTML = "";
+    const tbody = document.querySelector("tbody");
+    tbody.innerHTML = "";
 
-        if (!products.length) {
-            tbody.innerHTML = `
-              <tr>
-                <td colspan="7" class="text-center text-muted">
-                  No products found
-                </td>
-              </tr>
-            `;
-            return;
-        }
-
-        products.forEach(p => {
-            tbody.innerHTML += `
-            <tr>
-                <td>
-                  <img src="${p.image || 'https://placehold.co/50'}" width="50">
-                </td>
-                <td>${p.name}</td>
-                <td>${p.category || "-"}</td>
-                <td>₹${p.price}</td>
-                <td>${p.status}</td>
-                <td>${p.featured ? "Yes" : "No"}</td>
-                <td>
-                <button 
-                    class="btn btn-sm btn-danger"
-                    onclick="confirmDelete('${p._id}', this)">
-                    Delete
-                </button>
-                </td>
-
-            </tr>
-            `;
-        });
-    } catch (err) {
-        console.error("Failed to load products", err);
+    if (!products.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            No products found
+          </td>
+        </tr>
+      `;
+      return;
     }
+
+    products.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>
+            <img 
+              src="${p.image || 'https://placehold.co/50'}" 
+              width="50" 
+              height="50"
+              style="object-fit: cover;"
+            >
+          </td>
+
+          <td>${p.name}</td>
+
+          <!-- ✅ CATEGORY NAME FIX -->
+          <td>${p.category?.name || "Uncategorized"}</td>
+
+          <td>₹${p.price}</td>
+
+          <td>${p.status || "In Stock"}</td>
+
+          <td>${p.featured ? "Yes" : "No"}</td>
+
+          <td>
+            <button 
+              class="btn btn-sm btn-danger"
+              onclick="confirmDelete('${p._id}', this)">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+  } catch (err) {
+    console.error("❌ Failed to load products", err);
+  }
 }
 
 loadProducts();
+
 async function deleteProduct(productId) {
   try {
     const token = localStorage.getItem("token");

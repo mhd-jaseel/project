@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     company: String,
-    category: String,
+    weight: String, // e.g. "500g", "1L", "10 pcs"
     price: Number,
     discount: Number,
     stockQty: Number,
@@ -15,12 +15,12 @@ const productSchema = new mongoose.Schema(
     },
     description: String,
     image: String,
-    
+
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true
-     },
+    },
 
     featured: { type: Boolean, default: false },
     createdBy: {
