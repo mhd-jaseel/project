@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
+    isHotDeal: { type: Boolean, default: false },
     featured: { type: Boolean, default: false },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

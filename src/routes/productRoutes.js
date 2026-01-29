@@ -6,7 +6,10 @@ const {
   getAllProducts,
   deleteProduct,
   getProductsByCategory,
-  getProductById
+  getProductById,
+  updateProduct,
+  toggleHotDeal,
+  updateStockStatus
 } = require("../controllers/productController");
 
 const auth = require("../middleware/authMiddleware");
@@ -20,6 +23,31 @@ router.post(
   adminOnly("admin"),
   upload.fields([{ name: 'image', maxCount: 1 }, { name: 'extraImages', maxCount: 4 }]),
   addProduct
+);
+
+// ✅ ADMIN: UPDATE PRODUCT
+router.put(
+  "/:id",
+  auth,
+  adminOnly("admin"),
+  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'extraImages', maxCount: 4 }]),
+  updateProduct
+);
+
+// ✅ ADMIN: TOGGLE HOT DEAL
+router.patch(
+  "/:id/hot-deal",
+  auth,
+  adminOnly("admin"),
+  toggleHotDeal
+);
+
+// ✅ ADMIN: UPDATE STOCK STATUS
+router.patch(
+  "/:id/stock-status",
+  auth,
+  adminOnly("admin"),
+  updateStockStatus
 );
 
 // ✅ GET SINGLE PRODUCT

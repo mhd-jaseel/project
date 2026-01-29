@@ -419,17 +419,19 @@
                 </div>
                 <!-- User Actions -->
                 <div class="col-md-4 text-end">
-                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
+                    <a href="wishlist.html" class="text-white text-decoration-none me-3" id="headerWishlistBtn"><i
                             class="fas fa-heart me-1"></i>
                         Wishlist</a>
-                    <a href="cart.html" class="text-white text-decoration-none me-3"><i
+                    <a href="cart.html" class="text-white text-decoration-none me-3" id="headerCartBtn"><i
                             class="fas fa-shopping-cart me-1"></i>
                         Cart</a>
-                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                            class="fas fa-sign-in-alt me-1"></i>
-                        Login</a>
-                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
-                        Account</a>
+
+                    <!-- Dynamic Auth Section -->
+                    <span id="auth-actions">
+                        <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                                class="fas fa-sign-in-alt me-1"></i>
+                            Login</a>
+                    </span>
                 </div>
             </div>
             <!-- Navigation -->
@@ -445,7 +447,6 @@
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
 
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
                         </ul>
                     </div>
                 </div>
@@ -460,6 +461,11 @@
             </svg>
         </div>
     </header>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
     <!-- Breadcrumb -->
     <div class="container my-3">
@@ -642,6 +648,169 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
 
+    <script>
+        // --- Page Access Protection ---
+        (function () {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to continue',
+                    icon: 'warning',
+                    confirmButtonColor: '#2ecc71',
+                    confirmButtonText: 'Login',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Go Home'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    } else {
+                        window.location.href = 'homepage.html';
+                    }
+                });
+            }
+        })();
+
+        // Check Login for Actions
+        function checkLogin(e) {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to access this feature',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const authContainer = document.getElementById('auth-actions');
+            if (!authContainer) return;
+
+            if (token) {
+                authContainer.innerHTML = `
+                    <div class="dropdown d-inline-block">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+                const logoutBtn = document.getElementById('headerLogoutBtn');
+                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+            } else {
+                authContainer.innerHTML = `
+                    <a href="login.html" class="text-white text-decoration-none" id="headerLoginBtn">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                `;
+            }
+        }
+
+        const headerWishBtn = document.getElementById('headerWishlistBtn');
+        if (headerWishBtn) headerWishBtn.addEventListener('click', checkLogin);
+        const headerCartBtn = document.getElementById('headerCartBtn');
+        if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
+
+        updateHeaderAuth();
+
+        // Checkout Logic
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkoutProductList = document.getElementById('checkout-product-list');
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            const checkoutSubtotalEl = document.getElementById('checkout-subtotal');
+            const checkoutTotalEl = document.getElementById('checkout-total');
+
+            if (checkoutProductList) {
+                renderCheckout();
+
+                if (placeOrderBtn) {
+                    placeOrderBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        // Simple validation - check if cart is empty
+                        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                        if (cart.length === 0) {
+                            Swal.fire('Cart Empty', 'Your cart is empty!', 'warning');
+                            return;
+                        }
+
+                        // Validate form (basic)
+                        const form = document.getElementById('billing-form');
+                        if (form.checkValidity()) {
+                            // Success
+                            Swal.fire({
+                                title: 'Order Placed Successfully!',
+                                text: 'Thank you for shopping with us.',
+                                icon: 'success',
+                                confirmButtonText: 'Continue Shopping',
+                                confirmButtonColor: '#28a745'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    localStorage.removeItem('kmStoreCart'); // Clear cart
+                                    window.location.href = 'homepage.html'; // Redirect to home
+                                }
+                            });
+                        } else {
+                            form.reportValidity();
+                        }
+                    });
+                }
+            }
+
+            function renderCheckout() {
+                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                checkoutProductList.innerHTML = '';
+                let subtotal = 0;
+
+                if (cart.length === 0) {
+                    checkoutProductList.innerHTML = '<p class="text-muted">Your cart is empty.</p>';
+                }
+
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+
+                    const div = document.createElement('div');
+                    div.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-3');
+                    div.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <img src="${item.image}" alt="${item.name}" class="checkout-item-img">
+                    <span class="small">${item.name} <span class="text-danger">x ${item.quantity}</span></span>
+                </div>
+                <span class="small text-muted">₹${itemTotal}</span>
+            `;
+                    checkoutProductList.appendChild(div);
+                });
+
+                if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = '₹' + subtotal;
+                if (checkoutTotalEl) checkoutTotalEl.textContent = '₹' + subtotal;
+            }
+        });
+    </script>
 </body>
 
 </html>

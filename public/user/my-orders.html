@@ -15,383 +15,385 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Custom CSS -->
-   <style>:root {
-    --primary-green: #2ecc71;
-    /* Adjust to match image */
-    --dark-green: #27ae60;
-    --light-green-bg: #d4efdf;
-    --yellow-accent: #f1c40f;
-    --text-dark: #333;
-}
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            /* Adjust to match image */
+            --dark-green: #27ae60;
+            --light-green-bg: #d4efdf;
+            --yellow-accent: #f1c40f;
+            --text-dark: #333;
+        }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #ffffff;
-    color: var(--text-dark);
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            color: var(--text-dark);
+        }
 
-/* Custom Colors */
-.bg-primary-custom {
-    background-color: var(--primary-green) !important;
-}
+        /* Custom Colors */
+        .bg-primary-custom {
+            background-color: var(--primary-green) !important;
+        }
 
-.text-primary-custom {
-    color: var(--primary-green) !important;
-}
+        .text-primary-custom {
+            color: var(--primary-green) !important;
+        }
 
-.btn-primary-custom {
-    background-color: var(--primary-green);
-    border-color: var(--primary-green);
-}
+        .btn-primary-custom {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
 
-.btn-primary-custom:hover {
-    background-color: var(--dark-green);
-    border-color: var(--dark-green);
-}
+        .btn-primary-custom:hover {
+            background-color: var(--dark-green);
+            border-color: var(--dark-green);
+        }
 
-/* Header */
-header {
-    position: relative;
-    padding-bottom: 50px;
-    /* Space for the curve */
-}
+        /* Header */
+        header {
+            position: relative;
+            padding-bottom: 50px;
+            /* Space for the curve */
+        }
 
-.header-curve {
-    position: absolute;
-    bottom: -1px;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-}
+        .header-curve {
+            position: absolute;
+            bottom: -1px;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
 
-.header-curve svg {
-    display: block;
-    width: calc(100% + 1.3px);
-    height: 60px;
-}
+        .header-curve svg {
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 60px;
+        }
 
-.header-curve path {
-    fill: #ffffff;
-}
+        .header-curve path {
+            fill: #ffffff;
+        }
 
-/* Hero Section */
-.bg-light-green {
-    background-color: #a8e6cf;
-    /* Lighter mint green */
-}
+        /* Hero Section */
+        .bg-light-green {
+            background-color: #a8e6cf;
+            /* Lighter mint green */
+        }
 
-.yellow-circle {
-    position: absolute;
-    width: 250px;
-    height: 250px;
-    background-color: #f7dc6f;
-    border-radius: 50%;
-    bottom: -50px;
-    right: -50px;
-    z-index: 0;
-}
+        .yellow-circle {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background-color: #f7dc6f;
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            z-index: 0;
+        }
 
-.hero-img {
-    position: relative;
-    z-index: 1;
-}
+        .hero-img {
+            position: relative;
+            z-index: 1;
+        }
 
-/* Categories */
-.category-circle {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
+        /* Categories */
+        .category-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
 
-.category-circle:hover {
-    transform: scale(1.05);
-}
+        .category-circle:hover {
+            transform: scale(1.05);
+        }
 
-/* Product Cards */
-.product-card {
-    border-radius: 15px;
-    /* Softer rounded corners */
-    transition: box-shadow 0.3s ease;
-    padding: 15px;
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    /* Subtle border */
-}
+        /* Product Cards */
+        .product-card {
+            border-radius: 15px;
+            /* Softer rounded corners */
+            transition: box-shadow 0.3s ease;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            /* Subtle border */
+        }
 
-.product-card:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
-}
+        .product-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+        }
 
-.product-card img.card-img-top {
-    height: 180px;
-    /* Fixed height for consistency */
-    object-fit: contain;
-}
+        .product-card img.card-img-top {
+            height: 180px;
+            /* Fixed height for consistency */
+            object-fit: contain;
+        }
 
-.product-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 0.2rem;
-    color: #000;
-}
+        .product-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+            color: #000;
+        }
 
-.product-weight {
-    color: #777;
-    font-size: 0.9rem;
-}
+        .product-weight {
+            color: #777;
+            font-size: 0.9rem;
+        }
 
-.product-price {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #000;
-}
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #000;
+        }
 
-/* Wishlist Styles */
-.wishlist-card {
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
+        /* Wishlist Styles */
+        .wishlist-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
 
-.wishlist-card:hover {
-    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-}
+        .wishlist-card:hover {
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+        }
 
-.wishlist-img-wrapper {
-    height: 200px;
-    /* Fixed height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-}
+        .wishlist-img-wrapper {
+            height: 200px;
+            /* Fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
 
-.wishlist-img-wrapper img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-}
+        .wishlist-img-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
 
-.btn-remove-wishlist {
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    background: white;
-}
+        .btn-remove-wishlist {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: white;
+        }
 
-.btn-remove-wishlist:hover {
-    background-color: #f8d7da;
-    color: #dc3545;
-}
+        .btn-remove-wishlist:hover {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
 
-.btn-add-cart-wishlist {
-    background-color: black;
-    color: white;
-    border: none;
-    transition: all 0.3s;
-}
+        .btn-add-cart-wishlist {
+            background-color: black;
+            color: white;
+            border: none;
+            transition: all 0.3s;
+        }
 
-.btn-add-cart-wishlist:hover {
-    background-color: #333;
-    color: white;
-}
+        .btn-add-cart-wishlist:hover {
+            background-color: #333;
+            color: white;
+        }
 
-/* Checkout Styles */
-.form-control:focus {
-    box-shadow: none;
-    border-color: #db4444;
-    /* Match the red accent */
-}
+        /* Checkout Styles */
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #db4444;
+            /* Match the red accent */
+        }
 
-.checkout-item-img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-}
+        .checkout-item-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
 
-.product-price-old {
-    text-decoration: line-through;
-    color: #bbb;
-    font-size: 0.9rem;
-    margin-left: 8px;
-}
+        .product-price-old {
+            text-decoration: line-through;
+            color: #bbb;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
 
-/* Badges */
-.badge-best-deal {
-    background-color: #a8e6cf;
-    /* Light green from image */
-    color: #2c3e50;
-    font-weight: 500;
-    border-radius: 4px 0 10px 0;
-    /* Stylized corner if needed, or simple rounded */
-    padding: 5px 10px;
-    font-size: 0.9rem;
-    z-index: 2;
-}
+        /* Badges */
+        .badge-best-deal {
+            background-color: #a8e6cf;
+            /* Light green from image */
+            color: #2c3e50;
+            font-weight: 500;
+            border-radius: 4px 0 10px 0;
+            /* Stylized corner if needed, or simple rounded */
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
 
-/* Action Buttons */
-.btn-wishlist {
-    width: 45px;
-    height: 45px;
-    border: 1px solid var(--primary-green);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-    background: #fff;
-    transition: all 0.2s;
-}
+        /* Action Buttons */
+        .btn-wishlist {
+            width: 45px;
+            height: 45px;
+            border: 1px solid var(--primary-green);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            background: #fff;
+            transition: all 0.2s;
+        }
 
-.btn-wishlist:hover {
-    background-color: #f0fff4;
-}
+        .btn-wishlist:hover {
+            background-color: #f0fff4;
+        }
 
-.btn-add-cart {
-    background-color: var(--primary-green);
-    color: white;
-    font-weight: 600;
-    border: none;
-    border-radius: 12px;
-    padding: 10px 0;
-    width: 100%;
-    transition: background-color 0.2s;
-}
+        .btn-add-cart {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 0;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
 
-.btn-add-cart:hover {
-    background-color: var(--dark-green);
-    color: white;
-}
+        .btn-add-cart:hover {
+            background-color: var(--dark-green);
+            color: white;
+        }
 
-/* Single Product Page Styles */
-.thumbnail-img {
-    cursor: pointer;
-    transition: all 0.2s;
-}
+        /* Single Product Page Styles */
+        .thumbnail-img {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.thumbnail-img:hover {
-    border-color: var(--primary-green) !important;
-}
+        .thumbnail-img:hover {
+            border-color: var(--primary-green) !important;
+        }
 
-.quantity-selector input:focus {
-    box-shadow: none;
-    outline: none;
-}
+        .quantity-selector input:focus {
+            box-shadow: none;
+            outline: none;
+        }
 
-.btn-add-cart-lg {
-    background-color: var(--primary-green);
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    transition: background-color 0.2s;
-}
+        .btn-add-cart-lg {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            transition: background-color 0.2s;
+        }
 
-.btn-add-cart-lg:hover {
-    background-color: var(--dark-green);
-    color: white;
-}
-
-
-/* Features Info Section */
-.icon-circle {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e8f5e9 !important;
-    /* Very light green */
-    color: var(--dark-green) !important;
-}
-
-/* Scrollbar hiding for horizontal scrolls if added later */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-/* Sidebar Styles */
-.sidebar {
-    background-color: #f8f9fa;
-    border-radius: 12px;
-}
-
-.form-check-input:checked {
-    background-color: var(--primary-green);
-    border-color: var(--primary-green);
-}
-
-.form-check-label {
-    cursor: pointer;
-}
+        .btn-add-cart-lg:hover {
+            background-color: var(--dark-green);
+            color: white;
+        }
 
 
+        /* Features Info Section */
+        .icon-circle {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8f5e9 !important;
+            /* Very light green */
+            color: var(--dark-green) !important;
+        }
+
+        /* Scrollbar hiding for horizontal scrolls if added later */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .form-check-label {
+            cursor: pointer;
+        }
 
 
-.btn-outline-custom {
-    color: var(--dark-green);
-    border-color: var(--primary-green);
-    background-color: #fff;
-}
 
-.btn-outline-custom:hover {
-    background-color: var(--primary-green);
-    color: white;
-}
 
-/* Cart Page Styles */
-.cart-img-wrapper {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-}
+        .btn-outline-custom {
+            color: var(--dark-green);
+            border-color: var(--primary-green);
+            background-color: #fff;
+        }
 
-.cart-img-wrapper img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-}
+        .btn-outline-custom:hover {
+            background-color: var(--primary-green);
+            color: white;
+        }
 
-.quantity-selector-sm {
-    width: fit-content;
-}
+        /* Cart Page Styles */
+        .cart-img-wrapper {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+        }
 
-.table> :not(caption)>*>* {
-    background-color: transparent;
-    /* Fix default BS table bg */
-}
+        .cart-img-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
 
-thead th {
-    font-weight: 500;
-    color: #555;
-    font-size: 0.9rem;
-}
+        .quantity-selector-sm {
+            width: fit-content;
+        }
 
-/* Account Page Styles */
-.active-link {
-    color: var(--primary-green) !important;
-    font-weight: 600;
-}
+        .table> :not(caption)>*>* {
+            background-color: transparent;
+            /* Fix default BS table bg */
+        }
 
-.account-sidebar a:hover {
-    color: var(--primary-green) !important;
-}</style>
+        thead th {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        /* Account Page Styles */
+        .active-link {
+            color: var(--primary-green) !important;
+            font-weight: 600;
+        }
+
+        .account-sidebar a:hover {
+            color: var(--primary-green) !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -651,884 +653,331 @@ thead th {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script >// Toggle "View More" text in Product Details
-function toggleText() {
-    var moreText = document.getElementById("more-text");
-    var btnText = document.getElementById("view-more-btn");
+    <script>
+        // Toggle "View More" text in Product Details
+        function toggleText() {
+            var moreText = document.getElementById("more-text");
+            var btnText = document.getElementById("view-more-btn");
 
-    if (moreText.style.display === "none") {
-        moreText.style.display = "inline";
-        btnText.innerHTML = "view less";
-    } else {
-        moreText.style.display = "none";
-        btnText.innerHTML = "view more";
-    }
-}
-
-// Check Login Status and Update Navbar
-document.addEventListener('DOMContentLoaded', function () {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const signupLink = document.querySelector('a[href="signup.html"]');
-    const accountLink = document.querySelector('a[href="account.html"]');
-    const headerLoginBtn = document.getElementById('headerLoginBtn');
-
-    if (isLoggedIn) {
-        // User IS logged in
-        if (signupLink) {
-            signupLink.closest('li').style.display = 'none';
-        }
-
-        if (headerLoginBtn) {
-            headerLoginBtn.style.display = 'none';
-        }
-
-        if (accountLink) {
-            // Create Dropdown
-            const dropdownHTML = `
-                <div class="dropdown d-inline-block">
-                    <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user me-1"></i> Account
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                        <li><a class="dropdown-item" href="account.html">Account</a></li>
-                        <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
-                    </ul>
-                </div>
-            `;
-            accountLink.outerHTML = dropdownHTML;
-
-            // Logout Functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    localStorage.removeItem('isLoggedIn');
-                    window.location.href = 'homepage.html';
-                });
+            if (moreText.style.display === "none") {
+                moreText.style.display = "inline";
+                btnText.innerHTML = "view less";
+            } else {
+                moreText.style.display = "none";
+                btnText.innerHTML = "view more";
             }
         }
-    } else {
-        // User is NOT logged in
-        if (accountLink) {
-            accountLink.style.display = 'none';
-        }
-        if (headerLoginBtn) {
-            headerLoginBtn.style.display = 'inline';
-        }
-    }
-});
 
-// Cart Functionality
-document.addEventListener('DOMContentLoaded', function () {
-    const cartTableBody = document.getElementById('cart-table-body');
-    const wishlistContainer = document.getElementById('wishlist-container');
-    const checkoutProductList = document.getElementById('checkout-product-list');
-    const wishlistCountEl = document.getElementById('wishlist-count');
-    const btnClearWishlist = document.getElementById('btn-clear-wishlist');
-    const btnMoveAllCart = document.getElementById('btn-move-all-cart');
-    const cartSubtotalEl = document.getElementById('cart-subtotal');
-    const cartTotalEl = document.getElementById('cart-total');
-    const checkoutSubtotalEl = document.getElementById('checkout-subtotal');
-    const checkoutTotalEl = document.getElementById('checkout-total');
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    const shippingCost = 20;
+        // Check Login for Actions
+        function checkLogin(e) {
+            const token = localStorage.getItem("userToken");
 
-    // --- Checkout Logic ---
-    if (checkoutProductList) {
-        renderCheckout();
-
-        if (placeOrderBtn) {
-            placeOrderBtn.addEventListener('click', function (e) {
+            if (!token) {
                 e.preventDefault();
-                // Simple validation - check if cart is empty
-                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                if (cart.length === 0) {
-                    alert('Your cart is empty!');
-                    return;
-                }
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to access this feature',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
 
-                // Validate form (basic)
-                const form = document.getElementById('billing-form');
-                if (form.checkValidity()) {
-                    // Success
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+
+            const authContainer = document.getElementById('auth-actions'); // Note: my-orders.html might not have this ID yet?
+            // Let's check my-orders.html header structure.
+            // It has <div class="col-md-4 text-end"> with hardcoded links.
+            // We need to support the dynamic auth container.
+            // But wait, my-orders.html header (lines 419-431) has hardcoded links:
+            // Wishlist, Cart, Login, Account.
+            // It DOES NOT have <span id="auth-actions"> wrapper in the view I saw (Step 532).
+            // Lines 426-430:
+            /*
+            <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i ...> Login</a>
+            <a href="account.html" class="text-white text-decoration-none"><i ...> Account</a>
+            */
+            // So I need to use the logic that finds these elements, OR update the HTML to match others.
+            // The "Old Auth Logic" (669-721) manipulated `headerLoginBtn`, `accountLink` directly.
+            // I should stick to that "Finding Elements" approach OR inject the container.
+            // Injecting container is cleaner for consistency, but replacing HTML is extra step.
+            // I'll stick to finding elements for now, similar to what was there, but modernized with Token.
+
+            // ACTUALLY, I should make it consistent with other pages if possible.
+            // But for now, let's adapt updateHeaderAuth to the current HTML structure of my-orders.html
+
+            const loginBtn = document.getElementById('headerLoginBtn');
+            const accountLink = document.querySelector('a[href="account.html"]'); // Might be inside the list?
+
+            // In the HTML view:
+            // <a href="account.html" class="text-white ..."><i ...> Account</a>
+
+            if (token) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (accountLink) {
+                    // Convert to dropdown
+                    const parent = accountLink.parentNode;
+                    // It's just an <a> tag in a div.
+                    // Let's replace it with the dropdown HTML.
+
+                    // Check if already replaced
+                    if (!document.getElementById('accountDropdown')) {
+                        const dropdownHTML = `
+                            <div class="dropdown d-inline-block">
+                                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i> Account
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                                </ul>
+                            </div>
+                        `;
+                        accountLink.outerHTML = dropdownHTML;
+
+                        // Add Logout Listener (delegated or direct)
+                        setTimeout(() => { // slight delay to ensure DOM update
+                            const logoutBtn = document.getElementById('headerLogoutBtn');
+                            if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                localStorage.removeItem('userToken');
+                                localStorage.removeItem('role');
+                                localStorage.removeItem('user');
+                                window.location.href = 'login.html';
+                            });
+                        }, 0);
+                    }
+                }
+            } else {
+                if (loginBtn) loginBtn.style.display = 'inline';
+                // Account link usually hidden if not logged in?
+                // The old script hid it.
+                // "if (accountLink) accountLink.style.display = 'none';"
+                if (accountLink && !document.getElementById('accountDropdown')) {
+                    accountLink.style.display = 'none';
+                }
+            }
+        }
+
+        // However, sticking to the "Standard" updateHeaderAuth I've been using which assumes <span id="auth-actions"> is better for future.
+        // But I don't want to edit HTML header in this step if I can avoid (keep changes focused).
+        // I will use the "Modified for this page" updateHeaderAuth I drafted above.
+
+        // Wait, cleaner solution: Just use the same logic as the OLD script but using 'token'.
+        /*
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            // ... logic ...
+        });
+        */
+        // But I want a 'updateHeaderAuth' function I can call.
+
+        updateHeaderAuth(); // Call immediately
+
+        const wishlistBtn = document.querySelector('a[href="wishlist.html"]');
+        if (wishlistBtn) wishlistBtn.addEventListener('click', checkLogin);
+        const cartBtn = document.querySelector('a[href="cart.html"]');
+        if (cartBtn) cartBtn.addEventListener('click', checkLogin);
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Re-run auth update on load just in case
+            updateHeaderAuth();
+
+            // 4. My Orders: Cancel Order
+            document.body.addEventListener('click', function (e) {
+                if (e.target.classList.contains('btn-cancel-order')) {
+                    e.preventDefault();
                     Swal.fire({
-                        title: 'Order Placed Successfully!',
-                        text: 'Thank you for shopping with us.',
-                        icon: 'success',
-                        confirmButtonText: 'Continue Shopping',
-                        confirmButtonColor: '#28a745'
+                        title: 'Cancel Order?',
+                        text: "Are you sure you want to cancel this order? This action cannot be undone.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Cancel Order'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            localStorage.removeItem('kmStoreCart'); // Clear cart
-                            window.location.href = 'homepage.html'; // Redirect to home
+                            const row = e.target.closest('tr');
+                            const badge = row.querySelector('.badge');
+                            if (badge) {
+                                badge.className = 'badge bg-secondary';
+                                badge.innerText = 'Cancelled';
+                            }
+                            e.target.remove(); // Remove Cancel button
+
+                            Swal.fire(
+                                'Cancelled!',
+                                'Your order has been cancelled.',
+                                'success'
+                            );
                         }
                     });
-                } else {
-                    form.reportValidity();
                 }
             });
-        }
-    }
 
-    function renderCheckout() {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-        checkoutProductList.innerHTML = '';
-        let subtotal = 0;
+            // --- Order Details & Invoice Logic (My Orders Page) ---
+            const orderDetailsModalEl = document.getElementById('orderDetailsModal');
+            if (orderDetailsModalEl) {
+                const modal = new bootstrap.Modal(orderDetailsModalEl);
+                const modalOrderId = document.getElementById('modalOrderId');
+                const modalOrderDate = document.getElementById('modalOrderDate');
+                const modalOrderItems = document.getElementById('modalOrderItems');
+                const modalOrderTotal = document.getElementById('modalOrderTotal');
+                const btnDownloadInvoice = document.getElementById('btnDownloadInvoice');
+                let currentOrderData = null;
 
-        if (cart.length === 0) {
-            checkoutProductList.innerHTML = '<p class="text-muted">Your cart is empty.</p>';
-        }
+                // View Details Click Handler
+                document.body.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('view-order-btn')) {
+                        const btn = e.target;
+                        const row = btn.closest('tr');
 
-        cart.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            subtotal += itemTotal;
+                        // Parse Data
+                        const orderId = row.getAttribute('data-order-id');
+                        const date = row.getAttribute('data-date');
+                        const status = row.getAttribute('data-status');
+                        const total = row.getAttribute('data-total');
+                        const items = JSON.parse(row.getAttribute('data-items'));
 
-            const div = document.createElement('div');
-            div.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-3');
-            div.innerHTML = `
-                <div class="d-flex align-items-center gap-3">
-                    <img src="${item.image}" alt="${item.name}" class="checkout-item-img">
-                    <span class="small">${item.name} <span class="text-danger">x ${item.quantity}</span></span>
-                </div>
-                <span class="small text-muted">₹${itemTotal}</span>
-            `;
-            checkoutProductList.appendChild(div);
-        });
+                        currentOrderData = { orderId, date, status, total, items };
 
-        if (checkoutSubtotalEl) checkoutSubtotalEl.textContent = '₹' + subtotal;
-        if (checkoutTotalEl) checkoutTotalEl.textContent = '₹' + subtotal; // Assuming free shipping as per design text, or add shippingCost
-    }
+                        // Populate Modal
+                        modalOrderId.textContent = orderId;
+                        modalOrderDate.textContent = date;
+                        modalOrderTotal.textContent = total;
 
+                        // Populate Items
+                        modalOrderItems.innerHTML = '';
+                        items.forEach(item => {
+                            const li = document.createElement('li');
+                            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'px-0');
+                            li.innerHTML = `
+                                <div>
+                                    <h6 class="mb-0 text-dark">${item.name}</h6>
+                                    <small class="text-muted">Qty: ${item.qty}</small>
+                                </div>
+                                <span class="text-muted small">${item.price}</span>
+                            `;
+                            modalOrderItems.appendChild(li);
+                        });
 
-    // --- Wishlist Logic ---
+                        // Show/Hide Download Button
+                        if (status === 'Delivered') {
+                            btnDownloadInvoice.style.display = 'inline-block';
+                        } else {
+                            btnDownloadInvoice.style.display = 'none';
+                        }
 
-    // Bulk Actions
-    if (btnClearWishlist) {
-        btnClearWishlist.addEventListener('click', function () {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, clear it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem('kmStoreWishlist');
-                    renderWishlist();
-                    Swal.fire(
-                        'Cleared!',
-                        'Your wishlist has been cleared.',
-                        'success'
-                    )
-                }
-            })
-        });
-    }
-
-    if (btnMoveAllCart) {
-        btnMoveAllCart.addEventListener('click', function () {
-            let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-            if (wishlist.length === 0) return;
-
-            Swal.fire({
-                title: 'Move all to cart?',
-                text: "This will clear your wishlist and move items to cart.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, move them!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    wishlist.forEach(item => {
-                        // Create cart compatible product object
-                        const product = {
-                            name: item.name,
-                            price: item.price,
-                            image: item.image,
-                            quantity: 1
-                        };
-                        addToCart(product, false); // Pass false to prevent redirect for each item
-                    });
-
-                    // Clear wishlist after moving
-                    localStorage.removeItem('kmStoreWishlist');
-                    renderWishlist();
-
-                    // Redirect to cart once after all added
-                    window.location.href = 'cart.html';
-                }
-            })
-        });
-    }
-
-    // Generic Wishlist Buttons (Homepage/Product Page)
-    document.body.addEventListener('click', function (e) {
-        if (e.target.closest('.btn-wishlist')) {
-            const btn = e.target.closest('.btn-wishlist');
-            const card = btn.closest('.product-card');
-
-            const product = {
-                name: card.querySelector('.product-title').innerText,
-                price: parseFloat(card.querySelector('.product-price').innerText.replace('₹', '')),
-                image: card.querySelector('.card-img-top').src,
-                originalPrice: card.querySelector('.product-price-old') ? card.querySelector('.product-price-old').innerText : null
-            };
-
-            addToWishlist(product);
-            btn.querySelector('i').classList.remove('far');
-            btn.querySelector('i').classList.add('fas', 'text-danger');
-        }
-    });
-
-    function addToWishlist(product) {
-        let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-
-        // Check if exists
-        if (!wishlist.some(item => item.name === product.name)) {
-            wishlist.push(product);
-            localStorage.setItem('kmStoreWishlist', JSON.stringify(wishlist));
-            updateWishlistCount();
-            // Optional: Show toast
-        }
-    }
-
-    function updateWishlistCount() {
-        let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-        // Update header count if element exists (you might need to add ID to header heart icon)
-        // For now, updating specific page element if present
-        if (wishlistCountEl) wishlistCountEl.textContent = wishlist.length;
-    }
-
-    if (wishlistContainer) {
-        renderWishlist();
-
-        wishlistContainer.addEventListener('click', function (e) {
-            if (e.target.closest('.btn-remove-wishlist')) {
-                const btn = e.target.closest('.btn-remove-wishlist');
-                const name = btn.getAttribute('data-name');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        removeFromWishlist(name);
-                        Swal.fire(
-                            'Deleted!',
-                            'Your item has been deleted.',
-                            'success'
-                        )
+                        modal.show();
                     }
-                })
-            } else if (e.target.closest('.btn-add-cart-wishlist')) {
-                const btn = e.target.closest('.btn-add-cart-wishlist');
-                const name = btn.getAttribute('data-name');
-                const price = parseFloat(btn.getAttribute('data-price'));
-                const image = btn.getAttribute('data-image');
-
-                const product = {
-                    name: name,
-                    price: price,
-                    image: image,
-                    quantity: 1
-                };
-                addToCart(product);
-            }
-        });
-    }
-
-    function renderWishlist() {
-        let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-        wishlistContainer.innerHTML = '';
-
-        if (wishlist.length === 0) {
-            wishlistContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">Your wishlist is empty.</p></div>';
-            updateWishlistCount();
-            return;
-        }
-
-        wishlist.forEach(item => {
-            const discountBadge = item.originalPrice ? `<span class="badge bg-danger position-absolute top-0 start-0 m-3">-10%</span>` : '';
-            const oldPrice = item.originalPrice ? `<span class="text-muted text-decoration-line-through small">${item.originalPrice}</span>` : '';
-
-            const col = document.createElement('div');
-            col.classList.add('col');
-            col.innerHTML = `
-                <div class="card product-card h-100 position-relative">
-                    ${discountBadge}
-                    <a href="single-product.html">
-                        <img src="${item.image}" class="card-img-top p-3" alt="${item.name}">
-                    </a>
-                    <div class="card-body text-center p-2">
-                        <h6 class="product-title">${item.name}</h6>
-                        <div class="mb-3 text-start ps-2">
-                             <span class="product-price">₹${item.price}</span>
-                             ${oldPrice}
-                        </div>
-                        <div class="d-flex gap-2 align-items-center justify-content-center">
-                             <button class="btn btn-light border rounded-circle btn-remove-wishlist" data-name="${item.name}" style="width: 40px; height: 40px;"><i class="fas fa-trash text-danger"></i></button>
-                             <button class="btn btn-add-cart w-100">Add to cart</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            wishlistContainer.appendChild(col);
-        });
-        updateWishlistCount();
-    }
-
-    function removeFromWishlist(name) {
-        let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-        wishlist = wishlist.filter(item => item.name !== name);
-        localStorage.setItem('kmStoreWishlist', JSON.stringify(wishlist));
-        renderWishlist();
-    }
-
-
-    // --- Add to Cart Logic ---
-
-    // Generic Add to Cart Buttons (Homepage/Product Page)
-    document.body.addEventListener('click', function (e) {
-        if (e.target.closest('.btn-add-cart')) {
-            const btn = e.target.closest('.btn-add-cart');
-            const card = btn.closest('.product-card');
-
-            const product = {
-                name: card.querySelector('.product-title').innerText,
-                price: parseFloat(card.querySelector('.product-price').innerText.replace('₹', '')),
-                image: card.querySelector('.card-img-top').src,
-                originalPrice: card.querySelector('.product-price-old') ? parseFloat(card.querySelector('.product-price-old').innerText.replace('₹', '')) : null,
-                quantity: 1
-            };
-
-            addToCart(product, false);
-
-            // Visual Feedback
-            const originalText = btn.innerHTML; // Use innerHTML to preserve icons if we want, or just text? innerText is safer for text.
-            // Let's just change text for now as requested.
-            // If the button has an icon, we might lose it if we just set innerText. 
-            // The existing buttons have "Add to cart" text. Some might have icons.
-            // Looking at homepage.html: <button class="btn btn-add-cart">Add to cart</button> -> No icon inside text, but some might.
-            // Let's safe check.
-
-            btn.innerText = "Added";
-            // Optional: change color? The user didn't explicitly ask, but "Added" implies success.
-            // btn.classList.add('btn-success'); 
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                // btn.classList.remove('btn-success');
-            }, 2000);
-        }
-    });
-
-    // Single Product Add to Cart Button
-    const singleProductBtn = document.querySelector('.btn-add-cart-lg');
-    if (singleProductBtn) {
-        singleProductBtn.addEventListener('click', function () {
-            const quantityInput = document.querySelector('.quantity-selector input') ||
-                document.querySelector('.quantity-selector-sm input'); // Fallback if re-using classes
-
-            // In single-product.html structure
-            const titleEl = document.querySelector('h2.fw-bold'); // Assuming h2 is title
-            const priceEl = document.querySelector('h3.fw-bold'); // Assuming h3 is price
-            const imgEl = document.querySelector('.main-product-img');
-
-            if (titleEl && priceEl && imgEl) {
-                const product = {
-                    name: titleEl.innerText,
-                    price: parseFloat(priceEl.innerText.replace('₹', '')),
-                    image: imgEl.src,
-                    originalPrice: null, // Assuming single product page logic can be enhanced later if needed, or parse if available
-                    quantity: quantityInput ? parseInt(quantityInput.value) : 1
-                };
-                addToCart(product, false);
-
-                // Visual Feedback
-                const originalText = singleProductBtn.innerText;
-                singleProductBtn.innerText = "Added";
-
-                setTimeout(() => {
-                    singleProductBtn.innerText = originalText;
-                }, 2000);
-            }
-        });
-    }
-
-    function addToCart(product, redirect = true) {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-
-        // Check if product exists
-        const existingItemIndex = cart.findIndex(item => item.name === product.name);
-
-        if (existingItemIndex > -1) {
-            cart[existingItemIndex].quantity += product.quantity;
-        } else {
-            cart.push(product);
-        }
-
-        localStorage.setItem('kmStoreCart', JSON.stringify(cart));
-
-        // Redirect to cart page
-        if (redirect) {
-            window.location.href = 'cart.html';
-        }
-    }
-
-
-    // --- Cart Page Logic ---
-
-    if (cartTableBody) {
-        renderCart();
-
-        cartTableBody.addEventListener('click', function (e) {
-            if (e.target.classList.contains('quantity-btn')) {
-                const btn = e.target;
-                const action = btn.getAttribute('data-action');
-                const row = btn.closest('tr');
-                const name = row.getAttribute('data-product-name');
-
-                updateCartItemQuantity(name, action);
-            } else if (e.target.closest('.btn-remove-cart')) {
-                const btn = e.target.closest('.btn-remove-cart');
-                const row = btn.closest('tr');
-                const name = row.getAttribute('data-product-name');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        removeFromCart(name);
-                        Swal.fire(
-                            'Deleted!',
-                            'Item has been removed from cart.',
-                            'success'
-                        )
-                    }
-                })
-            }
-        });
-    }
-
-    // Clear Cart Button Logic
-    const btnClearCart = document.getElementById('btn-clear-cart');
-    if (btnClearCart) {
-        btnClearCart.addEventListener('click', function () {
-            let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-            if (cart.length === 0) return;
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, clear it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem('kmStoreCart');
-                    renderCart();
-                    Swal.fire(
-                        'Deleted!',
-                        'Your cart has been cleared.',
-                        'success'
-                    )
-                }
-            })
-        });
-    }
-
-    function renderCart() {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-        cartTableBody.innerHTML = '';
-
-        if (cart.length === 0) {
-            cartTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Your cart is empty.</td></tr>';
-            if (cartSubtotalEl) cartSubtotalEl.textContent = '₹0';
-            if (cartTotalEl) cartTotalEl.textContent = '₹0';
-            return;
-        }
-
-        cart.forEach(item => {
-            const subtotal = item.price * item.quantity;
-            const row = document.createElement('tr');
-            row.classList.add('border-bottom', 'cart-item-row');
-            row.setAttribute('data-product-name', item.name);
-
-            row.innerHTML = `
-                <td class="ps-4 py-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="cart-img-wrapper rounded p-2 border">
-                            <img src="${item.image}" alt="${item.name}" class="img-fluid">
-                        </div>
-                        <span class="fw-semibold text-dark">${item.name}</span>
-                    </div>
-                </td>
-                <td class="fw-semibold product-price" data-price="${item.price}">₹${item.price}</td>
-                <td>
-                    <div class="quantity-selector-sm d-flex align-items-center border rounded">
-                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="decrease">-</button>
-                        <input type="text" value="${item.quantity}" class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="increase">+</button>
-                    </div>
-                </td>
-                <td class="fw-semibold text-end pe-4 product-subtotal">₹${subtotal}</td>
-                <td class="text-center pe-4">
-                    <button class="btn btn-sm text-danger btn-remove-cart"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-            cartTableBody.appendChild(row);
-        });
-
-        updateCartTotal();
-    }
-
-    function removeFromCart(name) {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-        cart = cart.filter(item => item.name !== name);
-        localStorage.setItem('kmStoreCart', JSON.stringify(cart));
-        renderCart();
-    }
-
-    function updateCartItemQuantity(name, action) {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-        const itemIndex = cart.findIndex(item => item.name === name);
-
-        if (itemIndex > -1) {
-            if (action === 'increase') {
-                cart[itemIndex].quantity++;
-            } else if (action === 'decrease') {
-                if (cart[itemIndex].quantity > 1) {
-                    cart[itemIndex].quantity--;
-                } else {
-                    // Start of logic to remove item if desired, strictly requested min 1 but let's keep it safe
-                    // For now, simple min 1
-                }
-            }
-            localStorage.setItem('kmStoreCart', JSON.stringify(cart));
-            renderCart();
-        }
-    }
-
-    function updateCartTotal() {
-        let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-        let totalSubtotal = 0;
-        let totalOriginalSubtotal = 0;
-        const deliveryCharge = 25;
-        const handlingCharge = 2;
-
-        cart.forEach(item => {
-            totalSubtotal += item.price * item.quantity;
-            if (item.originalPrice) {
-                totalOriginalSubtotal += item.originalPrice * item.quantity;
-            } else {
-                totalOriginalSubtotal += item.price * item.quantity;
-            }
-        });
-
-        const savings = totalOriginalSubtotal - totalSubtotal;
-
-        // Elements
-        const billItemsTotalEl = document.getElementById('bill-items-total');
-        const billItemsTotalStrikeEl = document.getElementById('bill-items-total-strike');
-        const billSavingsBadgeEl = document.getElementById('bill-savings-badge');
-
-        if (billItemsTotalEl) {
-            billItemsTotalEl.textContent = '₹' + totalSubtotal;
-
-            if (savings > 0) {
-                if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '₹' + totalOriginalSubtotal;
-                if (billSavingsBadgeEl) {
-                    billSavingsBadgeEl.textContent = 'Saved ₹' + savings;
-                    billSavingsBadgeEl.style.display = 'inline-block';
-                }
-            } else {
-                if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '';
-                if (billSavingsBadgeEl) billSavingsBadgeEl.style.display = 'none';
-            }
-
-            if (cartTotalEl) cartTotalEl.textContent = '₹' + (totalSubtotal + deliveryCharge + handlingCharge);
-        } else if (cartSubtotalEl) {
-            // Fallback for checkout or other pages using old IDs if any (though we updated cart.html)
-            cartSubtotalEl.textContent = '₹' + totalSubtotal;
-            if (cartTotalEl) cartTotalEl.textContent = '₹' + (totalSubtotal + deliveryCharge + handlingCharge);
-        }
-    }
-
-    // --- Hot Deals Slider Logic ---
-    const hotDealsTrack = document.getElementById('hot-deals-track');
-    const prevBtn = document.getElementById('hot-deals-prev');
-    const nextBtn = document.getElementById('hot-deals-next');
-
-    if (hotDealsTrack && prevBtn && nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            const scrollAmount = hotDealsTrack.clientWidth / 2; // Scroll half container width
-            hotDealsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        });
-
-        prevBtn.addEventListener('click', () => {
-            const scrollAmount = hotDealsTrack.clientWidth / 2;
-            hotDealsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        });
-    }
-
-    // --- Address Book Logic ---
-    document.body.addEventListener('click', function (e) {
-        if (e.target.classList.contains('btn-delete-address')) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to delete this address?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = e.target.closest('tr');
-                    if (row) row.remove();
-                    Swal.fire(
-                        'Deleted!',
-                        'Address has been deleted.',
-                        'success'
-                    )
-                }
-            })
-        }
-    });
-
-    // --- SweetAlert Confirmations ---
-
-    // 1. Wishlist: Clear All
-    // btnClearWishlist is already declared at the top
-    if (btnClearWishlist) {
-        btnClearWishlist.addEventListener('click', function () {
-            Swal.fire({
-                title: 'Clear Wishlist?',
-                text: "Are you sure you want to remove all items?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, clear it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const wishlistContainer = document.getElementById('wishlist-container');
-                    if (wishlistContainer) wishlistContainer.innerHTML = '<p class="text-center w-100">Your wishlist is empty.</p>';
-                    const countEl = document.getElementById('wishlist-count');
-                    if (countEl) countEl.innerText = 0;
-
-                    Swal.fire(
-                        'Cleared!',
-                        'Your wishlist has been cleared.',
-                        'success'
-                    );
-                }
-            });
-        });
-    }
-
-    // Cart and Checkout logic already exists above.
-
-    // 4. My Orders: Cancel Order
-    document.body.addEventListener('click', function (e) {
-        if (e.target.classList.contains('btn-cancel-order')) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Cancel Order?',
-                text: "Are you sure you want to cancel this order? This action cannot be undone.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, Cancel Order'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const row = e.target.closest('tr');
-                    const badge = row.querySelector('.badge');
-                    if (badge) {
-                        badge.className = 'badge bg-secondary';
-                        badge.innerText = 'Cancelled';
-                    }
-                    e.target.remove(); // Remove Cancel button
-
-                    Swal.fire(
-                        'Cancelled!',
-                        'Your order has been cancelled.',
-                        'success'
-                    );
-                }
-            });
-        }
-    });
-
-    // --- Order Details & Invoice Logic (My Orders Page) ---
-    const orderDetailsModalEl = document.getElementById('orderDetailsModal');
-    if (orderDetailsModalEl) {
-        const modal = new bootstrap.Modal(orderDetailsModalEl);
-        const modalOrderId = document.getElementById('modalOrderId');
-        const modalOrderDate = document.getElementById('modalOrderDate');
-        const modalOrderItems = document.getElementById('modalOrderItems');
-        const modalOrderTotal = document.getElementById('modalOrderTotal');
-        const btnDownloadInvoice = document.getElementById('btnDownloadInvoice');
-        let currentOrderData = null;
-
-        // View Details Click Handler
-        document.body.addEventListener('click', function (e) {
-            if (e.target.classList.contains('view-order-btn')) {
-                const btn = e.target;
-                const row = btn.closest('tr');
-
-                // Parse Data
-                const orderId = row.getAttribute('data-order-id');
-                const date = row.getAttribute('data-date');
-                const status = row.getAttribute('data-status');
-                const total = row.getAttribute('data-total');
-                const items = JSON.parse(row.getAttribute('data-items'));
-
-                currentOrderData = { orderId, date, status, total, items };
-
-                // Populate Modal
-                modalOrderId.textContent = orderId;
-                modalOrderDate.textContent = date;
-                modalOrderTotal.textContent = total;
-
-                // Populate Items
-                modalOrderItems.innerHTML = '';
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'px-0');
-                    li.innerHTML = `
-                        <div>
-                            <h6 class="mb-0 text-dark">${item.name}</h6>
-                            <small class="text-muted">Qty: ${item.qty}</small>
-                        </div>
-                        <span class="text-muted small">${item.price}</span>
-                    `;
-                    modalOrderItems.appendChild(li);
                 });
 
-                // Show/Hide Download Button
-                if (status === 'Delivered') {
-                    btnDownloadInvoice.style.display = 'inline-block';
-                } else {
-                    btnDownloadInvoice.style.display = 'none';
+                // Download Invoice Click Handler
+                if (btnDownloadInvoice) {
+                    btnDownloadInvoice.addEventListener('click', function () {
+                        if (!currentOrderData) return;
+                        generateInvoice(currentOrderData);
+                    });
                 }
+            }
 
-                modal.show();
+            function generateInvoice(order) {
+                const invoiceHTML = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Invoice ${order.orderId}</title>
+                        <style>
+                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
+                            .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; }
+                            .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+                            .header img { max-width: 150px; }
+                            .invoice-title { font-size: 24px; font-weight: bold; color: #0d6efd; }
+                            .invoice-details { text-align: right; }
+                            .table-responsive { margin-top: 30px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th { text-align: left; background-color: #f8f9fa; padding: 12px; border-bottom: 2px solid #dee2e6; }
+                            td { padding: 12px; border-bottom: 1px solid #eee; }
+                            .total-row td { font-weight: bold; font-size: 18px; border-top: 2px solid #333; }
+                            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #aaa; }
+                            @media print {
+                                body { padding: 0; }
+                                .invoice-box { border: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="invoice-box">
+                            <div class="header">
+                                <div>
+                                    <div class="invoice-title">KM Store</div>
+                                    <p>123 Grocery Lane<br>Fresh Town, KA 560000</p>
+                                </div>
+                                <div class="invoice-details">
+                                    <h2 style="color: #333;">INVOICE</h2>
+                                    <p><strong>Order ID:</strong> ${order.orderId}<br>
+                                    <strong>Date:</strong> ${order.date}<br>
+                                    <strong>Status:</strong> ${order.status}</p>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th style="text-align: right;">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${order.items.map(item => `
+                                        <tr>
+                                            <td>${item.name}</td>
+                                            <td>${item.qty}</td>
+                                            <td style="text-align: right;">${item.price}</td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr class="total-row">
+                                        <td colspan="2" style="text-align: right;">Total</td>
+                                        <td style="text-align: right;">${order.total}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+
+                            <div class="footer">
+                                <p>Thank you for shopping with KM Store!</p>
+                                <p>For support, email support@kmstore.com</p>
+                            </div>
+                        </div>
+                        <script>
+                            window.onload = function() { window.print(); }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+
+                const printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write(invoiceHTML);
+                printWindow.document.close();
             }
         });
-
-        // Download Invoice Click Handler
-        if (btnDownloadInvoice) {
-            btnDownloadInvoice.addEventListener('click', function () {
-                if (!currentOrderData) return;
-                generateInvoice(currentOrderData);
-            });
-        }
-    }
-
-    function generateInvoice(order) {
-        const invoiceHTML = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Invoice ${order.orderId}</title>
-                <style>
-                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
-                    .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; }
-                    .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-                    .header img { max-width: 150px; }
-                    .invoice-title { font-size: 24px; font-weight: bold; color: #0d6efd; }
-                    .invoice-details { text-align: right; }
-                    .table-responsive { margin-top: 30px; }
-                    table { width: 100%; border-collapse: collapse; }
-                    th { text-align: left; background-color: #f8f9fa; padding: 12px; border-bottom: 2px solid #dee2e6; }
-                    td { padding: 12px; border-bottom: 1px solid #eee; }
-                    .total-row td { font-weight: bold; font-size: 18px; border-top: 2px solid #333; }
-                    .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #aaa; }
-                    @media print {
-                        body { padding: 0; }
-                        .invoice-box { border: none; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="invoice-box">
-                    <div class="header">
-                        <div>
-                            <div class="invoice-title">KM Store</div>
-                            <p>123 Grocery Lane<br>Fresh Town, KA 560000</p>
-                        </div>
-                        <div class="invoice-details">
-                            <h2 style="color: #333;">INVOICE</h2>
-                            <p><strong>Order ID:</strong> ${order.orderId}<br>
-                            <strong>Date:</strong> ${order.date}<br>
-                            <strong>Status:</strong> ${order.status}</p>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th style="text-align: right;">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${order.items.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.qty}</td>
-                                    <td style="text-align: right;">${item.price}</td>
-                                </tr>
-                            `).join('')}
-                            <tr class="total-row">
-                                <td colspan="2" style="text-align: right;">Total</td>
-                                <td style="text-align: right;">${order.total}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
-
-                    <div class="footer">
-                        <p>Thank you for shopping with KM Store!</p>
-                        <p>For support, email support@kmstore.com</p>
-                    </div>
-                </div>
-                <script>
-                    window.onload = function() { window.print(); }
-                <\/script>
-            </body>
-            </html>
-        `;
-
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write(invoiceHTML);
-        printWindow.document.close();
-    }
-});
-</script>
+    </script>
 </body>
 
 </html>

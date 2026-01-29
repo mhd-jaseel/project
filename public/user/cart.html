@@ -419,16 +419,19 @@
                 </div>
                 <!-- User Actions -->
                 <div class="col-md-4 text-end">
-                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
+                    <a href="wishlist.html" class="text-white text-decoration-none me-3" id="headerWishlistBtn"><i
                             class="fas fa-heart me-1"></i>
                         Wishlist</a>
-                    <a href="#" class="text-white text-decoration-none me-3"><i class="fas fa-shopping-cart me-1"></i>
+                    <a href="#" class="text-white text-decoration-none me-3" id="headerCartBtn"><i
+                            class="fas fa-shopping-cart me-1"></i>
                         Cart</a>
-                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                            class="fas fa-sign-in-alt me-1"></i>
-                        Login</a>
-                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
-                        Account</a>
+
+                    <!-- Dynamic Auth Section -->
+                    <span id="auth-actions">
+                        <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                                class="fas fa-sign-in-alt me-1"></i>
+                            Login</a>
+                    </span>
                 </div>
             </div>
             <!-- Navigation -->
@@ -443,8 +446,6 @@
                             <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
-
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
                         </ul>
                     </div>
                 </div>
@@ -459,6 +460,8 @@
             </svg>
         </div>
     </header>
+
+
 
     <!-- Breadcrumb -->
     <div class="container mt-5">
@@ -501,7 +504,12 @@
                                         <span class="fw-semibold text-dark">Achappam</span>
                                     </div>
                                 </td>
-                                <td class="fw-semibold product-price" data-price="20">₹20</td>
+                                <td class="fw-semibold" data-price="20">
+                                    <div class="d-flex flex-column">
+                                        <span class="product-price">₹20</span>
+                                        <span class="text-muted text-decoration-line-through small">₹25</span>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="quantity-selector-sm d-flex align-items-center border rounded">
                                         <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
@@ -644,7 +652,285 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
+    <script>
+        // --- Page Access Protection ---
+        (function () {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                // Hide content immediately to prevent flash
+                document.body.style.visibility = 'hidden';
+
+                // Wait for Swal to load (it usually loads fast from CDN but safe to wait for DOMContentLoaded or just execute)
+                // Since this is in body script, Swal script is above.
+                // We show Swal
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to continue',
+                    icon: 'warning',
+                    confirmButtonColor: '#2ecc71',
+                    confirmButtonText: 'Login',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Go Home'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    } else {
+                        window.location.href = 'homepage.html';
+                    }
+                });
+            } else {
+                // If logged in, ensure visible
+                // document.body.style.visibility = 'visible';
+            }
+        })();
+
+        // --- Auth & Header Logic ---
+        function checkLogin(e) {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to access this feature',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const authContainer = document.getElementById('auth-actions');
+            if (!authContainer) return;
+
+            if (token) {
+                authContainer.innerHTML = `
+                    <div class="dropdown d-inline-block">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+                const logoutBtn = document.getElementById('headerLogoutBtn');
+                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+            } else {
+                authContainer.innerHTML = `
+                    <a href="login.html" class="text-white text-decoration-none" id="headerLoginBtn">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                `;
+            }
+        }
+
+        const headerWishBtn = document.getElementById('headerWishlistBtn');
+        if (headerWishBtn) headerWishBtn.addEventListener('click', checkLogin);
+        const headerCartBtn = document.getElementById('headerCartBtn');
+        if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
+
+        updateHeaderAuth();
+
+        // --- Cart Functionality ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const cartTableBody = document.getElementById('cart-table-body');
+            const cartSubtotalEl = document.getElementById('cart-subtotal');
+            const cartTotalEl = document.getElementById('cart-total');
+            const btnClearCart = document.getElementById('btn-clear-cart');
+
+            if (cartTableBody) {
+                renderCart();
+
+                cartTableBody.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('quantity-btn')) {
+                        const btn = e.target;
+                        const action = btn.getAttribute('data-action');
+                        const row = btn.closest('tr');
+                        const name = row.getAttribute('data-product-name');
+                        updateCartItemQuantity(name, action);
+                    } else if (e.target.closest('.btn-remove-cart')) {
+                        const btn = e.target.closest('.btn-remove-cart');
+                        const row = btn.closest('tr');
+                        const name = row.getAttribute('data-product-name');
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                removeFromCart(name);
+                                Swal.fire('Deleted!', 'Item has been removed from cart.', 'success');
+                            }
+                        })
+                    }
+                });
+            }
+
+            if (btnClearCart) {
+                btnClearCart.addEventListener('click', function () {
+                    let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                    if (cart.length === 0) return;
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, clear it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.removeItem('kmStoreCart');
+                            renderCart();
+                            Swal.fire('Deleted!', 'Your cart has been cleared.', 'success');
+                        }
+                    })
+                });
+            }
+
+            function renderCart() {
+                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                cartTableBody.innerHTML = '';
+
+                if (cart.length === 0) {
+                    cartTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Your cart is empty.</td></tr>';
+                    if (cartSubtotalEl) cartSubtotalEl.textContent = '₹0';
+                    if (cartTotalEl) cartTotalEl.textContent = '₹0';
+                    updateCartTotal();
+                    return;
+                }
+
+                cart.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    const row = document.createElement('tr');
+                    row.classList.add('border-bottom', 'cart-item-row');
+                    row.setAttribute('data-product-name', item.name);
+
+                    row.innerHTML = `
+                <td class="ps-4 py-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="cart-img-wrapper rounded p-2 border">
+                            <img src="${item.image}" alt="${item.name}" class="img-fluid">
+                        </div>
+                        <span class="fw-semibold text-dark">${item.name}</span>
+                    </div>
+                </td>
+                <td class="fw-semibold">
+                    <div class="d-flex flex-column">
+                        <span class="product-price">₹${item.price}</span>
+                        ${item.originalPrice ? `<span class="text-muted text-decoration-line-through small">₹${item.originalPrice}</span>` : ''}
+                    </div>
+                </td>
+                <td>
+                    <div class="quantity-selector-sm d-flex align-items-center border rounded">
+                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="decrease">-</button>
+                        <input type="text" value="${item.quantity}" class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input" readonly style="width: 30px;">
+                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="increase">+</button>
+                    </div>
+                </td>
+                <td class="fw-semibold text-end pe-4 product-subtotal">₹${subtotal}</td>
+                <td class="text-center pe-4">
+                    <button class="btn btn-sm text-danger btn-remove-cart"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+                    cartTableBody.appendChild(row);
+                });
+
+                updateCartTotal();
+            }
+
+            function removeFromCart(name) {
+                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                cart = cart.filter(item => item.name !== name);
+                localStorage.setItem('kmStoreCart', JSON.stringify(cart));
+                renderCart();
+            }
+
+            function updateCartItemQuantity(name, action) {
+                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                const itemIndex = cart.findIndex(item => item.name === name);
+
+                if (itemIndex > -1) {
+                    if (action === 'increase') {
+                        cart[itemIndex].quantity++;
+                    } else if (action === 'decrease') {
+                        if (cart[itemIndex].quantity > 1) {
+                            cart[itemIndex].quantity--;
+                        }
+                    }
+                    localStorage.setItem('kmStoreCart', JSON.stringify(cart));
+                    renderCart();
+                }
+            }
+
+            function updateCartTotal() {
+                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
+                let totalSubtotal = 0;
+                let totalOriginalSubtotal = 0;
+                const deliveryCharge = 25;
+                const handlingCharge = 2;
+
+                cart.forEach(item => {
+                    totalSubtotal += item.price * item.quantity;
+                    if (item.originalPrice) {
+                        totalOriginalSubtotal += item.originalPrice * item.quantity;
+                    } else {
+                        totalOriginalSubtotal += item.price * item.quantity;
+                    }
+                });
+
+                const savings = totalOriginalSubtotal - totalSubtotal;
+
+                // Elements
+                const billItemsTotalEl = document.getElementById('bill-items-total');
+                const billItemsTotalStrikeEl = document.getElementById('bill-items-total-strike');
+                const billSavingsBadgeEl = document.getElementById('bill-savings-badge');
+
+                if (billItemsTotalEl) {
+                    billItemsTotalEl.textContent = '₹' + totalSubtotal;
+
+                    if (savings > 0) {
+                        if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '₹' + totalOriginalSubtotal;
+                        if (billSavingsBadgeEl) {
+                            billSavingsBadgeEl.textContent = 'Saved ₹' + savings;
+                            billSavingsBadgeEl.style.display = 'inline-block';
+                        }
+                    } else {
+                        if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '';
+                        if (billSavingsBadgeEl) billSavingsBadgeEl.style.display = 'none';
+                    }
+
+                    if (cartTotalEl) cartTotalEl.textContent = '₹' + (totalSubtotal + (cart.length > 0 ? deliveryCharge + handlingCharge : 0));
+                }
+            }
+        });
+    </script>
 
 </body>
 

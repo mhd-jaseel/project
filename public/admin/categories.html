@@ -322,12 +322,50 @@
                 <div class="d-flex gap-2">
                     <a href="add-category.html" class="btn btn-primary-custom px-4"><i class="fas fa-plus me-2"></i> Add
                         Categories</a>
-                    <button class="btn btn-light bg-white border px-3">More Action <i
-                            class="fas fa-ellipsis-v ms-2"></i></button>
+
                 </div>
             </div>
 
             <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4" id="categoryGrid"></div>
+
+            <!-- Edit Category Modal -->
+            <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editCategoryForm">
+                                <input type="hidden" id="editCategoryId">
+                                <div class="mb-3">
+                                    <label class="form-label">Category Name</label>
+                                    <input type="text" class="form-control" id="editCategoryName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="editCategoryDescription" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category Image</label>
+                                    <input type="file" class="form-control" id="editCategoryImage" accept="image/*">
+                                    <div class="mt-2 text-center" id="currentImagePreviewContainer">
+                                        <p class="text-muted small mb-1">Current Image:</p>
+                                        <img id="currentImagePreview" src="" alt="Current Image"
+                                            style="max-height: 100px; max-width: 100%; border-radius: 5px;">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEditCategory()">Save
+                                Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
         </div>
@@ -335,28 +373,40 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    /* =========================
-   LOAD CATEGORIES
-========================= */
-async function loadCategories() {
-  try {
-    const res = await fetch("/api/categories");
-    const categories = await res.json();
+        // Auth Check
+        const token = localStorage.getItem("adminToken");
 
-    const grid = document.getElementById("categoryGrid");
-    grid.innerHTML = "";
-    if (!categories.length) {
-        grid.innerHTML = `
+        const role = localStorage.getItem("role");
+
+        if (!token || role !== "admin") {
+            window.location.href = "/user/login.html";
+        }
+
+        /* =========================
+       LOAD CATEGORIES
+    ========================= */
+        let allCategories = [];
+        let editModalObj;
+
+        async function loadCategories() {
+            try {
+                const res = await fetch("/api/categories");
+                allCategories = await res.json();
+
+                const grid = document.getElementById("categoryGrid");
+                grid.innerHTML = "";
+                if (!allCategories.length) {
+                    grid.innerHTML = `
             <div class="col-12 text-center text-muted">
             No categories found
             </div>
         `;
-        return;
-        }
+                    return;
+                }
 
 
-    categories.forEach(cat => {
-      grid.innerHTML += `
+                allCategories.forEach(cat => {
+                    grid.innerHTML += `
             <div class="col">
                 <div class="card-custom p-3 d-flex justify-content-between align-items-center flex-row">
 
@@ -373,87 +423,170 @@ async function loadCategories() {
                     <h6 class="fw-bold m-0">${cat.name}</h6>
                 </a>
 
-                <!-- ❌ DELETE BUTTON (NOT CLICKABLE AS LINK) -->
-                <button
-                    class="btn btn-sm btn-light text-danger"
-                    onclick="deleteCategory('${cat._id}', this)">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div class="d-flex gap-2">
+                    <!-- EDIT BUTTON -->
+                    <button
+                        class="btn btn-sm btn-light text-primary"
+                        onclick="openEditModal('${cat._id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <!-- DELETE BUTTON -->
+                    <button
+                        class="btn btn-sm btn-light text-danger"
+                        onclick="deleteCategory('${cat._id}', this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
 
                 </div>
             </div>
             `;
 
-    });
+                });
 
-  } catch (err) {
-    console.error(err);
-    Swal.fire("Error", "Failed to load categories", "error");
-  }
-}
-
-/* =========================
-   DELETE CATEGORY (WITH CONFIRMATION)
-========================= */
-async function deleteCategory(id, btn) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    Swal.fire("Unauthorized", "Please login again", "warning");
-    return;
-  }
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This category will be permanently deleted!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async (result) => {
-    if (!result.isConfirmed) return;
-
-    try {
-      const res = await fetch(`/api/categories/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Failed to load categories", "error");
+            }
         }
-      });
 
-      const data = await res.json();
+        /* =========================
+           EDIT CATEGORY LOGIC
+        ========================= */
+        function openEditModal(id) {
+            const category = allCategories.find(c => c._id === id);
+            if (!category) return;
 
-      if (!res.ok) {
-        throw new Error(data.message || "Delete failed");
-      }
+            document.getElementById('editCategoryId').value = category._id;
+            document.getElementById('editCategoryName').value = category.name;
+            document.getElementById('editCategoryDescription').value = category.description || '';
 
-      Swal.fire("Deleted!", "Category has been deleted.", "success");
+            const imgPreview = document.getElementById('currentImagePreview');
+            if (category.image) {
+                imgPreview.src = category.image;
+                document.getElementById('currentImagePreviewContainer').style.display = 'block';
+            } else {
+                document.getElementById('currentImagePreviewContainer').style.display = 'none';
+            }
 
-      // Remove from UI
-      btn.closest(".col").remove();
+            // Initialize and show modal
+            const modalEl = document.getElementById('editCategoryModal');
+            editModalObj = new bootstrap.Modal(modalEl);
+            editModalObj.show();
+        }
 
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", err.message, "error");
-    }
-  });
-}
+        async function saveEditCategory() {
+            const id = document.getElementById('editCategoryId').value;
+            const name = document.getElementById('editCategoryName').value.trim();
+            const description = document.getElementById('editCategoryDescription').value.trim();
+            const imageInput = document.getElementById('editCategoryImage');
+            const token = localStorage.getItem('adminToken');
 
-/* =========================
-   INIT
-========================= */
-loadCategories();
-document.addEventListener("click", (e) => {
-  const link = e.target.closest(".category-link");
-  if (!link) return;
+            if (!name) {
+                Swal.fire("Error", "Category name is required", "error");
+                return;
+            }
 
-  const categoryId = link.dataset.id;
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            if (imageInput.files.length > 0) {
+                formData.append("image", imageInput.files[0]);
+            }
 
-  // redirect to products page with category
-  window.location.href = `products.html?category=${categoryId}`;
-});
-</script>
+            try {
+                const res = await fetch(`/api/categories/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || "Update failed");
+                }
+
+                Swal.fire("Success", "Category updated successfully", "success");
+
+                // Close modal
+                if (editModalObj) editModalObj.hide();
+
+                // Reload categories
+                loadCategories();
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+            }
+        }
+
+        /* =========================
+           DELETE CATEGORY (WITH CONFIRMATION)
+        ========================= */
+        async function deleteCategory(id, btn) {
+            const token = localStorage.getItem("adminToken");
+
+
+            if (!token) {
+                Swal.fire("Unauthorized", "Please login again", "warning");
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This category will be permanently deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then(async (result) => {
+                if (!result.isConfirmed) return;
+
+                try {
+                    const res = await fetch(`/api/categories/${id}`, {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.message || "Delete failed");
+                    }
+
+                    Swal.fire("Deleted!", "Category has been deleted.", "success");
+
+                    // Remove from UI
+                    btn.closest(".col").remove();
+
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire("Error", err.message, "error");
+                }
+            });
+        }
+
+        /* =========================
+           INIT
+        ========================= */
+        loadCategories();
+        document.addEventListener("click", (e) => {
+            const link = e.target.closest(".category-link");
+            if (!link) return;
+
+            const categoryId = link.dataset.id;
+
+            // redirect to products page with category
+            window.location.href = `products.html?category=${categoryId}`;
+        });
+    </script>
 </body>
 
 </html>

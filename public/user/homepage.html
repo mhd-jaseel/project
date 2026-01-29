@@ -120,6 +120,19 @@
             background: #fff;
             border: 1px solid #f0f0f0;
             /* Subtle border */
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .product-card .card-body {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .product-card .card-body>:last-child {
+            margin-top: auto;
         }
 
         .product-card:hover {
@@ -421,14 +434,7 @@
 </head>
 
 <body>
-    <script>
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
 
-        if (!token || role !== "user") {
-            window.location.href = "/user/login.html";
-        }
-    </script>
 
 
     <!-- Header Section -->
@@ -452,17 +458,20 @@
                 </div>
                 <!-- User Actions -->
                 <div class="col-md-4 text-end">
-                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
+                    <a href="wishlist.html" class="text-white text-decoration-none me-3" id="headerWishlistBtn"><i
                             class="fas fa-heart me-1"></i>
                         Wishlist</a>
-                    <a href="cart.html" class="text-white text-decoration-none me-3"><i
+                    <a href="cart.html" class="text-white text-decoration-none me-3" id="headerCartBtn"><i
                             class="fas fa-shopping-cart me-1"></i>
                         Cart</a>
-                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                            class="fas fa-sign-in-alt me-1"></i>
-                        Login</a>
-                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
-                        Account</a>
+
+                    <!-- Dynamic Auth Section -->
+                    <span id="auth-actions">
+                        <!-- Default to Login -->
+                        <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                                class="fas fa-sign-in-alt me-1"></i>
+                            Login</a>
+                    </span>
                 </div>
             </div>
             <!-- Navigation -->
@@ -477,8 +486,6 @@
                             <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
                             <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
-
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
                         </ul>
                     </div>
                 </div>
@@ -493,6 +500,8 @@
             </svg>
         </div>
     </header>
+
+
 
     <!-- Hero Section -->
     <section class="hero-section container my-4">
@@ -575,91 +584,10 @@
             </div>
         </div>
         <div class="row flex-nowrap overflow-hidden g-4" id="hot-deals-track" style="scroll-behavior: smooth;">
-            <!-- Product Card 1 -->
-            <div class="col-6 col-md-3 mb-4" style="flex: 0 0 auto;">
-                <div class="card product-card h-100 position-relative">
-                    <span class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                        deal</span>
-                    <a href="single-product.html">
-                        <img src="../project images/chicken.jfif" class="card-img-top p-3" alt="Product">
-                    </a>
-                    <div class="card-body text-center p-2">
-                        <h6 class="product-title">Chicken Breast Boneless</h6>
-                        <p class="product-weight">(500g)</p>
-                        <div class="mb-3 text-start ps-2">
-                            <span class="product-price">₹259</span>
-                            <span class="product-price-old">₹337</span>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart">Add to cart</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Card 2 -->
-            <div class="col-6 col-md-3 mb-4" style="flex: 0 0 auto;">
-                <div class="card product-card h-100 position-relative">
-                    <span class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                        deal</span>
-                    <a href="single-product.html">
-                        <img src="../project images/atta 2.avif" class="card-img-top p-3" alt="Product">
-                    </a>
-                    <div class="card-body text-center p-2">
-                        <h6 class="product-title">Chakki Atta</h6>
-                        <p class="product-weight">(5kg)</p>
-                        <div class="mb-3 text-start ps-2">
-                            <span class="product-price">₹350</span>
-                            <span class="product-price-old">₹420</span>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart">Add to cart</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Card 3 -->
-            <div class="col-6 col-md-3 mb-4" style="flex: 0 0 auto;">
-                <div class="card product-card h-100 position-relative">
-                    <span class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                        deal</span>
-                    <a href="single-product.html">
-                        <img src="../project images/basmathi rice.jfif" class="card-img-top p-3" alt="Product">
-                    </a>
-                    <div class="card-body text-center p-2">
-                        <h6 class="product-title">Basmati Rice</h6>
-                        <p class="product-weight">(1kg)</p>
-                        <div class="mb-3 text-start ps-2">
-                            <span class="product-price">₹90</span>
-                            <span class="product-price-old">₹110</span>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart">Add to cart</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3 mb-4" style="flex: 0 0 auto;">
-                <div class="card product-card h-100 position-relative">
-                    <span class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best
-                        deal</span>
-                    <a href="single-product.html">
-                        <img src="../project images/Sunflower Oil.jfif" class="card-img-top p-3" alt="Product">
-                    </a>
-                    <div class="card-body text-center p-2">
-                        <h6 class="product-title">Sunflower Oil</h6>
-                        <p class="product-weight">(1L)</p>
-                        <div class="mb-3 text-start ps-2">
-                            <span class="product-price">₹150</span>
-                            <span class="product-price-old">₹180</span>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart">Add to cart</button>
-                        </div>
-                    </div>
+            <!-- Dynamic Hot Deals will load here -->
+            <div class="d-flex justify-content-center w-100 py-5">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
         </div>
@@ -795,10 +723,89 @@
         </div>
     </footer>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script>// Toggle "View More" text in Product Details
+    <script>
+        // --- Auth & Header Logic (Moved) ---
+        // Public access allowed - Redirection removed
+
+        // Check Login for Actions
+        function checkLogin(e) {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to continue',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        // Update Header State
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const authContainer = document.getElementById('auth-actions');
+            if (!authContainer) return;
+
+            if (token) {
+                // User is logged in
+                authContainer.innerHTML = `
+                    <div class="dropdown d-inline-block">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+
+                // Attach Logout Listener
+                const logoutBtn = document.getElementById('headerLogoutBtn');
+                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+            } else {
+                // User is not logged in
+                authContainer.innerHTML = `
+                    <a href="login.html" class="text-white text-decoration-none" id="headerLoginBtn">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                `;
+            }
+        }
+
+        // Listeners
+        const wishBtn = document.getElementById('headerWishlistBtn');
+        if (wishBtn) wishBtn.addEventListener('click', checkLogin);
+
+        const cartBtn = document.getElementById('headerCartBtn');
+        if (cartBtn) cartBtn.addEventListener('click', checkLogin);
+
+        // Run on load
+        updateHeaderAuth();
+
+        // Toggle "View More" text in Product Details
         function toggleText() {
             var moreText = document.getElementById("more-text");
             var btnText = document.getElementById("view-more-btn");
@@ -815,7 +822,7 @@
         // Check Login Status and Update Navbar
 
         document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("userToken");
             const role = localStorage.getItem("role");
 
             const loginBtn = document.getElementById("headerLoginBtn");
@@ -832,6 +839,8 @@
 
         // Cart Functionality
         document.addEventListener('DOMContentLoaded', function () {
+            loadHotDealsDynamically();
+
             const cartTableBody = document.getElementById('cart-table-body');
             const wishlistContainer = document.getElementById('wishlist-container');
             const checkoutProductList = document.getElementById('checkout-product-list');
@@ -979,6 +988,8 @@
             // Generic Wishlist Buttons (Homepage/Product Page)
             document.body.addEventListener('click', function (e) {
                 if (e.target.closest('.btn-wishlist')) {
+                    if (typeof checkLogin === 'function' && !checkLogin(e)) return;
+
                     const btn = e.target.closest('.btn-wishlist');
                     const card = btn.closest('.product-card');
 
@@ -1141,6 +1152,8 @@
             // Generic Add to Cart Buttons (Homepage/Product Page)
             document.body.addEventListener('click', function (e) {
                 if (e.target.closest('.btn-add-cart')) {
+                    if (typeof checkLogin === 'function' && !checkLogin(e)) return;
+
                     const btn = e.target.closest('.btn-add-cart');
                     const card = btn.closest('.product-card');
 
@@ -1176,7 +1189,9 @@
             // Single Product Add to Cart Button
             const singleProductBtn = document.querySelector('.btn-add-cart-lg');
             if (singleProductBtn) {
-                singleProductBtn.addEventListener('click', function () {
+                singleProductBtn.addEventListener('click', function (e) {
+                    if (typeof checkLogin === 'function' && !checkLogin(e)) return;
+
                     const quantityInput = document.querySelector('.quantity-selector input') ||
                         document.querySelector('.quantity-selector-sm input'); // Fallback if re-using classes
 
@@ -1229,83 +1244,87 @@
 
             async function loadDynamicSections() {
                 try {
-                    const res = await fetch('/api/products');
-                    const products = await res.json();
+                    // 1. Fetch All Categories
+                    const catRes = await fetch('/api/categories');
+                    const categories = await catRes.json();
 
-                    // Group by category
-                    const grouped = {};
-                    products.forEach(p => {
-                        if (!p.category) return;
-                        const catName = p.category.name || "Others";
-                        if (!grouped[catName]) {
-                            grouped[catName] = {
-                                id: p.category._id,
-                                products: []
-                            };
-                        }
-                        grouped[catName].products.push(p);
-                    });
+                    // 2. Select the first 3 categories
+                    // Note: Depending on requirement, might want to reverse if 'First Added' means Oldest.
+                    // Currently using API default (Newest First).
+                    const targetCategories = categories.slice(0, 3);
 
                     const container = document.getElementById('dynamic-category-sections');
                     container.innerHTML = '';
 
-                    for (const [catName, data] of Object.entries(grouped)) {
-                        // Take first 5 products
-                        const displayProducts = data.products.slice(0, 5);
-                        if (displayProducts.length === 0) continue;
+                    // 3. For each category, fetch and display products
+                    for (const cat of targetCategories) {
+                        try {
+                            const prodRes = await fetch(`/api/products/category/${cat._id}`);
+                            const products = await prodRes.json();
 
-                        let productCards = displayProducts.map(p => {
-                            // Calculate original price if needed
-                            let oldPriceHtml = '';
-                            if (p.discount && p.discount > 0) {
-                                const originalPrice = Math.round(p.price * (100 / (100 - p.discount)));
-                                oldPriceHtml = `<span class="product-price-old">₹${originalPrice}</span>`;
-                            }
+                            // Take first 5 products
+                            const displayProducts = products.slice(0, 5);
 
-                            // Company Display
-                            let companyHtml = '';
-                            if (p.company) {
-                                companyHtml = `<div class="text-start small text-muted mb-1" style="font-size: 0.8rem;">${p.company}</div>`;
-                            }
+                            if (displayProducts.length === 0) continue;
 
-                            // Quantity Display
-                            const quantityText = p.weight ? p.weight : '';
+                            const productCards = displayProducts.map(p => {
+                                // Calculate original price if discount exists
+                                let oldPriceHtml = '';
+                                if (p.discount && p.discount > 0) {
+                                    const originalPrice = Math.round(p.price * (100 / (100 - p.discount)));
+                                    oldPriceHtml = `<span class="product-price-old">₹${originalPrice}</span>`;
+                                }
 
-                            return `
-                <div class="col">
-                    <div class="card product-card h-100 position-relative">
-                        <a href="single-product.html?id=${p._id}">
-                           <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top p-3" alt="${p.name}">
-                        </a>
-                        <div class="card-body p-2">
-                             ${companyHtml}
-                             <h6 class="product-title text-center">${p.name}</h6>
-                             <p class="product-weight text-center">${quantityText}</p>
-                             <div class="mb-3 text-start ps-2">
-                                <span class="product-price">₹${p.price}</span>
-                                ${oldPriceHtml}
-                             </div>
-                             <div class="d-flex gap-2 align-items-center">
-                                <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                                <button class="btn btn-add-cart">Add to cart</button>
-                             </div>
-                        </div>
-                    </div>
-                </div>`;
-                        }).join('');
+                                const quantityText = p.weight ? `(${p.weight})` : '';
 
-                        const sectionHtml = `
-            <section class="container my-5">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-bold">${catName}</h3>
-                    <a href="product.html?category=${data.id}" class="text-muted text-decoration-none small">see all</a>
-                </div>
-                <div class="row row-cols-2 row-cols-md-5 g-4">
-                    ${productCards}
-                </div>
-            </section>
-            `;
-                        container.innerHTML += sectionHtml;
+                                const isOutOfStock = p.status === 'Out of Stock';
+                                const badge = isOutOfStock ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
+                                const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : 'style="background-color: #2ecc71; border: none;"';
+                                const btnText = isOutOfStock ? 'Out of Stock' : 'Add to cart';
+
+                                return `
+                                <div class="col">
+                                    <div class="card product-card h-100 position-relative border-0 shadow-sm">
+                                        ${badge}
+                                        <a href="single-product.html?id=${p._id}" class="text-decoration-none">
+                                            <div class="text-center p-3">
+                                                <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top" alt="${p.name}" style="height: 150px; object-fit: contain; opacity: ${isOutOfStock ? 0.6 : 1}">
+                                            </div>
+                                            <div class="card-body text-center p-2">
+                                                <h6 class="product-title text-dark mb-1" style="font-size: 1rem;">${p.name}</h6>
+                                                <p class="product-weight text-muted small mb-2">${quantityText}</p>
+                                                
+                                                <div class="d-flex align-items-center justify-content-between px-2 mb-3">
+                                                     <div class="text-start">
+                                                        <span class="product-price fw-bold text-dark">₹${p.price}</span>
+                                                     </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="px-3 pb-3 d-flex gap-2">
+                                            <button class="btn btn-outline-dark btn-sm rounded-circle btn-wishlist" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><i class="far fa-heart"></i></button>
+                                            <button class="btn btn-success btn-sm flex-grow-1 btn-add-cart" ${btnDisabled}>${btnText}</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }).join('');
+
+                            const sectionHtml = `
+                            <section class="container my-5">
+                                <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
+                                    <h3 class="fw-bold mb-0 text-dark">${cat.name}</h3>
+                                    <a href="product.html?category=${cat._id}" class="text-muted text-decoration-none small">see all</a>
+                                </div>
+                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                    ${productCards}
+                                </div>
+                            </section>
+                            `;
+                            container.innerHTML += sectionHtml;
+
+                        } catch (innerErr) {
+                            console.error(`Error loading products for category ${cat.name}`, innerErr);
+                        }
                     }
 
                 } catch (err) {
@@ -1410,7 +1429,12 @@
                         <span class="fw-semibold text-dark">${item.name}</span>
                     </div>
                 </td>
-                <td class="fw-semibold product-price" data-price="${item.price}">₹${item.price}</td>
+                <td class="fw-semibold" data-price="${item.price}">
+                    <div class="d-flex flex-column">
+                        <span class="product-price">₹${item.price}</span>
+                        ${item.originalPrice ? `<span class="text-muted text-decoration-line-through small">₹${item.originalPrice}</span>` : ''}
+                    </div>
+                </td>
                 <td>
                     <div class="quantity-selector-sm d-flex align-items-center border rounded">
                         <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="decrease">-</button>
@@ -1767,6 +1791,82 @@
                 window.location.href = "/user/login.html";
             }
         });
+
+        /* ========================
+           LOAD HOT DEALS DYNAMICALLY
+        ======================== */
+        async function loadHotDealsDynamically() {
+            try {
+                const res = await fetch("/api/products");
+                const products = await res.json();
+
+                // Filter products where isHotDeal is true
+                const hotDeals = products.filter(p => p.isHotDeal);
+
+                const container = document.getElementById("hot-deals-track");
+                if (container) {
+                    container.innerHTML = "";
+
+                    if (hotDeals.length === 0) {
+                        container.innerHTML = '<div class="col-12 py-5 text-center text-muted">No Hot Deals available at the moment.</div>';
+                        return;
+                    }
+
+                    hotDeals.forEach(p => {
+                        let priceHtml = `<span class="product-price">₹${p.price}</span>`;
+
+                        // Assuming discount is the 'Deal Price' logic based on product.html findings
+                        if (p.discount && Number(p.discount) > 0) {
+                            priceHtml = `
+                                <span class="product-price">₹${p.discount}</span>
+                                <span class="product-price-old">₹${p.price}</span>
+                            `;
+                        }
+
+                        const isOutOfStock = p.status === 'Out of Stock';
+                        // Keep 'Best deal' badge but maybe optional or stacked if out of stock
+                        const bestDealBadge = `<span class="badge badge-best-deal position-absolute top-0 start-0 m-0 rounded-top-left-3">Best deal</span>`;
+                        const stockBadge = isOutOfStock ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
+
+                        const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : '';
+                        const btnText = isOutOfStock ? 'Out of Stock' : 'Add to cart';
+
+
+                        const card = `
+                <div class="col-6 col-md-3 mb-4" style="flex: 0 0 auto;">
+                    <div class="card product-card h-100 position-relative">
+                        ${bestDealBadge}
+                        ${stockBadge}
+                        <a href="single-product.html?id=${p._id}">
+                            <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top p-3" alt="${p.name}" style="height: 180px; object-fit: contain; opacity: ${isOutOfStock ? 0.6 : 1}">
+                        </a>
+                        <div class="card-body text-center p-2">
+                            <h6 class="product-title text-truncate">${p.name}</h6>
+                            <p class="product-weight text-muted small">${p.weight || ''}</p>
+                            <div class="mb-3 text-start ps-2">
+                                ${priceHtml}
+                            </div>
+                            <div class="d-flex gap-2 align-items-center">
+                                <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
+                                <button class="btn btn-add-cart" ${btnDisabled}>${btnText}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                        container.innerHTML += card;
+                    });
+                }
+
+            } catch (err) {
+                console.error("Error loading hot deals:", err);
+                const container = document.getElementById("hot-deals-track");
+                if (container) container.innerHTML = '<div class="col-12 text-center text-danger">Failed to load deals.</div>';
+            }
+        }
+
+        // Execute
+        document.addEventListener('DOMContentLoaded', loadHotDealsDynamically);
+
     </script>
 </body>
 

@@ -5,7 +5,8 @@ const {
   addCategory,
   getCategories,
   getAllCategories,
-  deleteCategory
+  deleteCategory,
+  updateCategory
 } = require("../controllers/categoryController");
 
 const upload = require("../middleware/categoryUpload");
@@ -19,6 +20,15 @@ router.post(
   adminOnly("admin"),
   upload.single("image"),
   addCategory
+);
+
+// Admin: Update
+router.put(
+  "/:id",
+  auth,
+  adminOnly("admin"),
+  upload.single("image"),
+  updateCategory
 );
 
 // Public

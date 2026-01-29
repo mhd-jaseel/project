@@ -417,17 +417,19 @@
                 </div>
                 <!-- User Actions -->
                 <div class="col-md-4 text-end">
-                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
+                    <a href="wishlist.html" class="text-white text-decoration-none me-3" id="headerWishlistBtn"><i
                             class="fas fa-heart me-1"></i>
                         Wishlist</a>
-                    <a href="cart.html" class="text-white text-decoration-none me-3"><i
+                    <a href="cart.html" class="text-white text-decoration-none me-3" id="headerCartBtn"><i
                             class="fas fa-shopping-cart me-1"></i>
                         Cart</a>
-                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                            class="fas fa-sign-in-alt me-1"></i>
-                        Login</a>
-                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
-                        Account</a>
+
+                    <!-- Dynamic Auth Section -->
+                    <span id="auth-actions">
+                        <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                                class="fas fa-sign-in-alt me-1"></i>
+                            Login</a>
+                    </span>
                 </div>
             </div>
             <!-- Navigation -->
@@ -442,8 +444,6 @@
                             <li class="nav-item"><a class="nav-link active" href="about.html">About</a></li>
                             <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
-
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
                         </ul>
                     </div>
                 </div>
@@ -458,6 +458,11 @@
             </svg>
         </div>
     </header>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
     <!-- Breadcrumb -->
     <div class="container my-4">
@@ -632,7 +637,72 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
+    <script>
+        // Check Login for Actions
+        function checkLogin(e) {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to continue',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
 
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const authContainer = document.getElementById('auth-actions');
+            if (!authContainer) return;
+
+            if (token) {
+                authContainer.innerHTML = `
+                    <div class="dropdown d-inline-block">
+                        <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+                const logoutBtn = document.getElementById('headerLogoutBtn');
+                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+            } else {
+                authContainer.innerHTML = `
+                    <a href="login.html" class="text-white text-decoration-none" id="headerLoginBtn">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                `;
+            }
+        }
+
+        const headerWishBtn = document.getElementById('headerWishlistBtn');
+        if (headerWishBtn) headerWishBtn.addEventListener('click', checkLogin);
+        const headerCartBtn = document.getElementById('headerCartBtn');
+        if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
+
+        updateHeaderAuth();
+    </script>
 </body>
 
 </html>

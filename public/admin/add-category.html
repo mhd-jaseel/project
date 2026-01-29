@@ -321,45 +321,26 @@
                         <form>
                             <div class="mb-3">
                                 <label class="form-label text-muted small">Category Name</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="categoryName"
-                                    placeholder="e.g. Vegetables"
-                                    required
-                                >
-                                </div>
+                                <input type="text" class="form-control" id="categoryName" placeholder="e.g. Vegetables"
+                                    required>
+                            </div>
 
-                                <div class="mb-3">
+                            <div class="mb-3">
                                 <label class="form-label text-muted small">Description</label>
-                                <textarea
-                                    class="form-control"
-                                    id="categoryDescription"
-                                    rows="3"
-                                    placeholder="Category description..."
-                                ></textarea>
-                                </div>
+                                <textarea class="form-control" id="categoryDescription" rows="3"
+                                    placeholder="Category description..."></textarea>
+                            </div>
 
-                                <div class="mb-4">
+                            <div class="mb-4">
                                 <label class="form-label text-muted small">Category Image</label>
-                                <input
-                                    type="file"
-                                    class="form-control"
-                                    id="categoryImage"
-                                    accept="image/*"
-                                    required
-                                >
-                                </div>
+                                <input type="file" class="form-control" id="categoryImage" accept="image/*" required>
+                            </div>
 
-                                <div class="d-grid">
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary-custom"
-                                    id="btnSaveCategory"
-                                >
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary-custom" id="btnSaveCategory">
                                     Save Category
                                 </button>
-                                </div>
+                            </div>
 
                         </form>
                     </div>
@@ -369,9 +350,9 @@
                 <div class="col-lg-6">
                     <div class="card-custom">
                         <h5 class="fw-bold mb-4">Existing Categories</h5>
-                        <ul class="list-group list-group-flush"  id="categoryList"></ul>
-                            
-                        
+                        <ul class="list-group list-group-flush" id="categoryList"></ul>
+
+
                     </div>
                 </div>
             </div>
@@ -381,62 +362,71 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-document.querySelector("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+        // Auth Check
+        const token = localStorage.getItem("adminToken");
+        const role = localStorage.getItem("role");
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Please login as admin");
-    return;
-  }
+        if (!token || role !== "admin") {
+            window.location.href = "/user/login.html";
+        }
 
-  const name = document.getElementById("categoryName").value.trim();
-  const description = document.getElementById("categoryDescription").value.trim();
-  const imageInput = document.getElementById("categoryImage");
+        document.querySelector("form").addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-  if (!name) {
-    alert("Category name is required");
-    return;
-  }
+            const token = localStorage.getItem("adminToken");
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("description", description);
+            if (!token) {
+                alert("Please login as admin");
+                return;
+            }
 
-  if (imageInput.files.length > 0) {
-    formData.append("image", imageInput.files[0]);
-  }
+            const name = document.getElementById("categoryName").value.trim();
+            const description = document.getElementById("categoryDescription").value.trim();
+            const imageInput = document.getElementById("categoryImage");
 
-  try {
-    const res = await fetch("/api/categories", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: formData
-    });
+            if (!name) {
+                alert("Category name is required");
+                return;
+            }
 
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      data = {};
-    }
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
 
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to add category");
-    }
+            if (imageInput.files.length > 0) {
+                formData.append("image", imageInput.files[0]);
+            }
 
-    alert("✅ Category added successfully");
-    location.reload();
+            try {
+                const res = await fetch("/api/categories", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                });
 
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-});
+                let data;
+                try {
+                    data = await res.json();
+                } catch {
+                    data = {};
+                }
 
-</script>
+                if (!res.ok) {
+                    throw new Error(data.message || "Failed to add category");
+                }
+
+                alert("✅ Category added successfully");
+                location.reload();
+
+            } catch (err) {
+                console.error(err);
+                alert(err.message);
+            }
+        });
+
+    </script>
 
 </body>
 

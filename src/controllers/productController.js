@@ -5,7 +5,7 @@ const Product = require("../models/Product");
 ============================ */
 exports.addProduct = async (req, res) => {
   try {
-    const { name, company, weight, price, description, category } = req.body;
+    const { name, company, weight, price, discount, description, category, isHotDeal } = req.body;
 
     // ✅ Validation
     if (!name || !price || !category) {
@@ -19,6 +19,8 @@ exports.addProduct = async (req, res) => {
       company,
       weight,
       price,
+      discount, // ✅ Added discount field
+      isHotDeal: isHotDeal === 'true',
       description,
       category,
       image: req.files && req.files['image'] ? `/uploads/products/${req.files['image'][0].filename}` : null,
@@ -58,8 +60,52 @@ exports.getAllProducts = async (req, res) => {
 };
 
 /* ============================
-   ADMIN: DELETE PRODUCT
+   ADMIN: UPDATE PRODUCT
 ============================ */
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, company, weight, price, discount, description, category, status, featured, isHotDeal } = req.body;
+
+    let updateData = {
+      name,
+      company,
+      weight,
+      price,
+      discount, // ✅ Added discount field
+      description,
+      category,
+      status, // e.g. "In Stock", "Out of Stock"
+      featured: featured === 'true', // Convert string to boolean
+      isHotDeal: isHotDeal === 'true'
+    };
+
+    // Update main image if provided
+    if (req.files && req.files['image']) {
+      updateData.image = `/uploads/products/${req.files['image'][0].filename}`;
+    }
+
+    // Update extra images if provided
+    if (req.files && req.files['extraImages']) {
+      updateData.images = req.files['extraImages'].map(f => `/uploads/products/${f.filename}`);
+    }
+
+    const product = await Product.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json({
+      success: true,
+      product
+    });
+
+  } catch (err) {
+    console.error("❌ Update product error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -113,6 +159,70 @@ exports.getProductById = async (req, res) => {
   } catch (err) {
     console.error("❌ Get product error:", err);
     res.status(500).json({ message: "Failed to load product" });
+  }
+};
+
+/* ============================
+   ADMIN: TOGGLE HOT DEAL
+============================ */
+exports.toggleHotDeal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isHotDeal } = req.body;
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { isHotDeal },
+      { new: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json({
+      success: true,
+      product
+    });
+
+  } catch (err) {
+    console.error("❌ Toggle Hot Deal error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ============================
+   ADMIN: UPDATE STOCK STATUS
+============================ */
+exports.updateStockStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    const validStatuses = ["In Stock", "Out of Stock", "Low Stock"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.json({
+      success: true,
+      product
+    });
+
+  } catch (err) {
+    console.error("❌ Update Stock Status error:", err);
+    res.status(500).json({ message: err.message });
   }
 };
 

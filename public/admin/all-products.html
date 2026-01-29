@@ -346,6 +346,85 @@
                 </div>
             </div>
 
+            <!-- Edit Product Modal -->
+            <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Product</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProductForm">
+                                <input type="hidden" id="editProductId">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Product Name</label>
+                                        <input type="text" class="form-control" id="editProductName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-select" id="editProductCategory" required>
+                                            <option value="">Select Category</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Price</label>
+                                        <input type="number" class="form-control" id="editProductPrice" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Discount</label>
+                                        <input type="number" class="form-control" id="editProductDiscount"
+                                            placeholder="Optional">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Weight/Unit</label>
+                                        <input type="text" class="form-control" id="editProductWeight">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Stock Status</label>
+                                        <select class="form-select" id="editProductStatus">
+                                            <option value="In Stock">In Stock</option>
+                                            <option value="Low Stock">Low Stock</option>
+                                            <option value="Out of Stock">Out of Stock</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Featured (Hot Deal)</label>
+                                        <select class="form-select" id="editProductFeatured">
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="editProductDescription" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Product Image</label>
+                                    <input type="file" class="form-control" id="editProductImage" accept="image/*">
+                                    <div class="mt-2 text-center" id="currentProductImageContainer">
+                                        <p class="text-muted small mb-1">Current Image:</p>
+                                        <img id="currentProductImage" src="" alt="Current Image"
+                                            style="max-height: 100px; max-width: 100%; border-radius: 5px;">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveEditProduct()">Save
+                                Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -407,28 +486,45 @@
             });
         });
 
-        
-async function loadProducts() {
-  try {
-    const res = await fetch("/api/products");
-    const products = await res.json();
 
-    const tbody = document.querySelector("tbody");
-    tbody.innerHTML = "";
+        let allProducts = [];
+        let editProductModalObj;
 
-    if (!products.length) {
-      tbody.innerHTML = `
+        async function loadCategoriesForModal() {
+            try {
+                const res = await fetch("/api/categories");
+                const categories = await res.json();
+                const select = document.getElementById("editProductCategory");
+                select.innerHTML = '<option value="">Select Category</option>';
+                categories.forEach(cat => {
+                    select.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
+                });
+            } catch (err) {
+                console.error("Failed to load categories", err);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch("/api/products");
+                allProducts = await res.json();
+
+                const tbody = document.querySelector("tbody");
+                tbody.innerHTML = "";
+
+                if (!allProducts.length) {
+                    tbody.innerHTML = `
         <tr>
           <td colspan="7" class="text-center text-muted">
             No products found
           </td>
         </tr>
       `;
-      return;
-    }
+                    return;
+                }
 
-    products.forEach(p => {
-      tbody.innerHTML += `
+                allProducts.forEach(p => {
+                    tbody.innerHTML += `
         <tr>
           <td>
             <img 
@@ -441,16 +537,32 @@ async function loadProducts() {
 
           <td>${p.name}</td>
 
-          <!-- ✅ CATEGORY NAME FIX -->
           <td>${p.category?.name || "Uncategorized"}</td>
 
           <td>₹${p.price}</td>
 
-          <td>${p.status || "In Stock"}</td>
-
-          <td>${p.featured ? "Yes" : "No"}</td>
+          <td>
+            <select class="form-select form-select-sm" 
+                    onchange="changeStockStatus('${p._id}', this.value)"
+                    style="width: 140px; font-weight: 500; color: ${p.status === 'Out of Stock' ? '#dc3545' : (p.status === 'Low Stock' ? '#ffc107' : '#198754')}; border-color: ${p.status === 'Out of Stock' ? '#dc3545' : (p.status === 'Low Stock' ? '#ffc107' : '#198754')};">
+                <option value="In Stock" ${(!p.status || p.status === 'In Stock') ? 'selected' : ''} style="color:#198754;">In Stock</option>
+                <option value="Low Stock" ${p.status === 'Low Stock' ? 'selected' : ''} style="color:#ffc107;">Low Stock</option>
+                <option value="Out of Stock" ${p.status === 'Out of Stock' ? 'selected' : ''} style="color:#dc3545;">Out of Stock</option>
+            </select>
+          </td>
 
           <td>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" ${p.isHotDeal ? 'checked' : ''} onchange="toggleHotDeal('${p._id}', this.checked)" style="cursor: pointer;">
+            </div>
+          </td>
+
+          <td>
+            <button 
+              class="btn btn-sm btn-primary me-2"
+              onclick="openEditModal('${p._id}')">
+              Edit
+            </button>
             <button 
               class="btn btn-sm btn-danger"
               onclick="confirmDelete('${p._id}', this)">
@@ -459,64 +571,243 @@ async function loadProducts() {
           </td>
         </tr>
       `;
-    });
+                });
 
-  } catch (err) {
-    console.error("❌ Failed to load products", err);
-  }
-}
+            } catch (err) {
+                console.error("❌ Failed to load products", err);
+            }
+        }
 
-loadProducts();
+        loadProducts();
+        loadCategoriesForModal();
 
-async function deleteProduct(productId) {
-  try {
-    const token = localStorage.getItem("token");
+        /* =========================
+           EDIT PRODUCT LOGIC
+        ========================= */
+        function openEditModal(id) {
+            const product = allProducts.find(p => p._id === id);
+            if (!product) return;
 
-    if (!token) {
-      Swal.fire("Error", "Admin not logged in", "error");
-      return;
-    }
+            document.getElementById('editProductId').value = product._id;
+            document.getElementById('editProductName').value = product.name;
+            // Handle category population - ensure value matches option value
+            const categoryId = typeof product.category === 'object' ? product.category._id : product.category;
+            document.getElementById('editProductCategory').value = categoryId || "";
 
-    const res = await fetch(`/api/products/${productId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+            document.getElementById('editProductPrice').value = product.price;
+            document.getElementById('editProductDiscount').value = product.discount || "";
+            document.getElementById('editProductWeight').value = product.weight || "";
+            document.getElementById('editProductStatus').value = product.status || "In Stock";
+            document.getElementById('editProductFeatured').value = product.featured ? "true" : "false";
+            document.getElementById('editProductDescription').value = product.description || "";
 
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message || "Delete failed");
-    }
+            const imgPreview = document.getElementById('currentProductImage');
+            if (product.image) {
+                imgPreview.src = product.image;
+                document.getElementById('currentProductImageContainer').style.display = 'block';
+            } else {
+                document.getElementById('currentProductImageContainer').style.display = 'none';
+            }
 
-    Swal.fire("Deleted!", "Product deleted successfully", "success");
+            const modalEl = document.getElementById('editProductModal');
+            editProductModalObj = new bootstrap.Modal(modalEl);
+            editProductModalObj.show();
+        }
 
-    // 🔁 reload table
-    loadProducts();
+        async function saveEditProduct() {
+            const id = document.getElementById('editProductId').value;
+            const name = document.getElementById('editProductName').value.trim();
+            const category = document.getElementById('editProductCategory').value;
+            const price = document.getElementById('editProductPrice').value;
+            const discount = document.getElementById('editProductDiscount').value;
+            const weight = document.getElementById('editProductWeight').value;
+            const status = document.getElementById('editProductStatus').value;
+            const featured = document.getElementById('editProductFeatured').value;
+            const description = document.getElementById('editProductDescription').value.trim();
+            const imageInput = document.getElementById('editProductImage');
 
-  } catch (err) {
-    console.error(err);
-    Swal.fire("Error", err.message, "error");
-  }
-}
+            const token = localStorage.getItem("adminToken");
 
-function confirmDelete(productId) {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This product will be permanently deleted!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      deleteProduct(productId);
-    }
-  });
-}
+            if (!name || !price || !category) {
+                Swal.fire("Error", "Name, Price, and Category are required", "warning");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("category", category);
+            formData.append("price", price);
+            if (discount) formData.append("discount", discount);
+            formData.append("weight", weight);
+            formData.append("status", status);
+            formData.append("featured", featured);
+            formData.append("description", description);
+
+            if (imageInput.files.length > 0) {
+                formData.append("image", imageInput.files[0]);
+            }
+
+            try {
+                const res = await fetch(`/api/products/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || "Update failed");
+                }
+
+                Swal.fire("Success", "Product updated successfully", "success");
+
+                if (editProductModalObj) editProductModalObj.hide();
+                loadProducts();
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+            }
+        }
+
+        async function deleteProduct(productId) {
+            try {
+                const token = localStorage.getItem("adminToken");
+                if (!token) {
+                    Swal.fire("Error", "Admin not logged in", "error");
+                    return;
+                }
+
+                const res = await fetch(`/api/products/${productId}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || "Delete failed");
+                }
+
+                Swal.fire("Deleted!", "Product deleted successfully", "success");
+                loadProducts();
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+            }
+        }
+
+        function confirmDelete(productId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This product will be permanently deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteProduct(productId);
+                }
+            });
+        }
 
 
+
+        async function changeStockStatus(id, newStatus) {
+            const token = localStorage.getItem("adminToken");
+            if (!token) {
+                Swal.fire("Error", "You must be logged in.", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/products/${id}/stock-status`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || "Failed to update stock status");
+                }
+
+                // Initial success feedback
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: `Stock updated to ${newStatus}`
+                });
+
+                // Refresh to update colors properly
+                loadProducts();
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+                loadProducts(); // Revert on failure
+            }
+        }
+
+        async function toggleHotDeal(id, status) {
+            const token = localStorage.getItem("adminToken");
+            if (!token) {
+                Swal.fire("Error", "You must be logged in.", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/products/${id}/hot-deal`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isHotDeal: status })
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.message || "Failed to update hot deal status");
+                }
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: `Product marked as ${status ? 'Hot Deal' : 'Normal'}`
+                });
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+                // Revert checkbox state if failed 
+                loadProducts();
+            }
+        }
     </script>
 </body>
 

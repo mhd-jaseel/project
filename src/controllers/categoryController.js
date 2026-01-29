@@ -31,7 +31,36 @@ exports.getCategories = async (req, res) => {
   res.json(categories);
 };
 
-// ADMIN: Delete category
+// ADMIN: Update Category
+exports.updateCategory = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    let updateData = { name, description };
+
+    if (req.file) {
+      updateData.image = `/uploads/categories/${req.file.filename}`;
+    }
+
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.json({
+      success: true,
+      category
+    });
+  } catch (err) {
+    console.error("❌ Update category error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.deleteCategory = async (req, res) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
