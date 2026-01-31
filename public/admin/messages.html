@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Store Admin - Messages</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Reuse Admin Dashboard Styles */
+        :root {
+            --primary-color: #0f9d58;
+            --sidebar-bg: #1e1e2d;
+            --sidebar-text: #9899ac;
+            --sidebar-active: #ffffff;
+            --sidebar-active-bg: #0f9d58;
+            --body-bg: #f5f8fa;
+            --card-bg: #ffffff;
+            --text-dark: #3f4254;
+            --text-muted: #b5b5c3;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar, Main Content, Header styles copied/adapted */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .sidebar .brand {
+            padding: 0 25px 20px 25px;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .menu-label {
+            padding: 10px 25px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            letter-spacing: 0.05rem;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar .nav-link:hover {
+            color: var(--sidebar-active);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar .nav-link.active {
+            color: var(--sidebar-active);
+            background-color: rgba(15, 157, 88, 0.1);
+            border-left-color: var(--primary-color);
+        }
+
+        .sidebar .nav-link i {
+            width: 25px;
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 0;
+            min-height: 100vh;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            background-color: #fff;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile .icon-btn {
+            background: none;
+            border: none;
+            color: #b5b5c3;
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-profile .icon-btn .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.6rem;
+        }
+
+        .content-wrapper {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .card-custom {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
+            padding: 25px;
+            height: 100%;
+            margin-bottom: 25px;
+        }
+
+        /* Message Specific Styles */
+        .message-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .message-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .message-row.unread {
+            font-weight: 600;
+            background-color: #f0fff4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+
+        <a href="order-management.html" class="nav-link">
+            <i class="fas fa-shopping-bag"></i> Order Management
+        </a>
+        <a href="customers.html" class="nav-link">
+            <i class="fas fa-users"></i> Customers
+        </a>
+
+        <div class="menu-label mt-3">Products</div>
+        <a href="categories.html" class="nav-link">
+            <i class="fas fa-th-list"></i> Categories
+        </a>
+        <a href="all-products.html" class="nav-link">
+            <i class="fas fa-boxes"></i> All Products
+        </a>
+
+        <div class="mt-auto p-4">
+            <a href="#" id="adminLogoutBtn" class="btn btn-outline-danger w-100 btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div>
+                <h4 class="fw-bold m-0 text-success">Contact Messages</h4>
+            </div>
+
+            <div class="user-profile">
+                <button class="icon-btn" onclick="window.location.href='messages.html'">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge bg-danger rounded-circle" id="navMsgBadge" style="display:none;">0</span>
+                </button>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo"
+                            style="width: 40px; height: 40px; border-radius: 8px;">
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="#" id="logoutLink">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Content -->
+        <div class="content-wrapper">
+
+            <div class="card-custom">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messagesTableBody">
+                            <!-- Messages injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Reply Modal -->
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Reply to Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="replyForm">
+                        <input type="hidden" id="replyMsgId">
+                        <div class="mb-3">
+                            <label class="form-label">To</label>
+                            <input type="email" class="form-control" id="replyTo" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="replySubject">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" id="replyMessage" rows="6" required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Send Reply <i
+                                    class="fas fa-paper-plane ms-1"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Auth Check
+        const token = localStorage.getItem("adminToken");
+        const role = localStorage.getItem("role");
+
+        if (!token || role !== "admin") {
+            window.location.href = "/user/login.html";
+        }
+
+        document.getElementById("adminLogoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = "/user/login.html";
+        });
+        document.getElementById("logoutLink").addEventListener('click', document.getElementById("adminLogoutBtn").click);
+
+
+        // Fetch Messages
+        async function fetchMessages() {
+            try {
+                const res = await fetch('/api/admin/messages', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const messages = await res.json();
+
+                const tbody = document.getElementById('messagesTableBody');
+                tbody.innerHTML = '';
+
+                let unreadCount = 0;
+
+                messages.forEach(msg => {
+                    if (!msg.isRead) unreadCount++;
+
+                    const tr = document.createElement('tr');
+                    tr.className = `message-row ${!msg.isRead ? 'unread' : ''}`;
+                    tr.innerHTML = `
+                        <td onclick="openMessage('${msg._id}', '${msg.name}', '${msg.email}', '${msg.subject}', '${encodeURIComponent(msg.message)}', ${msg.isRead})">
+                            <div class="fw-bold">${msg.name}</div>
+                            <div class="small text-muted">${msg.email}</div>
+                        </td>
+                        <td onclick="openMessage('${msg._id}', '${msg.name}', '${msg.email}', '${msg.subject}', '${encodeURIComponent(msg.message)}', ${msg.isRead})">${msg.subject}</td>
+                        <td onclick="openMessage('${msg._id}', '${msg.name}', '${msg.email}', '${msg.subject}', '${encodeURIComponent(msg.message)}', ${msg.isRead})">${new Date(msg.createdAt).toLocaleDateString()}</td>
+                        <td onclick="openMessage('${msg._id}', '${msg.name}', '${msg.email}', '${msg.subject}', '${encodeURIComponent(msg.message)}', ${msg.isRead})">
+                            ${msg.isRead ? '<span class="badge bg-secondary">Read</span>' : '<span class="badge bg-warning text-dark">Unread</span>'}
+                            ${msg.isReplied ? '<span class="badge bg-success ms-1">Replied</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="openReplyModal('${msg._id}', '${msg.email}', 'Re: ${msg.subject}')">Reply</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Update Badges
+                const badge = document.getElementById('navMsgBadge');
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.innerText = unreadCount;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Poll every 10 seconds
+        setInterval(fetchMessages, 10000);
+
+        // Open Message (Mark as Read)
+        window.openMessage = async (id, name, email, subject, message, isRead) => {
+            message = decodeURIComponent(message);
+            // Mark as read
+            if (!isRead) {
+                try {
+                    await fetch(`/api/admin/message/${id}/read`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    fetchMessages(); // Refresh UI
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            Swal.fire({
+                title: subject,
+                html: `
+                    <div class="text-start">
+                        <p><strong>From:</strong> ${name} (&lt;${email}&gt;)</p>
+                        <p class="mt-3">${message}</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Reply',
+                cancelButtonText: 'Close',
+                confirmButtonColor: '#0f9d58'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    openReplyModal(id, email, 'Re: ' + subject);
+                }
+            });
+        };
+
+        // Open Reply Modal
+        window.openReplyModal = (id, email, subject) => {
+            document.getElementById('replyMsgId').value = id;
+            document.getElementById('replyTo').value = email;
+            document.getElementById('replySubject').value = subject;
+            document.getElementById('replyMessage').value = '';
+
+            const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+            replyModal.show();
+        };
+
+        // Handle Reply Submit
+        document.getElementById('replyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('replyMsgId').value;
+            const to = document.getElementById('replyTo').value;
+            const subject = document.getElementById('replySubject').value;
+            const message = document.getElementById('replyMessage').value;
+
+            try {
+                const res = await fetch(`/api/admin/message/${id}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ to, subject, message })
+                });
+
+                if (res.ok) {
+                    Swal.fire('Sent!', 'Reply sent successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('replyModal')).hide();
+                    fetchMessages();
+                } else {
+                    Swal.fire('Error', 'Failed to send reply', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Server error', 'error');
+            }
+        });
+
+        // Initialize
+        fetchMessages();
+    </script>
+</body>
+
+</html>

@@ -40,7 +40,7 @@ exports.register = async (req, res) => {
       otpPurpose: "signup",
       isEmailVerified: false
     });
-    
+
 
     await transporter.sendMail({
       to: email,
@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
       text: `Your OTP is ${otp}. Valid for 5 minutes.`
     });
 
-     
+
     res.status(201).json({
       message: "OTP sent to email",
       email,
@@ -200,5 +200,19 @@ exports.resetPassword = async (req, res) => {
     res.json({ message: "Password reset successful" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+/* ======================
+   GET WALLET
+====================== */
+exports.getWalletBalance = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ balance: user.wallet || 0 });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };

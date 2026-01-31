@@ -24,6 +24,26 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
+      }
+    ],
+    cart: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          min: 1
+        }
+      }
+    ],
     otp: {
       type: String
     },
@@ -39,6 +59,10 @@ const userSchema = new mongoose.Schema(
     },
     resetTokenExpiry: {
       type: Date
+    },
+    wallet: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }

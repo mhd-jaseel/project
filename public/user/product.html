@@ -271,6 +271,18 @@
             background-color: #f0fff4;
         }
 
+        .btn-wishlist.active {
+            background-color: #fff !important;
+            border-color: var(--primary-green) !important;
+            border-width: 1px !important;
+            border-style: solid !important;
+        }
+
+        .btn-wishlist.active i {
+            color: #dc3545 !important;
+            font-weight: 900 !important;
+        }
+
         .btn-add-cart {
             background-color: var(--primary-green);
             color: white;
@@ -683,65 +695,66 @@
             }
         }
 
-        // Check Login for Actions
-        function checkLogin(e) {
-            const token = localStorage.getItem("userToken");
+        /* =========================
+           GLOBAL UTILITIES
+        ========================= */
+        function getToken() {
+            return localStorage.getItem("userToken");
+        }
 
+        /* =========================
+           AUTH & HEADER
+        ========================= */
+        function checkLogin(e) {
+            const token = getToken();
             if (!token) {
-                e.preventDefault();
+                e?.preventDefault();
                 Swal.fire({
-                    title: 'Login Required',
-                    text: 'Please login to continue',
-                    icon: 'warning',
+                    title: "Login Required",
+                    text: "Please login to continue",
+                    icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Login'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'login.html';
-                    }
+                    confirmButtonText: "Login",
+                    confirmButtonColor: "#2ecc71"
+                }).then(res => {
+                    if (res.isConfirmed) window.location.href = "login.html";
                 });
                 return false;
             }
             return true;
         }
 
-        // Update Header State
         function updateHeaderAuth() {
-            const token = localStorage.getItem("userToken");
-
-            const authContainer = document.getElementById('auth-actions');
+            const authContainer = document.getElementById("auth-actions");
             if (!authContainer) return;
 
-            if (token) {
+            if (getToken()) {
                 authContainer.innerHTML = `
-                    <div class="dropdown d-inline-block">
-                        <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user me-1"></i> Account
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
-                        </ul>
-                    </div>
-                `;
+      <div class="dropdown d-inline-block">
+        <a href="#" class="text-white text-decoration-none dropdown-toggle"
+           data-bs-toggle="dropdown">
+          <i class="fas fa-user me-1"></i> Account
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="account.html">My Account</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+        </ul>
+      </div>
+    `;
 
-                const logoutBtn = document.getElementById('headerLogoutBtn');
-                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                document.getElementById("headerLogoutBtn").onclick = e => {
                     e.preventDefault();
-                    localStorage.removeItem('userToken');
-                    localStorage.removeItem('role');
-                    localStorage.removeItem('user');
-                    window.location.href = 'login.html';
-                });
+                    localStorage.removeItem("userToken");
+                    localStorage.removeItem("role");
+                    window.location.href = "login.html";
+                };
             } else {
                 authContainer.innerHTML = `
-                    <a href="login.html" class="text-white text-decoration-none" id="headerLoginBtn">
-                        <i class="fas fa-sign-in-alt me-1"></i> Login
-                    </a>
-                `;
+      <a href="login.html" class="text-white text-decoration-none">
+        <i class="fas fa-sign-in-alt me-1"></i> Login
+      </a>
+    `;
             }
         }
 
@@ -901,42 +914,79 @@
                 });
             }
 
-            // Generic Wishlist Buttons (Homepage/Product Page)
-            document.body.addEventListener('click', function (e) {
-                if (e.target.closest('.btn-wishlist')) {
-                    const btn = e.target.closest('.btn-wishlist');
-                    const card = btn.closest('.product-card');
+            /* =========================
+               WISHLIST (DB BASED)
+            ========================= */
+            document.body.addEventListener("click", async e => {
+                const btn = e.target.closest(".btn-wishlist");
+                if (!btn) return;
 
-                    const product = {
-                        name: card.querySelector('.product-title').innerText,
-                        price: parseFloat(card.querySelector('.product-price').innerText.replace('₹', '')),
-                        image: card.querySelector('.card-img-top').src,
-                        originalPrice: card.querySelector('.product-price-old') ? card.querySelector('.product-price-old').innerText : null
-                    };
+                e.preventDefault();
+                if (!checkLogin(e)) return;
 
-                    addToWishlist(product);
-                    btn.querySelector('i').classList.remove('far');
-                    btn.querySelector('i').classList.add('fas', 'text-danger');
+                const productId = btn.dataset.productId;
+                const icon = btn.querySelector("i");
+                const alreadyAdded = icon.classList.contains("fas");
+
+                try {
+                    const res = await fetch(`/api/wishlist/${productId}`, {
+                        method: alreadyAdded ? "DELETE" : "POST",
+                        headers: { Authorization: "Bearer " + getToken() }
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message);
+
+                    if (alreadyAdded) {
+                        btn.classList.remove('active');
+                        icon.classList.remove("fas", "text-danger");
+                        icon.classList.add("far");
+                        wishlistToast("Removed from wishlist 💔", "info");
+                    } else {
+                        btn.classList.add('active');
+                        icon.classList.remove("far");
+                        icon.classList.add("fas", "text-danger");
+                        wishlistToast("Added to wishlist ❤️", "success");
+                    }
+                } catch (err) {
+                    wishlistToast(err.message || "Wishlist error", "error");
                 }
             });
 
-            function addToWishlist(product) {
-                let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
+            async function markWishlistHearts() {
+                if (!getToken()) return;
 
-                // Check if exists
-                if (!wishlist.some(item => item.name === product.name)) {
-                    wishlist.push(product);
-                    localStorage.setItem('kmStoreWishlist', JSON.stringify(wishlist));
-                    updateWishlistCount();
-                    // Optional: Show toast
+                try {
+                    const res = await fetch("/api/wishlist", {
+                        headers: { Authorization: "Bearer " + getToken() }
+                    });
+                    const wishlist = await res.json();
+
+                    wishlist.forEach(p => {
+                        const btns = document.querySelectorAll(
+                            `.btn-wishlist[data-product-id="${p._id}"]`
+                        );
+                        btns.forEach(btn => {
+                            btn.classList.add('active');
+                            const icon = btn.querySelector("i");
+                            icon.classList.remove("far");
+                            icon.classList.add("fas", "text-danger");
+                        });
+                    });
+                } catch (err) {
+                    console.error("Wishlist load failed");
                 }
             }
 
-            function updateWishlistCount() {
-                let wishlist = JSON.parse(localStorage.getItem('kmStoreWishlist')) || [];
-                // Update header count if element exists (you might need to add ID to header heart icon)
-                // For now, updating specific page element if present
-                if (wishlistCountEl) wishlistCountEl.textContent = wishlist.length;
+            function wishlistToast(msg, icon) {
+                Swal.fire({
+                    toast: true,
+                    position: "top-end",
+                    icon,
+                    title: msg,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
             }
 
             if (wishlistContainer) {
@@ -1375,14 +1425,17 @@
                             ${priceHtml}
                         </div>
                         <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart" ${btnDisabled}>${btnText}</button>
+                            <button class="btn btn-wishlist" data-product-id="${p._id}"><i class="far fa-heart"></i></button>
+                            <button class="btn btn-add-cart" data-product-id="${p._id}" ${btnDisabled}>${btnText}</button>
                         </div>
                     </div>
                 </div>
         </div>
       `;
                 });
+
+                // Wishlist load
+                markWishlistHearts();
 
             } catch (err) {
                 console.error("❌ Failed to load products", err);
@@ -1393,25 +1446,7 @@
 
 
         // Generic Wishlist Buttons (Homepage/Product Page) - Added Here
-        document.body.addEventListener('click', function (e) {
-            if (e.target.closest('.btn-wishlist')) {
-                if (typeof checkLogin === 'function' && !checkLogin(e)) return;
 
-                const btn = e.target.closest('.btn-wishlist');
-                const card = btn.closest('.product-card');
-
-                const product = {
-                    name: card.querySelector('.product-title').innerText,
-                    price: parseFloat(card.querySelector('.product-price').innerText.replace('₹', '')),
-                    image: card.querySelector('.card-img-top') ? card.querySelector('.card-img-top').src : 'https://placehold.co/300',
-                    originalPrice: card.querySelector('.product-price-old') ? card.querySelector('.product-price-old').innerText : null
-                };
-
-                addToWishlist(product);
-                btn.querySelector('i').classList.remove('far');
-                btn.querySelector('i').classList.add('fas', 'text-danger');
-            }
-        });
 
         async function loadSidebarCategories() {
             try {
@@ -1461,6 +1496,68 @@
             }
         }
         loadSidebarCategories();
+
+        // Add to Cart Logic (Event Delegation)
+        document.addEventListener('click', async (e) => {
+            if (e.target.matches('.btn-add-cart') || e.target.closest('.btn-add-cart')) {
+                const btn = e.target.matches('.btn-add-cart') ? e.target : e.target.closest('.btn-add-cart');
+                const productId = btn.getAttribute('data-product-id');
+
+                if (!productId) return;
+
+                // Auth Check using global getToken if available or localStorage
+                const token = localStorage.getItem('userToken');
+                if (!token) {
+                    Swal.fire({
+                        title: 'Login Required',
+                        text: 'Please login to add items to cart',
+                        icon: 'warning',
+                        confirmButtonText: 'Login',
+                        showCancelButton: true
+                    }).then((res) => {
+                        if (res.isConfirmed) window.location.href = 'login.html';
+                    });
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            id: productId,
+                            quantity: 1
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        Swal.fire({
+                            title: 'Added!',
+                            text: 'Product added to cart successfully',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                    } else {
+                        throw new Error(data.message || 'Failed to add to cart');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire({
+                        title: 'Error',
+                        text: err.message,
+                        icon: 'error'
+                    });
+                }
+            }
+        });
 
     </script>
 </body>

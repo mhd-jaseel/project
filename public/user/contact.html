@@ -41,18 +41,20 @@
         .btn-primary-custom {
             background-color: var(--primary-green);
             border-color: var(--primary-green);
+            color: white;
+            font-weight: 500;
         }
 
         .btn-primary-custom:hover {
             background-color: var(--dark-green);
             border-color: var(--dark-green);
+            color: white;
         }
 
         /* Header */
         header {
             position: relative;
             padding-bottom: 50px;
-            /* Space for the curve */
         }
 
         .header-curve {
@@ -73,322 +75,41 @@
             fill: #ffffff;
         }
 
-        /* Hero Section */
-        .bg-light-green {
-            background-color: #a8e6cf;
-            /* Lighter mint green */
-        }
-
-        .yellow-circle {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            background-color: #f7dc6f;
-            border-radius: 50%;
-            bottom: -50px;
-            right: -50px;
-            z-index: 0;
-        }
-
-        .hero-img {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Categories */
-        .category-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .category-circle:hover {
-            transform: scale(1.05);
-        }
-
-        /* Product Cards */
-        .product-card {
-            border-radius: 15px;
-            /* Softer rounded corners */
-            transition: box-shadow 0.3s ease;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #f0f0f0;
-            /* Subtle border */
-        }
-
-        .product-card:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        .product-card img.card-img-top {
-            height: 180px;
-            /* Fixed height for consistency */
-            object-fit: contain;
-        }
-
-        .product-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.2rem;
-            color: #000;
-        }
-
-        .product-weight {
-            color: #777;
-            font-size: 0.9rem;
-        }
-
-        .product-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #000;
-        }
-
-        /* Wishlist Styles */
-        .wishlist-card {
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .wishlist-card:hover {
-            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-        }
-
-        .wishlist-img-wrapper {
-            height: 200px;
-            /* Fixed height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .wishlist-img-wrapper img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        .btn-remove-wishlist {
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+        /* Contact Section */
+        .contact-box {
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
             background: white;
         }
 
-        .btn-remove-wishlist:hover {
-            background-color: #f8d7da;
-            color: #dc3545;
-        }
-
-        .btn-add-cart-wishlist {
-            background-color: black;
-            color: white;
-            border: none;
-            transition: all 0.3s;
-        }
-
-        .btn-add-cart-wishlist:hover {
-            background-color: #333;
-            color: white;
-        }
-
-        /* Checkout Styles */
         .form-control:focus {
             box-shadow: none;
-            border-color: #db4444;
-            /* Match the red accent */
+            border-color: var(--primary-green);
         }
 
-        .checkout-item-img {
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .contact-icon {
             width: 50px;
             height: 50px;
-            object-fit: contain;
-        }
-
-        .product-price-old {
-            text-decoration: line-through;
-            color: #bbb;
-            font-size: 0.9rem;
-            margin-left: 8px;
-        }
-
-        /* Badges */
-        .badge-best-deal {
-            background-color: #a8e6cf;
-            /* Light green from image */
-            color: #2c3e50;
-            font-weight: 500;
-            border-radius: 4px 0 10px 0;
-            /* Stylized corner if needed, or simple rounded */
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            z-index: 2;
-        }
-
-        /* Action Buttons */
-        .btn-wishlist {
-            width: 45px;
-            height: 45px;
-            border: 1px solid var(--primary-green);
-            border-radius: 12px;
+            background-color: var(--light-green-bg);
+            color: var(--primary-green);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            background: #fff;
-            transition: all 0.2s;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            flex-shrink: 0;
         }
 
-        .btn-wishlist:hover {
-            background-color: #f0fff4;
-        }
-
-        .btn-add-cart {
-            background-color: var(--primary-green);
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 0;
-            width: 100%;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-cart:hover {
-            background-color: var(--dark-green);
-            color: white;
-        }
-
-        /* Single Product Page Styles */
-        .thumbnail-img {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .thumbnail-img:hover {
-            border-color: var(--primary-green) !important;
-        }
-
-        .quantity-selector input:focus {
-            box-shadow: none;
-            outline: none;
-        }
-
-        .btn-add-cart-lg {
-            background-color: var(--primary-green);
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-cart-lg:hover {
-            background-color: var(--dark-green);
-            color: white;
-        }
-
-
-        /* Features Info Section */
-        .icon-circle {
-            width: 64px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #e8f5e9 !important;
-            /* Very light green */
-            color: var(--dark-green) !important;
-        }
-
-        /* Scrollbar hiding for horizontal scrolls if added later */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 4px;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: #f8f9fa;
-            border-radius: 12px;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--primary-green);
-            border-color: var(--primary-green);
-        }
-
-        .form-check-label {
-            cursor: pointer;
-        }
-
-
-
-
-        .btn-outline-custom {
-            color: var(--dark-green);
-            border-color: var(--primary-green);
-            background-color: #fff;
-        }
-
-        .btn-outline-custom:hover {
-            background-color: var(--primary-green);
-            color: white;
-        }
-
-        /* Cart Page Styles */
-        .cart-img-wrapper {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-        }
-
-        .cart-img-wrapper img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        .quantity-selector-sm {
-            width: fit-content;
-        }
-
-        .table> :not(caption)>*>* {
-            background-color: transparent;
-            /* Fix default BS table bg */
-        }
-
-        thead th {
-            font-weight: 500;
-            color: #555;
-            font-size: 0.9rem;
-        }
-
-        /* Account Page Styles */
-        .active-link {
-            color: var(--primary-green) !important;
-            font-weight: 600;
-        }
-
-        .account-sidebar a:hover {
+        /* Footer */
+        footer a:hover {
             color: var(--primary-green) !important;
         }
     </style>
@@ -462,8 +183,6 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
     <!-- Breadcrumb -->
     <div class="container my-4">
         <nav aria-label="breadcrumb">
@@ -479,103 +198,81 @@
     <section class="container mb-5">
         <div class="row g-5">
             <!-- Contact Info -->
-            <div class="col-md-4">
-                <div class="p-4 bg-light rounded-4 h-100">
-                    <h4 class="fw-bold mb-4">Get In Touch</h4>
+            <div class="col-lg-4">
+                <div class="contact-box h-100">
+                    <h3 class="fw-bold mb-4">Get in Touch</h3>
+                    <p class="text-muted mb-4">Have questions regarding our products or services? Feel free to contact
+                        us.</p>
 
-                    <div class="d-flex mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="icon-circle bg-white text-primary-custom shadow-sm rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 50px; height: 50px;">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fw-bold mb-1">Our Location</h6>
-                            <p class="text-muted small mb-0">123 Grocery St, Green Valley, CA 90210, USA</p>
+                        <div>
+                            <h5 class="fw-bold mb-1">Visit Us</h5>
+                            <p class="text-muted small mb-0">123 Market Street, New York, NY 10001, USA</p>
                         </div>
                     </div>
 
-                    <div class="d-flex mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="icon-circle bg-white text-primary-custom shadow-sm rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 50px; height: 50px;">
-                                <i class="fas fa-envelope"></i>
-                            </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fw-bold mb-1">Email Address</h6>
+                        <div>
+                            <h5 class="fw-bold mb-1">Call Us</h5>
+                            <p class="text-muted small mb-0">+1 234 567 890</p>
+                            <p class="text-muted small mb-0">+1 098 765 432</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Email Us</h5>
                             <p class="text-muted small mb-0">support@kmstore.com</p>
                             <p class="text-muted small mb-0">info@kmstore.com</p>
                         </div>
-                    </div>
-
-                    <div class="d-flex mb-4">
-                        <div class="flex-shrink-0">
-                            <div class="icon-circle bg-white text-primary-custom shadow-sm rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 50px; height: 50px;">
-                                <i class="fas fa-phone-alt"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="fw-bold mb-1">Phone Number</h6>
-                            <p class="text-muted small mb-0">+1 234 567 890</p>
-                            <p class="text-muted small mb-0">+1 987 654 321</p>
-                        </div>
-                    </div>
-
-                    <hr class="my-4">
-
-                    <h6 class="fw-bold mb-3">Follow Us</h6>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="btn btn-light rounded-circle text-primary-custom"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="btn btn-light rounded-circle text-primary-custom"><i
-                                class="fab fa-twitter"></i></a>
-                        <a href="#" class="btn btn-light rounded-circle text-primary-custom"><i
-                                class="fab fa-instagram"></i></a>
-                        <a href="#" class="btn btn-light rounded-circle text-primary-custom"><i
-                                class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>
 
             <!-- Contact Form -->
-            <div class="col-md-8">
-                <h2 class="fw-bold mb-3">Send Us a Message</h2>
-                <p class="text-muted mb-4">We'd love to hear from you. Please fill out this form.</p>
-                <form>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label fw-semibold">Your Name <span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control py-2" id="name" placeholder="John Doe" required>
+            <div class="col-lg-8">
+                <div class="contact-box">
+                    <h3 class="fw-bold mb-4">Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Your Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Your Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="john@example.com"
+                                    required>
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" placeholder="Order Inquiry"
+                                    required>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="How can we help you?"
+                                    required></textarea>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                                    Send Message <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="email" class="form-label fw-semibold">Email Address <span
-                                    class="text-danger">*</span></label>
-                            <input type="email" class="form-control py-2" id="email" placeholder="john@example.com"
-                                required>
-                        </div>
-                        <div class="col-12">
-                            <label for="subject" class="form-label fw-semibold">Subject</label>
-                            <input type="text" class="form-control py-2" id="subject" placeholder="How can we help?">
-                        </div>
-                        <div class="col-12">
-                            <label for="message" class="form-label fw-semibold">Message <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control" id="message" rows="5"
-                                placeholder="Write your message here..." required></textarea>
-                        </div>
-                        <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-primary-custom px-4 py-2">Send Message</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-
-
     </section>
 
     <!-- Footer -->
@@ -604,7 +301,7 @@
                     <h6 class="fw-bold">Useful Links</h6>
                     <ul class="list-unstyled small text-muted">
                         <li><a href="about.html" class="text-decoration-none text-muted">About Us</a></li>
-                        <li><a href="contact.html" class="text-decoration-none text-muted">Contact</a></li>
+                        <li><a href="contact.html" class="text-decoration-none text-muted active-link">Contact</a></li>
                         <li><a href="#" class="text-decoration-none text-muted">FAQ</a></li>
                     </ul>
                 </div>
@@ -688,6 +385,53 @@
         if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
 
         updateHeaderAuth();
+
+        // Contact Form Logic
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+
+            try {
+                const response = await fetch('/api/contact/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, subject, message })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Message Sent!',
+                        text: 'We will get back to you shortly.',
+                        icon: 'success',
+                        confirmButtonColor: '#2ecc71'
+                    });
+                    document.getElementById('contactForm').reset();
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.message || 'Something went wrong.',
+                        icon: 'error',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Unable to connect to the server.',
+                    icon: 'error',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        });
     </script>
 </body>
 

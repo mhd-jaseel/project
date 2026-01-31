@@ -494,59 +494,7 @@
                             </tr>
                         </thead>
                         <tbody id="cart-table-body">
-                            <!-- Item 1 -->
-                            <tr class="border-bottom cart-item-row">
-                                <td class="ps-4 py-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="cart-img-wrapper rounded p-2 border">
-                                            <img src="../project images/achappam.webp" alt="Product" class="img-fluid">
-                                        </div>
-                                        <span class="fw-semibold text-dark">Achappam</span>
-                                    </div>
-                                </td>
-                                <td class="fw-semibold" data-price="20">
-                                    <div class="d-flex flex-column">
-                                        <span class="product-price">₹20</span>
-                                        <span class="text-muted text-decoration-line-through small">₹25</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="quantity-selector-sm d-flex align-items-center border rounded">
-                                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
-                                            data-action="decrease">-</button>
-                                        <input type="text" value="1"
-                                            class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input"
-                                            readonly style="width: 30px;">
-                                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
-                                            data-action="increase">+</button>
-                                    </div>
-                                </td>
-                                <td class="fw-semibold text-end pe-4 product-subtotal">₹20</td>
-                            </tr>
-                            <!-- Item 2 -->
-                            <tr class="border-bottom cart-item-row">
-                                <td class="ps-4 py-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="cart-img-wrapper rounded p-2 border">
-                                            <img src="../project images/layas.jfif" alt="Product" class="img-fluid">
-                                        </div>
-                                        <span class="fw-semibold text-dark">Lay's</span>
-                                    </div>
-                                </td>
-                                <td class="fw-semibold product-price" data-price="10">₹10</td>
-                                <td>
-                                    <div class="quantity-selector-sm d-flex align-items-center border rounded">
-                                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
-                                            data-action="decrease">-</button>
-                                        <input type="text" value="2"
-                                            class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input"
-                                            readonly style="width: 30px;">
-                                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
-                                            data-action="increase">+</button>
-                                    </div>
-                                </td>
-                                <td class="fw-semibold text-end pe-4 product-subtotal">₹20</td>
-                            </tr>
+                            <!-- Cart items will be rendered dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -581,7 +529,7 @@
                             <i class="far fa-question-circle text-muted ms-1 small" data-bs-toggle="tooltip"
                                 title="Standard delivery charge"></i>
                         </div>
-                        <span class="fw-bold fs-6">₹25</span>
+                        <span class="fw-bold fs-6" id="bill-delivery">₹0</span>
                     </div>
 
                     <!-- Handling Charge -->
@@ -592,7 +540,7 @@
                             <i class="far fa-question-circle text-muted ms-1 small" data-bs-toggle="tooltip"
                                 title="Platform handling fee"></i>
                         </div>
-                        <span class="fw-bold fs-6">₹2</span>
+                        <span class="fw-bold fs-6" id="bill-handling">₹2</span>
                     </div>
 
                     <!-- Grand Total -->
@@ -657,12 +605,7 @@
         (function () {
             const token = localStorage.getItem("userToken");
             if (!token) {
-                // Hide content immediately to prevent flash
                 document.body.style.visibility = 'hidden';
-
-                // Wait for Swal to load (it usually loads fast from CDN but safe to wait for DOMContentLoaded or just execute)
-                // Since this is in body script, Swal script is above.
-                // We show Swal
                 Swal.fire({
                     title: 'Login Required',
                     text: 'Please login to continue',
@@ -680,37 +623,14 @@
                         window.location.href = 'homepage.html';
                     }
                 });
-            } else {
-                // If logged in, ensure visible
-                // document.body.style.visibility = 'visible';
             }
         })();
 
-        // --- Auth & Header Logic ---
-        function checkLogin(e) {
-            const token = localStorage.getItem("userToken");
-            if (!token) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Login Required',
-                    text: 'Please login to access this feature',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Login'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'login.html';
-                    }
-                });
-                return false;
-            }
-            return true;
-        }
+        function getToken() { return localStorage.getItem('userToken'); }
 
+        // --- Auth & Header Logic ---
         function updateHeaderAuth() {
-            const token = localStorage.getItem("userToken");
+            const token = getToken();
             const authContainer = document.getElementById('auth-actions');
             if (!authContainer) return;
 
@@ -743,48 +663,153 @@
                 `;
             }
         }
-
-        const headerWishBtn = document.getElementById('headerWishlistBtn');
-        if (headerWishBtn) headerWishBtn.addEventListener('click', checkLogin);
-        const headerCartBtn = document.getElementById('headerCartBtn');
-        if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
-
         updateHeaderAuth();
 
         // --- Cart Functionality ---
         document.addEventListener('DOMContentLoaded', function () {
             const cartTableBody = document.getElementById('cart-table-body');
-            const cartSubtotalEl = document.getElementById('cart-subtotal');
             const cartTotalEl = document.getElementById('cart-total');
+            const itemsTotalEl = document.getElementById('bill-items-total');
+            const itemsTotalStrikeEl = document.getElementById('bill-items-total-strike');
+            const savingsBadge = document.getElementById('bill-savings-badge');
+            const deliveryEl = document.getElementById('bill-delivery');
+            const handlingEl = document.getElementById('bill-handling');
             const btnClearCart = document.getElementById('btn-clear-cart');
 
+            async function fetchCart() {
+                try {
+                    const res = await fetch('/api/cart', {
+                        headers: { 'Authorization': 'Bearer ' + getToken() }
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        renderCart(data);
+                    } else {
+                        console.error("Failed to fetch cart", data);
+                        renderEmptyCart();
+                    }
+                } catch (err) {
+                    console.error("Error fetching cart", err);
+                    renderEmptyCart();
+                }
+            }
+
+            function renderEmptyCart() {
+                if (cartTableBody) cartTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-5">Your cart is empty. <a href="homepage.html">Start shopping</a></td></tr>';
+                if (cartTotalEl) cartTotalEl.textContent = '₹0';
+                if (itemsTotalEl) itemsTotalEl.textContent = '₹0';
+                if (itemsTotalStrikeEl) itemsTotalStrikeEl.textContent = '';
+                if (savingsBadge) savingsBadge.style.display = 'none';
+                if (deliveryEl) deliveryEl.textContent = '₹0';
+            }
+
+            function renderCart(data) {
+                const { items, bill } = data;
+
+                if (!items || items.length === 0) {
+                    renderEmptyCart();
+                    return;
+                }
+
+                cartTableBody.innerHTML = items.map(item => `
+                    <tr class="border-bottom cart-item-row" data-id="${item._id}">
+                        <td class="ps-4 py-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="cart-img-wrapper rounded p-2 border">
+                                    <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" alt="${item.name}" class="img-fluid" onerror="this.src='https://via.placeholder.com/60'">
+                                </div>
+                                <a href="single-product.html?id=${item._id}" class="text-decoration-none text-dark">
+                                    <span class="fw-semibold">${item.name}</span>
+                                </a>
+                            </div>
+                        </td>
+                        <td class="fw-semibold">
+                            <div class="d-flex flex-column">
+                                ${item.discount && item.discount > 0 ? `
+                                    <span class="product-price">₹${item.discount}</span>
+                                    <span class="text-muted text-decoration-line-through small">₹${item.price}</span>
+                                ` : `
+                                    <span class="product-price">₹${item.price}</span>
+                                `}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="quantity-selector-sm d-flex align-items-center border rounded">
+                                <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
+                                    data-action="decrease">-</button>
+                                <input type="text" value="${item.quantity}"
+                                    class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input"
+                                    readonly style="width: 30px;">
+                                <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn"
+                                    data-action="increase">+</button>
+                            </div>
+                        </td>
+                        <td class="fw-semibold text-end pe-4 product-subtotal">₹${item.subtotal}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm text-danger btn-remove-cart">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Update Bill Details
+                itemsTotalEl.textContent = `₹${bill.subtotal}`;
+                cartTotalEl.textContent = `₹${bill.total}`;
+                deliveryEl.textContent = bill.delivery === 0 ? 'Free' : `₹${bill.delivery}`;
+                handlingEl.textContent = `₹${bill.handling}`;
+
+                if (bill.savings > 0) {
+                    savingsBadge.style.display = 'inline-block';
+                    savingsBadge.textContent = `Saved ₹${bill.savings}`;
+                } else {
+                    savingsBadge.style.display = 'none';
+                }
+            }
+
+            // Event Listeners
             if (cartTableBody) {
-                renderCart();
+                cartTableBody.addEventListener('click', async (e) => {
+                    const target = e.target;
+                    const row = target.closest('tr');
+                    if (!row) return;
+                    const id = row.getAttribute('data-id');
 
-                cartTableBody.addEventListener('click', function (e) {
-                    if (e.target.classList.contains('quantity-btn')) {
-                        const btn = e.target;
-                        const action = btn.getAttribute('data-action');
-                        const row = btn.closest('tr');
-                        const name = row.getAttribute('data-product-name');
-                        updateCartItemQuantity(name, action);
-                    } else if (e.target.closest('.btn-remove-cart')) {
-                        const btn = e.target.closest('.btn-remove-cart');
-                        const row = btn.closest('tr');
-                        const name = row.getAttribute('data-product-name');
+                    // Quantity Update
+                    if (target.matches('.quantity-btn')) {
+                        const action = target.getAttribute('data-action');
+                        try {
+                            await fetch('/api/cart', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + getToken()
+                                },
+                                body: JSON.stringify({ id, action })
+                            });
+                            fetchCart(); // Refresh
+                        } catch (err) { console.error(err); }
+                    }
 
+                    // Remove Item
+                    if (target.closest('.btn-remove-cart')) {
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "You won't be able to revert this!",
+                            text: "Remove this item from cart?",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            confirmButtonText: 'Yes, delete it!'
-                        }).then((result) => {
+                            confirmButtonText: 'Yes, remove it!'
+                        }).then(async (result) => {
                             if (result.isConfirmed) {
-                                removeFromCart(name);
-                                Swal.fire('Deleted!', 'Item has been removed from cart.', 'success');
+                                try {
+                                    await fetch(`/api/cart/${id}`, {
+                                        method: 'DELETE',
+                                        headers: { 'Authorization': 'Bearer ' + getToken() }
+                                    });
+                                    fetchCart(); // Refresh
+                                    Swal.fire('Removed!', 'Item has been removed.', 'success');
+                                } catch (err) { console.error(err); }
                             }
                         })
                     }
@@ -792,143 +817,31 @@
             }
 
             if (btnClearCart) {
-                btnClearCart.addEventListener('click', function () {
-                    let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                    if (cart.length === 0) return;
-
+                btnClearCart.addEventListener('click', () => {
                     Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Clear Cart?',
+                        text: "All items will be removed!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
-                        cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes, clear it!'
-                    }).then((result) => {
+                    }).then(async (result) => {
                         if (result.isConfirmed) {
-                            localStorage.removeItem('kmStoreCart');
-                            renderCart();
-                            Swal.fire('Deleted!', 'Your cart has been cleared.', 'success');
+                            try {
+                                await fetch('/api/cart', {
+                                    method: 'DELETE',
+                                    headers: { 'Authorization': 'Bearer ' + getToken() }
+                                });
+                                fetchCart();
+                                Swal.fire('Cleared!', 'Cart is now empty.', 'success');
+                            } catch (err) { console.error(err); }
                         }
-                    })
+                    });
                 });
             }
 
-            function renderCart() {
-                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                cartTableBody.innerHTML = '';
-
-                if (cart.length === 0) {
-                    cartTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Your cart is empty.</td></tr>';
-                    if (cartSubtotalEl) cartSubtotalEl.textContent = '₹0';
-                    if (cartTotalEl) cartTotalEl.textContent = '₹0';
-                    updateCartTotal();
-                    return;
-                }
-
-                cart.forEach(item => {
-                    const subtotal = item.price * item.quantity;
-                    const row = document.createElement('tr');
-                    row.classList.add('border-bottom', 'cart-item-row');
-                    row.setAttribute('data-product-name', item.name);
-
-                    row.innerHTML = `
-                <td class="ps-4 py-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="cart-img-wrapper rounded p-2 border">
-                            <img src="${item.image}" alt="${item.name}" class="img-fluid">
-                        </div>
-                        <span class="fw-semibold text-dark">${item.name}</span>
-                    </div>
-                </td>
-                <td class="fw-semibold">
-                    <div class="d-flex flex-column">
-                        <span class="product-price">₹${item.price}</span>
-                        ${item.originalPrice ? `<span class="text-muted text-decoration-line-through small">₹${item.originalPrice}</span>` : ''}
-                    </div>
-                </td>
-                <td>
-                    <div class="quantity-selector-sm d-flex align-items-center border rounded">
-                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="decrease">-</button>
-                        <input type="text" value="${item.quantity}" class="form-control form-control-sm text-center border-0 p-0 shadow-none bg-white quantity-input" readonly style="width: 30px;">
-                        <button class="btn btn-sm btn-light rounded-0 border-0 px-2 quantity-btn" data-action="increase">+</button>
-                    </div>
-                </td>
-                <td class="fw-semibold text-end pe-4 product-subtotal">₹${subtotal}</td>
-                <td class="text-center pe-4">
-                    <button class="btn btn-sm text-danger btn-remove-cart"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-                    cartTableBody.appendChild(row);
-                });
-
-                updateCartTotal();
-            }
-
-            function removeFromCart(name) {
-                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                cart = cart.filter(item => item.name !== name);
-                localStorage.setItem('kmStoreCart', JSON.stringify(cart));
-                renderCart();
-            }
-
-            function updateCartItemQuantity(name, action) {
-                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                const itemIndex = cart.findIndex(item => item.name === name);
-
-                if (itemIndex > -1) {
-                    if (action === 'increase') {
-                        cart[itemIndex].quantity++;
-                    } else if (action === 'decrease') {
-                        if (cart[itemIndex].quantity > 1) {
-                            cart[itemIndex].quantity--;
-                        }
-                    }
-                    localStorage.setItem('kmStoreCart', JSON.stringify(cart));
-                    renderCart();
-                }
-            }
-
-            function updateCartTotal() {
-                let cart = JSON.parse(localStorage.getItem('kmStoreCart')) || [];
-                let totalSubtotal = 0;
-                let totalOriginalSubtotal = 0;
-                const deliveryCharge = 25;
-                const handlingCharge = 2;
-
-                cart.forEach(item => {
-                    totalSubtotal += item.price * item.quantity;
-                    if (item.originalPrice) {
-                        totalOriginalSubtotal += item.originalPrice * item.quantity;
-                    } else {
-                        totalOriginalSubtotal += item.price * item.quantity;
-                    }
-                });
-
-                const savings = totalOriginalSubtotal - totalSubtotal;
-
-                // Elements
-                const billItemsTotalEl = document.getElementById('bill-items-total');
-                const billItemsTotalStrikeEl = document.getElementById('bill-items-total-strike');
-                const billSavingsBadgeEl = document.getElementById('bill-savings-badge');
-
-                if (billItemsTotalEl) {
-                    billItemsTotalEl.textContent = '₹' + totalSubtotal;
-
-                    if (savings > 0) {
-                        if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '₹' + totalOriginalSubtotal;
-                        if (billSavingsBadgeEl) {
-                            billSavingsBadgeEl.textContent = 'Saved ₹' + savings;
-                            billSavingsBadgeEl.style.display = 'inline-block';
-                        }
-                    } else {
-                        if (billItemsTotalStrikeEl) billItemsTotalStrikeEl.textContent = '';
-                        if (billSavingsBadgeEl) billSavingsBadgeEl.style.display = 'none';
-                    }
-
-                    if (cartTotalEl) cartTotalEl.textContent = '₹' + (totalSubtotal + (cart.length > 0 ? deliveryCharge + handlingCharge : 0));
-                }
-            }
+            // Initialize
+            fetchCart();
         });
     </script>
 

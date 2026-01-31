@@ -568,6 +568,22 @@
                             <i class="fab fa-cc-mastercard fa-lg me-1 text-danger"></i>
                         </div>
                     </div>
+
+                    <!-- Wallet Option -->
+                    <div class="mb-3">
+                        <div class="form-check d-flex align-items-center justify-content-between">
+                            <div>
+                                <input class="form-check-input border-dark" type="radio" name="paymentMethod"
+                                    id="wallet">
+                                <label class="form-check-label" for="wallet">
+                                    Wallet
+                                    <span class="text-muted ms-2 small" id="wallet-balance-display">(Balance: ₹0)</span>
+                                </label>
+                            </div>
+                            <i class="fas fa-wallet text-secondary fa-lg"></i>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <div class="form-check">
                             <input class="form-check-input border-dark" type="radio" name="paymentMethod" id="cod"
@@ -788,6 +804,29 @@
 
                 if (cart.length === 0) {
                     checkoutProductList.innerHTML = '<p class="text-muted">Your cart is empty.</p>';
+                }
+
+                // Check Wallet Balance if user is logged in
+                const token = localStorage.getItem('userToken');
+                if (token) {
+                    fetch('/api/auth/wallet', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            const balanceEl = document.getElementById('wallet-balance-display');
+                            if (balanceEl && data.balance !== undefined) {
+                                balanceEl.textContent = `(Balance: ₹${data.balance})`;
+                                // Optionally disable wallet radio if balance is insufficient or 0
+                                const walletRadio = document.getElementById('wallet');
+                                if (data.balance <= 0 && walletRadio) {
+                                    walletRadio.disabled = true;
+                                    balanceEl.classList.add('text-danger');
+                                    balanceEl.textContent += " - Insufficient";
+                                }
+                            }
+                        })
+                        .catch(err => console.error(err));
                 }
 
                 cart.forEach(item => {
