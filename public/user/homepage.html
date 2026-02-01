@@ -880,16 +880,7 @@
         /* =========================
            CART (LOCAL STORAGE)
         ========================= */
-        function addToCart(product, redirect = false) {
-            let cart = JSON.parse(localStorage.getItem("kmStoreCart")) || [];
-            const index = cart.findIndex(p => p.name === product.name);
 
-            if (index > -1) cart[index].quantity += product.quantity;
-            else cart.push(product);
-
-            localStorage.setItem("kmStoreCart", JSON.stringify(cart));
-            if (redirect) window.location.href = "cart.html";
-        }
 
         document.body.addEventListener("click", async (e) => {
             if (e.target.matches('.btn-add-cart') || e.target.closest('.btn-add-cart')) {
