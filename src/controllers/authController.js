@@ -22,7 +22,7 @@ const generateOTP = () =>
 ====================== */
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "User already exists" });
@@ -34,6 +34,7 @@ exports.register = async (req, res) => {
     await User.create({
       name,
       email,
+      phoneNumber: phone,
       password: hashedPassword,
       otp,
       otpExpiry: Date.now() + 5 * 60 * 1000,

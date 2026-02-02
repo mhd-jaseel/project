@@ -313,10 +313,7 @@
                     <i class="fas fa-envelope"></i>
                     <span class="badge bg-danger rounded-circle" id="navMsgBadge" style="display:none;">0</span>
                 </button>
-                <button class="icon-btn">
-                    <i class="far fa-bell"></i>
-                    <span class="badge bg-danger rounded-circle">3</span>
-                </button>
+
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -350,7 +347,7 @@
                 <div class="col-md-3">
                     <div class="card-custom stat-card d-flex align-items-center justify-content-between">
                         <div>
-                            <h3>$350K</h3>
+                            <h3 id="totalSales">$0</h3>
                             <p>Total Sales</p>
                         </div>
                         <div class="icon-box bg-success-light text-success">
@@ -361,7 +358,7 @@
                 <div class="col-md-3">
                     <div class="card-custom stat-card d-flex align-items-center justify-content-between">
                         <div>
-                            <h3>10.7K</h3>
+                            <h3 id="totalOrders">0</h3>
                             <p>Total Orders</p>
                         </div>
                         <div class="icon-box text-primary" style="background-color: rgba(13, 110, 253, 0.1);">
@@ -372,7 +369,7 @@
                 <div class="col-md-3">
                     <div class="card-custom stat-card d-flex align-items-center justify-content-between">
                         <div>
-                            <h3>989</h3>
+                            <h3 id="newCustomers">0</h3>
                             <p>New Customers</p>
                         </div>
                         <div class="icon-box text-warning" style="background-color: rgba(255, 193, 7, 0.1);">
@@ -383,7 +380,7 @@
                 <div class="col-md-3">
                     <div class="card-custom stat-card d-flex align-items-center justify-content-between">
                         <div>
-                            <h3>54</h3>
+                            <h3 id="pendingOrders">0</h3>
                             <p>Pending Orders</p>
                         </div>
                         <div class="icon-box text-danger" style="background-color: rgba(220, 53, 69, 0.1);">
@@ -438,7 +435,7 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="recentOrdersBody">
                             <tr>
                                 <td>#ORD-001</td>
                                 <td>Md Rimel</td>
@@ -570,9 +567,81 @@
         }
 
         // Call it and Poll every 10 seconds
+
+
+        // Fetch and Update Dashboard Stats
+        async function fetchDashboardStats() {
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+
+                    // Update Stats Cards
+                    document.getElementById('totalSales').innerText = '₹' + data.totalSales.toLocaleString();
+                    document.getElementById('totalOrders').innerText = data.totalOrders;
+                    document.getElementById('newCustomers').innerText = data.newCustomers;
+                    document.getElementById('pendingOrders').innerText = data.pendingOrders;
+
+                    // Update Sales Chart
+                    if (data.salesChartData && salesChart) {
+                        salesChart.data.labels = data.salesChartData.map(d => {
+                            const date = new Date(d.date);
+                            return date.toLocaleDateString('en-US', { weekday: 'short' });
+                        });
+                        salesChart.data.datasets[0].data = data.salesChartData.map(d => d.total);
+                        salesChart.update();
+                    }
+
+                    // Update Category Chart
+                    if (data.categoryChartData && categoryChart) {
+                        categoryChart.data.labels = data.categoryChartData.map(d => d._id);
+                        categoryChart.data.datasets[0].data = data.categoryChartData.map(d => d.count);
+                        categoryChart.update();
+                    }
+
+                    // Update Recent Orders Table
+                    const tbody = document.getElementById('recentOrdersBody');
+                    tbody.innerHTML = '';
+
+                    if (data.recentOrders.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No recent orders.</td></tr>';
+                    } else {
+                        data.recentOrders.forEach(order => {
+                            let badgeClass = 'bg-secondary';
+                            if (order.orderStatus === 'Pending') badgeClass = 'bg-warning text-dark';
+                            if (order.orderStatus === 'Confirmed') badgeClass = 'bg-info text-dark';
+                            if (order.orderStatus === 'Delivered') badgeClass = 'bg-success';
+                            if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger';
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>#${order._id.substring(0, 8).toUpperCase()}</td>
+                                <td>${order.shippingAddress ? order.shippingAddress.firstName : 'Guest'}</td>
+                                <td>${order.items.length} Items</td>
+                                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                                <td>₹${order.totalAmount}</td>
+                                <td><span class="badge ${badgeClass} bg-opacity-75">${order.orderStatus}</span></td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading dashboard stats:", error);
+            }
+        }
+
+        // Call it and Poll every 10 seconds
         if (token && role === "admin") {
             updateUnreadCount();
-            setInterval(updateUnreadCount, 10000);
+            fetchDashboardStats();
+            setInterval(() => {
+                updateUnreadCount();
+                fetchDashboardStats(); // Keep stats live
+            }, 10000);
         }
     </script>
 </body>

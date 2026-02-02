@@ -228,7 +228,8 @@
                         <input type="email" class="form-control bg-light border-0 py-3" id="email" required>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input bg-danger border-0" type="checkbox" value="" id="saveInfo">
+                        <input class="form-check-input bg-danger border-0" type="checkbox" value="" id="saveInfo"
+                            checked>
                         <label class="form-check-label small" for="saveInfo">
                             Save this information for faster check-out next time
                         </label>
@@ -441,23 +442,53 @@
                         container.classList.remove('d-none');
                         list.innerHTML = '';
 
+                        let hasDefault = false;
+
                         savedAddresses.forEach((addr, index) => {
+                            const isDef = addr.isDefault;
+                            if (isDef) hasDefault = true;
+
                             const div = document.createElement('div');
-                            div.className = 'form-check address-card';
+                            div.className = `form-check address-card ${isDef ? 'selected' : ''}`;
                             div.innerHTML = `
-                                <input class="form-check-input" type="radio" name="addressSelection" id="addr_${index}" value="${index}">
+                                <input class="form-check-input" type="radio" name="addressSelection" id="addr_${index}" value="${index}" ${isDef ? 'checked' : ''}>
                                 <label class="form-check-label w-100" for="addr_${index}">
-                                    <strong>${addr.firstName}</strong> <br>
+                                    <strong>${addr.firstName}</strong> ${isDef ? '<span class="badge bg-success ms-2">Default</span>' : ''}<br>
                                     ${addr.streetAddress}, ${addr.city}, ${addr.apartment || ''}<br>
                                     Phone: ${addr.phoneNumber}
                                 </label>
                             `;
-                            div.querySelector('input').addEventListener('change', () => fillAddressForm(addr));
+
+                            div.querySelector('input').addEventListener('change', () => {
+                                // Highlight selected card
+                                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                                div.classList.add('selected');
+                                fillAddressForm(addr);
+                            });
+
                             list.appendChild(div);
+
+                            // If default, pre-fill
+                            if (isDef) {
+                                fillAddressForm(addr);
+                            }
                         });
 
                         // Add listener for "New Address" radio
-                        document.getElementById('useNewAddress').addEventListener('change', clearAddressForm);
+                        const newAddrRadio = document.getElementById('useNewAddress');
+                        newAddrRadio.addEventListener('change', () => {
+                            document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                            clearAddressForm();
+                        });
+
+                        // If no default was found/set, check "New Address" and clear form
+                        if (!hasDefault) {
+                            newAddrRadio.checked = true;
+                            clearAddressForm();
+                        }
+                    } else {
+                        // No saved addresses, ensure form is visible
+                        document.getElementById('billing-form').classList.remove('d-none');
                     }
                 }
             } catch (error) {
@@ -473,6 +504,12 @@
             document.getElementById('city').value = addr.city;
             document.getElementById('phoneNumber').value = addr.phoneNumber;
             document.getElementById('email').value = addr.email;
+
+            // Hide "Save Information" checkbox as we are using a saved address
+            toggleSaveCheckbox(false);
+
+            // Hide the billing form (inputs) since we selected a saved address
+            document.getElementById('billing-form').classList.add('d-none');
         }
 
         function clearAddressForm() {
@@ -483,6 +520,22 @@
             document.getElementById('city').value = '';
             document.getElementById('phoneNumber').value = '';
             document.getElementById('email').value = '';
+
+            // Show "Save Information" checkbox
+            toggleSaveCheckbox(true);
+
+            // Show the billing form (inputs) for new entry
+            document.getElementById('billing-form').classList.remove('d-none');
+        }
+
+        function toggleSaveCheckbox(show) {
+            const checklistItem = document.getElementById('saveInfo').closest('.form-check');
+            if (show) {
+                checklistItem.style.display = 'block';
+            } else {
+                checklistItem.style.display = 'none';
+                document.getElementById('saveInfo').checked = false; // Ensure it's not submitted
+            }
         }
 
         // --- Fetch Wallet ---

@@ -443,7 +443,7 @@
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
 
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
+
                         </ul>
                     </div>
                 </div>
@@ -514,7 +514,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Order #</th>
-                                    <th>Return ID</th>
+                                    <th>Reason</th>
                                     <th>Date Requested</th>
                                     <th>Status</th>
                                     <th>Refund Amount</th>
@@ -592,26 +592,99 @@
         // Check Login for Actions
         function checkLogin(e) {
             const token = localStorage.getItem("userToken");
-
             if (!token) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Login Required',
                     text: 'Please login to access this feature',
                     icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#d33',
                     confirmButtonText: 'Login'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = 'login.html';
                     }
                 });
-                return false;
             }
-            return true;
         }
+
+        async function fetchReturns() {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/orders/myreturns', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error('Failed to fetch returns');
+
+                const returns = await res.json();
+                const tbody = document.querySelector('tbody');
+                tbody.innerHTML = '';
+
+                if (returns.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No return requests found.</td></tr>';
+                    return;
+                }
+
+                returns.forEach(order => {
+                    let badgeClass = 'bg-secondary';
+                    if (order.returnStatus === 'Requested') badgeClass = 'bg-warning text-dark';
+                    if (order.returnStatus === 'Approved') badgeClass = 'bg-success';
+                    if (order.returnStatus === 'Rejected') badgeClass = 'bg-danger';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                         <td>#${order._id.substring(0, 8).toUpperCase()}</td>
+                         <td>${order.returnReason || 'N/A'}</td>
+                         <td>${order.returnRequestedAt ? new Date(order.returnRequestedAt).toLocaleDateString() : 'N/A'}</td>
+                         <td><span class="badge ${badgeClass}">${order.returnStatus}</span></td>
+                         <td>₹${order.totalAmount}</td>
+                     `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeaderAuth();
+            fetchReturns();
+        });
+
+        // Simplified header auth
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const authLinks = document.getElementById("authLinks");
+            if (authLinks) {
+                if (token) {
+                    authLinks.innerHTML = `
+                        <a href="#" class="text-dark me-3"><i class="fas fa-heart"></i></a>
+                        <div class="dropdown d-inline-block">
+                            <a href="#" class="text-dark dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown"><i class="fas fa-user"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                                <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+                                <li><button class="dropdown-item" onclick="logout()">Logout</button></li>
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    authLinks.innerHTML = `<a href="login.html" class="text-dark text-decoration-none"><i class="fas fa-user me-1"></i> Login</a>`;
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("userToken");
+            window.location.href = "login.html";
+        }
+
 
         function updateHeaderAuth() {
             const token = localStorage.getItem("userToken");

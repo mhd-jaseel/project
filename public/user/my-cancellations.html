@@ -443,7 +443,7 @@
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
 
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
+
                         </ul>
                     </div>
                 </div>
@@ -583,13 +583,127 @@
     <!-- Custom JS -->
     <script>
         // Check Login for Actions
+        // Check Login for Actions
         function checkLogin(e) {
-           const token = localStorage.getItem("userToken");
+            const token = localStorage.getItem("userToken");
 
             if (!token) {
                 e.preventDefault();
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to access this feature',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ecc71',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        function updateHeaderAuth() {
+            const token = localStorage.getItem("userToken");
+            const loginBtn = document.getElementById('headerLoginBtn');
+            const accountLink = document.querySelector('a[href="account.html"]');
+
+            if (token) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (accountLink) {
+                    if (!document.getElementById('accountDropdown')) {
+                        const dropdownHTML = `
+                            <div class="dropdown d-inline-block">
+                                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i> Account
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                                </ul>
+                            </div>
+                        `;
+                        accountLink.outerHTML = dropdownHTML;
+
+                        setTimeout(() => {
+                            const logoutBtn = document.getElementById('headerLogoutBtn');
+                            if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                localStorage.removeItem('userToken');
+                                localStorage.removeItem('role');
+                                localStorage.removeItem('user');
+                                window.location.href = 'login.html';
+                            });
+                        }, 0);
+                    }
+                }
+            } else {
+                if (loginBtn) loginBtn.style.display = 'inline';
+                if (accountLink && !document.getElementById('accountDropdown')) {
+                    accountLink.style.display = 'none';
+                }
             }
         }
+
+        async function fetchCancellations() {
+            const token = localStorage.getItem("userToken");
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/orders/mycancellations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error('Failed to fetch cancellations');
+
+                const orders = await res.json();
+                const tbody = document.querySelector('tbody');
+                tbody.innerHTML = '';
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No cancelled orders found.</td></tr>';
+                    return;
+                }
+
+                orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    // Refund amount: if paymentStatus COMPLETED or Wallet, show amount. Else 0.
+                    let refundText = '₹0';
+                    if (order.paymentStatus === 'Completed' || order.paymentMethod === 'Wallet') {
+                        refundText = '₹' + order.totalAmount;
+                        // Note: In real app, check 'Refunded' status or logic
+                    }
+
+                    tr.innerHTML = `
+                        <td>#${order._id.substring(0, 8).toUpperCase()}</td>
+                        <td>${order.cancelledAt ? new Date(order.cancelledAt).toLocaleDateString() : new Date(order.updatedAt).toLocaleDateString()}</td>
+                        <td>${order.cancellationReason || 'No reason'}</td>
+                        <td><span class="badge bg-secondary">Cancelled</span></td>
+                        <td>${refundText}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error(error);
+                const tbody = document.querySelector('tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateHeaderAuth();
+            fetchCancellations();
+        });
     </script>
 </body>
 

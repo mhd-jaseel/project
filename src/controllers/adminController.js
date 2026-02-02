@@ -47,3 +47,160 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+// Get Dashboard Stats
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const Order = require('../models/Order');
+    const totalOrders = await Order.countDocuments();
+    const pendingOrders = await Order.countDocuments({ orderStatus: 'Pending' });
+    const newCustomers = await User.countDocuments({ role: 'user' });
+
+    // Total Sales (Aggregation)
+    const salesData = await Order.aggregate([
+      { $match: { orderStatus: { $ne: 'Cancelled' } } },
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+    ]);
+    const totalSales = salesData.length > 0 ? salesData[0].total : 0;
+
+    // Sales Chart (Last 7 Days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const salesChartRaw = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: { $ne: 'Cancelled' },
+          createdAt: { $gte: sevenDaysAgo }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          total: { $sum: "$totalAmount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Fill in missing days for smoother chart
+    const salesChartData = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const found = salesChartRaw.find(r => r._id === dateStr);
+      salesChartData.push({
+        date: dateStr,
+        total: found ? found.total : 0
+      });
+    }
+
+    // Category Chart (Top Selling Categories)
+    const categoryChartData = await Order.aggregate([
+      { $match: { orderStatus: { $ne: 'Cancelled' } } },
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+      { $unwind: "$productDetails" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "productDetails.category",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" },
+      {
+        $group: {
+          _id: "$categoryDetails.name",
+          count: { $sum: "$items.quantity" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 4 }
+    ]);
+
+    // Recent Orders
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.json({
+      totalOrders,
+      pendingOrders,
+      newCustomers,
+      totalSales,
+      recentOrders,
+      salesChartData,
+      categoryChartData
+    });
+
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+// Get All Customers
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      { $match: { role: 'user' } },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "user",
+          as: "orders"
+        }
+      },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "_id",
+          foreignField: "user",
+          as: "addresses"
+        }
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          createdAt: 1,
+          orderCount: { $size: "$orders" },
+          // Get phone from User profile first, then Address
+          phoneNumber: {
+            $ifNull: [
+              "$phoneNumber",
+              { $ifNull: [{ $arrayElemAt: ["$addresses.phoneNumber", 0] }, "N/A"] }
+            ]
+          }
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Delete Customer
+exports.deleteCustomer = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "Customer deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting customer:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

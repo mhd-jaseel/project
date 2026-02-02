@@ -31,6 +31,10 @@ const addressSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true
+    },
+    isDefault: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

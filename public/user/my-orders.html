@@ -445,7 +445,7 @@
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                             <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
 
-                            <li class="nav-item"><a class="nav-link" href="signup.html">Signup</a></li>
+
                         </ul>
                     </div>
                 </div>
@@ -523,41 +523,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            <tbody>
-                                <tr data-order-id="#987654" data-date="Apr 14, 2024" data-status="Delivered"
-                                    data-total="₹1,200"
-                                    data-items='[{"name":"Tomato (Thakkali)", "qty": "2kg", "price": "₹60"}, {"name":"Sunflower Oil", "qty": "1L", "price": "150"}, {"name":"Basmati Rice", "qty": "5kg", "price": "₹450"}]'>
-                                    <td>#987654</td>
-                                    <td>Apr 14, 2024</td>
-                                    <td><span class="badge bg-success">Delivered</span></td>
-                                    <td>₹1,200</td>
-                                    <td><button class="btn btn-sm btn-outline-primary view-order-btn">View
-                                            Details</button></td>
-                                </tr>
-                                <tr data-order-id="#987653" data-date="Apr 10, 2024" data-status="Processing"
-                                    data-total="₹850"
-                                    data-items='[{"name":"Apple", "qty": "2kg", "price": "₹300"}, {"name":"Banana", "qty": "1 Dozen", "price": "₹60"}]'>
-                                    <td>#987653</td>
-                                    <td>Apr 10, 2024</td>
-                                    <td><span class="badge bg-warning text-dark">Processing</span></td>
-                                    <td>₹850</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary view-order-btn">View
-                                            Details</button>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger btn-cancel-order ms-1">Cancel</button>
-                                    </td>
-                                </tr>
-                                <tr data-order-id="#987652" data-date="Mar 28, 2024" data-status="Delivered"
-                                    data-total="₹2,300"
-                                    data-items='[{"name":"Chicken Breast", "qty": "1kg", "price": "₹500"}, {"name":"Dairy Milk Silk", "qty": "5", "price": "₹350"}]'>
-                                    <td>#987652</td>
-                                    <td>Mar 28, 2024</td>
-                                    <td><span class="badge bg-success">Delivered</span></td>
-                                    <td>₹2,300</td>
-                                    <td><button class="btn btn-sm btn-outline-primary view-order-btn">View
-                                            Details</button></td>
-                                </tr>
+                                <!-- Orders will be populated dynamically -->
                             </tbody>
                         </table>
                     </div>
@@ -662,38 +628,47 @@
 
         // Header Auth
         function updateHeaderAuth() {
-            const authContainer = document.getElementById('auth-actions');
-            // Logic to find login link if ID exists (it does in previous files, let's assume consistence)
-            // or just inject like previous step if we want to be safe.
-            // Simplified:
             const loginBtn = document.getElementById('headerLoginBtn');
-            if (loginBtn) {
-                loginBtn.outerHTML = `
-                    <div class="dropdown d-inline-block">
-                        <a href="#" class="text-white text-decoration-none dropdown-toggle me-3" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user me-1"></i> Account
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                            <li><a class="dropdown-item" href="account.html">My Account</a></li>
-                             <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
-                        </ul>
-                    </div>
-                 `;
+            const accountLink = document.querySelector('a[href="account.html"]');
 
-                setTimeout(() => {
-                    const logoutBtn = document.getElementById('headerLogoutBtn');
-                    if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        localStorage.removeItem('userToken');
-                        localStorage.removeItem('role');
-                        window.location.href = 'login.html';
-                    });
-                }, 0);
+            if (token) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (accountLink) {
+                    if (!document.getElementById('accountDropdown')) {
+                        const dropdownHTML = `
+                            <div class="dropdown d-inline-block">
+                                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user me-1"></i> Account
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                                </ul>
+                            </div>
+                        `;
+                        accountLink.outerHTML = dropdownHTML;
+
+                        setTimeout(() => {
+                            const logoutBtn = document.getElementById('headerLogoutBtn');
+                            if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                localStorage.removeItem('userToken');
+                                localStorage.removeItem('role');
+                                localStorage.removeItem('user');
+                                window.location.href = 'login.html';
+                            });
+                        }, 0);
+                    }
+                }
+            } else {
+                if (loginBtn) loginBtn.style.display = 'inline';
+                if (accountLink && !document.getElementById('accountDropdown')) {
+                    accountLink.style.display = 'none';
+                }
             }
         }
-        updateHeaderAuth();
 
         // Fetch Orders
         async function fetchMyOrders() {
@@ -703,7 +678,9 @@
                 });
                 const orders = await res.json();
 
-                const tbody = document.querySelector('tbody');
+                // Get the tbody inside the table inside .table-responsive
+                // The previous HTML had nested tbody or multiple tbody tags in the example, let's target carefully
+                const tbody = document.querySelector('.table-responsive table tbody');
                 tbody.innerHTML = '';
 
                 if (orders.length === 0) {
@@ -714,12 +691,35 @@
                 orders.forEach(order => {
                     let badgeClass = 'bg-secondary';
                     if (order.orderStatus === 'Pending') badgeClass = 'bg-warning text-dark';
-                    if (order.orderStatus === 'Processing') badgeClass = 'bg-info text-dark';
-                    if (order.orderStatus === 'Shipped') badgeClass = 'bg-primary';
+                    if (order.orderStatus === 'Confirmed') badgeClass = 'bg-info text-dark';
+                    if (order.orderStatus === 'Packed') badgeClass = 'bg-primary';
+                    if (order.orderStatus === 'Out For Delivery') badgeClass = 'bg-primary';
                     if (order.orderStatus === 'Delivered') badgeClass = 'bg-success';
                     if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger';
 
                     const itemsJson = encodeURIComponent(JSON.stringify(order.items));
+
+                    let actionButtons = '';
+
+                    // Cancel Button
+                    if (order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') {
+                        actionButtons += `<button class="btn btn-sm btn-outline-danger ms-1" onclick="cancelOrder('${order._id}')">Cancel</button>`;
+                    }
+
+                    // Return Button
+                    if (order.orderStatus === 'Delivered') {
+                        if (!order.returnStatus || order.returnStatus === 'None') {
+                            actionButtons += `<button class="btn btn-sm btn-outline-warning ms-1" onclick="requestReturn('${order._id}')">Return</button>`;
+                        } else {
+                            // Show Badge
+                            let returnBadgeClass = 'bg-secondary';
+                            if (order.returnStatus === 'Requested') returnBadgeClass = 'bg-warning text-dark';
+                            if (order.returnStatus === 'Approved') returnBadgeClass = 'bg-success';
+                            if (order.returnStatus === 'Rejected') returnBadgeClass = 'bg-danger';
+
+                            actionButtons += `<span class="badge ${returnBadgeClass} ms-1">Return: ${order.returnStatus}</span>`;
+                        }
+                    }
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -730,6 +730,7 @@
                         <td>
                             <button class="btn btn-sm btn-outline-primary view-order-btn" 
                                 onclick="openOrderModal('${order._id}', '${order.createdAt}', '${order.totalAmount}', '${itemsJson}')">View Details</button>
+                            ${actionButtons}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -737,6 +738,8 @@
 
             } catch (error) {
                 console.error(error);
+                const tbody = document.querySelector('.table-responsive table tbody');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load orders</td></tr>';
             }
         }
 
@@ -755,13 +758,15 @@
                 li.className = 'list-group-item d-flex justify-content-between align-items-center px-0';
                 li.innerHTML = `
                     <div class="d-flex align-items-center">
-                        <img src="${item.image || 'https://via.placeholder.com/50'}" style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded">
+                        <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" 
+                             onerror="this.src='https://via.placeholder.com/50'"
+                             style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded">
                         <div>
-                            <h6 class="mb-0 text-dark small fw-bold">${item.name}</h6>
+                            <h6 class="mb-0 text-dark small fw-bold">${item.name || 'Product'}</h6>
                             <small class="text-muted">Qty: ${item.quantity}</small>
                         </div>
                     </div>
-                    <span class="text-dark small fw-bold">₹${item.price * item.quantity}</span>
+                    <span class="text-dark small fw-bold">₹${(item.price * item.quantity).toFixed(2)}</span>
                 `;
                 list.appendChild(li);
             });
@@ -769,198 +774,120 @@
             new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
         };
 
-        fetchMyOrders();
-
-        const wishlistBtn = document.querySelector('a[href="wishlist.html"]');
-        if (wishlistBtn) wishlistBtn.addEventListener('click', checkLogin);
-        const cartBtn = document.querySelector('a[href="cart.html"]');
-        if (cartBtn) cartBtn.addEventListener('click', checkLogin);
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Re-run auth update on load just in case
-            updateHeaderAuth();
-
-            // 4. My Orders: Cancel Order
-            document.body.addEventListener('click', function (e) {
-                if (e.target.classList.contains('btn-cancel-order')) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Cancel Order?',
-                        text: "Are you sure you want to cancel this order? This action cannot be undone.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, Cancel Order'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const row = e.target.closest('tr');
-                            const badge = row.querySelector('.badge');
-                            if (badge) {
-                                badge.className = 'badge bg-secondary';
-                                badge.innerText = 'Cancelled';
-                            }
-                            e.target.remove(); // Remove Cancel button
-
-                            Swal.fire(
-                                'Cancelled!',
-                                'Your order has been cancelled.',
-                                'success'
-                            );
+        window.cancelOrder = async (orderId) => {
+            const { value: reason } = await Swal.fire({
+                title: 'Cancel Order',
+                text: "Please select a reason for cancellation",
+                input: 'select',
+                inputOptions: {
+                    'Ordered by mistake': 'Ordered by mistake',
+                    'Found cheaper elsewhere': 'Found cheaper elsewhere',
+                    'Delivery delay': 'Delivery delay',
+                    'Changed mind': 'Changed mind',
+                    'Other': 'Other'
+                },
+                inputPlaceholder: 'Select a reason',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Cancel Order',
+                inputValidator: (value) => {
+                    return new Promise((resolve) => {
+                        if (value) {
+                            resolve()
+                        } else {
+                            resolve('You must select a reason')
                         }
-                    });
+                    })
                 }
             });
 
-            // --- Order Details & Invoice Logic (My Orders Page) ---
-            const orderDetailsModalEl = document.getElementById('orderDetailsModal');
-            if (orderDetailsModalEl) {
-                const modal = new bootstrap.Modal(orderDetailsModalEl);
-                const modalOrderId = document.getElementById('modalOrderId');
-                const modalOrderDate = document.getElementById('modalOrderDate');
-                const modalOrderItems = document.getElementById('modalOrderItems');
-                const modalOrderTotal = document.getElementById('modalOrderTotal');
-                const btnDownloadInvoice = document.getElementById('btnDownloadInvoice');
-                let currentOrderData = null;
-
-                // View Details Click Handler
-                document.body.addEventListener('click', function (e) {
-                    if (e.target.classList.contains('view-order-btn')) {
-                        const btn = e.target;
-                        const row = btn.closest('tr');
-
-                        // Parse Data
-                        const orderId = row.getAttribute('data-order-id');
-                        const date = row.getAttribute('data-date');
-                        const status = row.getAttribute('data-status');
-                        const total = row.getAttribute('data-total');
-                        const items = JSON.parse(row.getAttribute('data-items'));
-
-                        currentOrderData = { orderId, date, status, total, items };
-
-                        // Populate Modal
-                        modalOrderId.textContent = orderId;
-                        modalOrderDate.textContent = date;
-                        modalOrderTotal.textContent = total;
-
-                        // Populate Items
-                        modalOrderItems.innerHTML = '';
-                        items.forEach(item => {
-                            const li = document.createElement('li');
-                            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'px-0');
-                            li.innerHTML = `
-                                <div>
-                                    <h6 class="mb-0 text-dark">${item.name}</h6>
-                                    <small class="text-muted">Qty: ${item.qty}</small>
-                                </div>
-                                <span class="text-muted small">${item.price}</span>
-                            `;
-                            modalOrderItems.appendChild(li);
-                        });
-
-                        // Show/Hide Download Button
-                        if (status === 'Delivered') {
-                            btnDownloadInvoice.style.display = 'inline-block';
-                        } else {
-                            btnDownloadInvoice.style.display = 'none';
-                        }
-
-                        modal.show();
-                    }
-                });
-
-                // Download Invoice Click Handler
-                if (btnDownloadInvoice) {
-                    btnDownloadInvoice.addEventListener('click', function () {
-                        if (!currentOrderData) return;
-                        generateInvoice(currentOrderData);
+            if (reason) {
+                try {
+                    const res = await fetch(`/api/orders/${orderId}/cancel`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ reason })
                     });
+
+                    if (res.ok) {
+                        await Swal.fire(
+                            'Cancelled!',
+                            'Your order has been cancelled.',
+                            'success'
+                        );
+                        fetchMyOrders();
+                    } else {
+                        const data = await res.json();
+                        Swal.fire('Error', data.message || 'Failed to cancel order', 'error');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Error', 'Server error', 'error');
                 }
             }
+        };
 
-            function generateInvoice(order) {
-                const invoiceHTML = `
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Invoice ${order.orderId}</title>
-                        <style>
-                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
-                            .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; }
-                            .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-                            .header img { max-width: 150px; }
-                            .invoice-title { font-size: 24px; font-weight: bold; color: #0d6efd; }
-                            .invoice-details { text-align: right; }
-                            .table-responsive { margin-top: 30px; }
-                            table { width: 100%; border-collapse: collapse; }
-                            th { text-align: left; background-color: #f8f9fa; padding: 12px; border-bottom: 2px solid #dee2e6; }
-                            td { padding: 12px; border-bottom: 1px solid #eee; }
-                            .total-row td { font-weight: bold; font-size: 18px; border-top: 2px solid #333; }
-                            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #aaa; }
-                            @media print {
-                                body { padding: 0; }
-                                .invoice-box { border: none; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="invoice-box">
-                            <div class="header">
-                                <div>
-                                    <div class="invoice-title">KM Store</div>
-                                    <p>123 Grocery Lane<br>Fresh Town, KA 560000</p>
-                                </div>
-                                <div class="invoice-details">
-                                    <h2 style="color: #333;">INVOICE</h2>
-                                    <p><strong>Order ID:</strong> ${order.orderId}<br>
-                                    <strong>Date:</strong> ${order.date}<br>
-                                    <strong>Status:</strong> ${order.status}</p>
-                                </div>
-                            </div>
+        window.requestReturn = async (orderId) => {
+            const { value: reason } = await Swal.fire({
+                title: 'Return Order',
+                text: "Please select a reason for returning",
+                input: 'select',
+                inputOptions: {
+                    'Damaged product': 'Damaged product',
+                    'Wrong item': 'Wrong item',
+                    'Quality issue': 'Quality issue',
+                    'Other': 'Other'
+                },
+                inputPlaceholder: 'Select a reason',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107', // yellow/warning
+                confirmButtonText: 'Submit Request',
+                inputValidator: (value) => {
+                    return new Promise((resolve) => {
+                        if (value) {
+                            resolve()
+                        } else {
+                            resolve('You must select a reason')
+                        }
+                    })
+                }
+            });
 
-                            <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Quantity</th>
-                                        <th style="text-align: right;">Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${order.items.map(item => `
-                                        <tr>
-                                            <td>${item.name}</td>
-                                            <td>${item.qty}</td>
-                                            <td style="text-align: right;">${item.price}</td>
-                                        </tr>
-                                    `).join('')}
-                                    <tr class="total-row">
-                                        <td colspan="2" style="text-align: right;">Total</td>
-                                        <td style="text-align: right;">${order.total}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </div>
+            if (reason) {
+                try {
+                    const res = await fetch(`/api/orders/${orderId}/return`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ reason })
+                    });
 
-                            <div class="footer">
-                                <p>Thank you for shopping with KM Store!</p>
-                                <p>For support, email support@kmstore.com</p>
-                            </div>
-                        </div>
-                        <script>
-                            window.onload = function() { window.print(); }
-                        <\/script>
-                    </body>
-                    </html>
-                `;
-
-                const printWindow = window.open('', '', 'height=600,width=800');
-                printWindow.document.write(invoiceHTML);
-                printWindow.document.close();
+                    if (res.ok) {
+                        await Swal.fire(
+                            'Requested!',
+                            'Your return request has been submitted.',
+                            'success'
+                        );
+                        fetchMyOrders();
+                    } else {
+                        const data = await res.json();
+                        Swal.fire('Error', data.message || 'Failed to request return', 'error');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Error', 'Server error', 'error');
+                }
             }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateHeaderAuth();
+            fetchMyOrders();
         });
     </script>
 </body>

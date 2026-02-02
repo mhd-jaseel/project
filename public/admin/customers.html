@@ -332,7 +332,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
-                                <th>City</th>
+
                                 <th>Orders</th>
                                 <th>Action</th>
                             </tr>
@@ -554,7 +554,6 @@
     <script>
         // Auth Check
         const token = localStorage.getItem("adminToken");
-
         const role = localStorage.getItem("role");
 
         if (!token || role !== "admin") {
@@ -569,11 +568,73 @@
             });
         }
 
-        // Global Delete Confirmation
-        document.body.addEventListener('click', function (e) {
-            const deleteBtn = e.target.closest('.btn.text-danger');
+        async function fetchCustomers() {
+            try {
+                const res = await fetch('/api/admin/customers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const customers = await res.json();
+                    const tbody = document.querySelector('tbody');
+                    tbody.innerHTML = '';
+
+                    if (customers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center">No customers found.</td></tr>';
+                        return;
+                    }
+
+                    customers.forEach((customer, index) => {
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('data-id', customer._id);
+                        tr.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td><img src="https://ui-avatars.com/api/?name=${customer.name}&background=random" class="rounded-circle" width="30" height="30"></td>
+                            <td><span class="text-dark fw-bold">${customer.name}</span></td>
+                            <td>${customer.email}</td>
+                            <td>${customer.phoneNumber || 'N/A'}</td>
+
+                            <td>${customer.orderCount}</td>
+                            <td>
+                                <button class="btn btn-sm btn-light text-warning" onclick="blockUser('${customer._id}')" title="Block"><i class="fas fa-ban"></i></button>
+                                <button class="btn btn-sm btn-light text-danger delete-btn" data-id="${customer._id}" title="Delete"><i class="fas fa-trash"></i></button>
+                            </td>
+                         `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching customers:", error);
+            }
+        }
+
+        async function deleteUser(id) {
+            try {
+                const res = await fetch(`/api/admin/customers/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    Swal.fire('Deleted!', 'User has been deleted.', 'success');
+                    fetchCustomers();
+                } else {
+                    Swal.fire('Error', 'Failed to delete user', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Server error', 'error');
+            }
+        }
+
+        window.blockUser = (id) => {
+            Swal.fire('Block', 'Block feature coming soon', 'info');
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchCustomers);
+
+        dcu_btn_listener = document.body.addEventListener('click', function (e) {
+            const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
                 e.preventDefault();
+                const id = deleteBtn.getAttribute('data-id');
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -584,45 +645,7 @@
                     confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The item has been deleted.',
-                            'success'
-                        ).then(() => {
-                            // Optional: Remove row from DOM
-                            const row = deleteBtn.closest('tr');
-                            if (row) row.remove();
-                        });
-                    }
-                });
-            }
-        });
-
-        // Global Block Confirmation
-        document.body.addEventListener('click', function (e) {
-            const blockBtn = e.target.closest('.btn.text-warning');
-            if (blockBtn) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Block User?',
-                    text: "Are you sure you want to block this user?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#ffc107', // Warning color
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, block user!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire(
-                            'Blocked!',
-                            'User has been blocked successfully.',
-                            'success'
-                        ).then(() => {
-                            // Optional: Change UI to reflect blocked state
-                            // For now just disabling the button or row style could be done
-                            // blockBtn.classList.remove('text-warning');
-                            // blockBtn.classList.add('text-muted');
-                        });
+                        deleteUser(id);
                     }
                 });
             }

@@ -306,8 +306,10 @@
 
             <div class="user-profile">
                 <!-- Same profile block as dashboard -->
-                <button class="icon-btn"><i class="far fa-bell"></i><span
-                        class="badge bg-danger rounded-circle">3</span></button>
+                <button class="icon-btn" onclick="filterUnviewedOrders()">
+                    <i class="far fa-bell"></i>
+                    <span class="badge bg-danger rounded-circle" style="display:none;">0</span>
+                </button>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -354,146 +356,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#ORD-001</td>
-                                <td>20 Jan, 2026</td>
-                                <td>Md Rimel</td>
-                                <td>New York, USA</td>
-                                <td>$120.00</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-002</td>
-                                <td>19 Jan, 2026</td>
-                                <td>John Doe</td>
-                                <td>London, UK</td>
-                                <td>$45.50</td>
-                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-003</td>
-                                <td>19 Jan, 2026</td>
-                                <td>Sarah Smith</td>
-                                <td>California, USA</td>
-                                <td>$15.00</td>
-                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Cancelled</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-004</td>
-                                <td>18 Jan, 2026</td>
-                                <td>Emily Davis</td>
-                                <td>Toronto, Canada</td>
-                                <td>$210.75</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-005</td>
-                                <td>18 Jan, 2026</td>
-                                <td>Michael Brown</td>
-                                <td>Berlin, Germany</td>
-                                <td>$85.00</td>
-                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-006</td>
-                                <td>17 Jan, 2026</td>
-                                <td>Jessica Wilson</td>
-                                <td>Paris, France</td>
-                                <td>$320.40</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-007</td>
-                                <td>17 Jan, 2026</td>
-                                <td>David Martinez</td>
-                                <td>Madrid, Spain</td>
-                                <td>$65.20</td>
-                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Cancelled</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-008</td>
-                                <td>16 Jan, 2026</td>
-                                <td>Sophia Taylor</td>
-                                <td>Rome, Italy</td>
-                                <td>$150.00</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-009</td>
-                                <td>15 Jan, 2026</td>
-                                <td>James Anderson</td>
-                                <td>Sydney, Australia</td>
-                                <td>$95.50</td>
-                                <td><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-010</td>
-                                <td>14 Jan, 2026</td>
-                                <td>Olivia Thomas</td>
-                                <td>Tokyo, Japan</td>
-                                <td>$215.00</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-light text-primary view-order-btn" title="View"><i
-                                            class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-light text-danger" title="Delete"><i
-                                            class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
+                            <!-- Orders will be populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -553,8 +416,9 @@
                         <label for="orderStatusSelect" class="form-label fw-bold">Change Order Status</label>
                         <select class="form-select" id="orderStatusSelect">
                             <option value="Pending">Pending</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Packed">Packed</option>
+                            <option value="Out For Delivery">Out For Delivery</option>
                             <option value="Delivered">Delivered</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
@@ -594,11 +458,52 @@
                 const res = await fetch('/api/orders/all', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+
+                if (res.status === 401) {
+                    // Token expired or invalid
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('role');
+                    window.location.href = '/user/login.html';
+                    return;
+                }
+
+                if (!res.ok) {
+                    console.error('Failed to fetch orders:', res.statusText);
+                    return;
+                }
+
                 const orders = await res.json();
-                allOrders = orders;
-                renderOrders(orders);
+                if (Array.isArray(orders)) {
+                    allOrders = orders;
+                    renderOrders(orders);
+                    updateNotificationCount();
+                } else {
+                    console.error('Expected array of orders, got:', orders);
+                }
             } catch (error) {
                 console.error("Error fetching orders:", error);
+            }
+        }
+
+        function filterUnviewedOrders() {
+            const unviewedOrders = allOrders.filter(o => !o.viewedByAdmin);
+
+            // If there are unviewed orders, show them
+            if (unviewedOrders.length > 0) {
+                renderOrders(unviewedOrders);
+                const header = document.querySelector('h4');
+                if (header) header.innerText = 'Order Management (New Orders)';
+            } else {
+                // If no unviewed orders, show alert and potentially reset view
+                Swal.fire({
+                    title: 'No New Orders',
+                    text: 'All orders have been viewed.',
+                    icon: 'info',
+                    confirmButtonColor: '#0f9d58'
+                });
+                renderOrders(allOrders);
+                const header = document.querySelector('h4');
+                if (header) header.innerText = 'Order Management';
             }
         }
 
@@ -606,13 +511,23 @@
             const tbody = document.querySelector('tbody');
             tbody.innerHTML = '';
 
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No orders found.</td></tr>';
+                return;
+            }
+
             orders.forEach(order => {
                 const tr = document.createElement('tr');
+                tr.setAttribute('data-id', order._id);
+                if (!order.viewedByAdmin) {
+                    tr.classList.add('fw-bold');
+                }
 
                 let badgeClass = 'bg-secondary';
                 if (order.orderStatus === 'Pending') badgeClass = 'bg-warning text-dark';
-                if (order.orderStatus === 'Processing') badgeClass = 'bg-info text-dark';
-                if (order.orderStatus === 'Shipped') badgeClass = 'bg-primary';
+                if (order.orderStatus === 'Confirmed') badgeClass = 'bg-info text-dark';
+                if (order.orderStatus === 'Packed') badgeClass = 'bg-primary';
+                if (order.orderStatus === 'Out For Delivery') badgeClass = 'bg-primary';
                 if (order.orderStatus === 'Delivered') badgeClass = 'bg-success';
                 if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger';
 
@@ -631,30 +546,82 @@
             });
         }
 
+
+        async function updateReturnStatus(orderId, status) {
+            try {
+                const res = await fetch(`/api/orders/${orderId}/return-status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    Swal.fire('Success', `Return request ${status}`, 'success');
+                    fetchOrders(); // Refresh list
+                    const modalEl = document.getElementById('orderDetailsModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } else {
+                    const data = await res.json();
+                    Swal.fire('Error', data.message || 'Failed to update return', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Server error', 'error');
+            }
+        }
+
         window.openOrderModal = (orderId) => {
             const order = allOrders.find(o => o._id === orderId);
             if (!order) return;
 
-            document.getElementById('modalOrderId').innerText = '#' + order._id.substring(0, 8).toUpperCase();
-            // document.getElementById('modalOrderDate').innerText = new Date(order.createdAt).toLocaleDateString(); // If element exists
-            // Fix: The Modal HTML uses specific IDs. Let's verify modal HTML structure. 
-            // Step 138 shows IDs: modalOrderId, modalOrderDate (Wait, 138 doesn't show modalOrderDate ID in the View/Edit block clearly? 
-            // Ah, lines 527-530: Order ID, Date, Total Amount. Date has no ID. Total Amount has no ID.
-            // Let's rely on querySelector or just update what we can see.
-            // Re-checking Step 138 Modal Body:
-            // <p class="mb-1"><strong>Order ID:</strong> <span id="modalOrderId">#ORD-001</span></p>
-            // <p class="mb-1"><strong>Date:</strong> 20 Jan, 2026</p>  <-- No ID
-            // <p class="mb-1"><strong>Total Amount:</strong> <span class="text-success fw-bold">$120.00</span></p> <-- No ID
-
             // I will inject innerHTML for the "Order Information" column to be safe.
             const infoCol = document.querySelector('#orderDetailsModal .col-md-6:first-child');
-            infoCol.innerHTML = `
-                 <h6 class="text-muted small">Order Information</h6>
-                 <p class="mb-1"><strong>Order ID:</strong> #${order._id.substring(0, 8).toUpperCase()}</p>
-                 <p class="mb-1"><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
-                 <p class="mb-1"><strong>Total Amount:</strong> <span class="text-success fw-bold">₹${order.totalAmount}</span></p>
-                 <p class="mb-1"><strong>Payment:</strong> ${order.paymentMethod} (${order.paymentStatus})</p>
-            `;
+            if (infoCol) {
+                let cancellationHtml = '';
+                if (order.orderStatus === 'Cancelled') {
+                    cancellationHtml = `
+                        <div class="mt-2 pt-2 border-top">
+                            <p class="mb-1 text-danger"><strong>Cancelled:</strong> ${order.cancelledAt ? new Date(order.cancelledAt).toLocaleString() : 'N/A'}</p>
+                            <p class="mb-1 text-danger"><strong>Reason:</strong> ${order.cancellationReason || 'N/A'}</p>
+                        </div>
+                    `;
+                }
+
+                let returnHtml = '';
+                if (order.returnStatus && order.returnStatus !== 'None') {
+                    let returnBadge = 'bg-secondary';
+                    if (order.returnStatus === 'Requested') returnBadge = 'bg-warning text-dark';
+                    if (order.returnStatus === 'Approved') returnBadge = 'bg-success';
+                    if (order.returnStatus === 'Rejected') returnBadge = 'bg-danger';
+
+                    returnHtml = `
+                        <div class="mt-2 pt-2 border-top">
+                            <p class="mb-1"><strong>Return Status:</strong> <span class="badge ${returnBadge}">${order.returnStatus}</span></p>
+                            <p class="mb-1"><strong>Reason:</strong> ${order.returnReason || 'N/A'}</p>
+                            ${order.returnStatus === 'Requested' ? `
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-success me-1" onclick="updateReturnStatus('${order._id}', 'Approved')">Approve</button>
+                                    <button class="btn btn-sm btn-danger" onclick="updateReturnStatus('${order._id}', 'Rejected')">Reject</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                infoCol.innerHTML = `
+                    <h6 class="text-muted small">Order Information</h6>
+                    <p class="mb-1"><strong>Order ID:</strong> #${order._id.substring(0, 8).toUpperCase()}</p>
+                    <p class="mb-1"><strong>Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+                    <p class="mb-1"><strong>Total Amount:</strong> <span class="text-success fw-bold">₹${order.totalAmount}</span></p>
+                    <p class="mb-1"><strong>Payment:</strong> ${order.paymentMethod} (${order.paymentStatus})</p>
+                    ${cancellationHtml}
+                    ${returnHtml}
+                `;
+            }
 
             const customerCol = document.querySelector('#orderDetailsModal .col-md-6:last-child');
             customerCol.innerHTML = `
@@ -691,18 +658,61 @@
             itemsContainer.innerHTML = itemsHtml;
 
             // set Status Select
-            document.getElementById('orderStatusSelect').value = order.orderStatus;
+            const statusSelect = document.getElementById('orderStatusSelect');
+            if (statusSelect) {
+                statusSelect.value = order.orderStatus;
+            }
 
             // Save Button
             const saveBtn = document.querySelector('#orderDetailsModal .modal-footer .btn-primary-custom');
-            saveBtn.onclick = () => updateStatus(order._id);
+            if (saveBtn) saveBtn.onclick = () => updateStatus(order._id);
 
-            const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
-            modal.show();
+            // Mark as viewed if not already
+            if (!order.viewedByAdmin) {
+                markAsViewed(order._id);
+                order.viewedByAdmin = true; // Optimistic update
+                // Update row UI if needed (e.g. remove bold)
+                const row = document.querySelector(`tr[data-id="${orderId}"]`);
+                if (row) row.classList.remove('fw-bold');
+                updateNotificationCount();
+            }
+
+            const modalEl = document.getElementById('orderDetailsModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
         };
 
+        async function markAsViewed(orderId) {
+            try {
+                await fetch(`/api/orders/${orderId}/viewed`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function updateNotificationCount() {
+            const unviewedCount = allOrders.filter(o => !o.viewedByAdmin).length;
+            // Target the bell icon badge in the header
+            const notificationBadge = document.querySelector('.user-profile .icon-btn .badge');
+
+            if (notificationBadge) {
+                if (unviewedCount > 0) {
+                    notificationBadge.innerText = unviewedCount;
+                    notificationBadge.style.display = 'inline-block';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+            }
+        }
+
         async function updateStatus(orderId) {
-            const status = document.getElementById('orderStatusSelect').value;
+            const statusSelect = document.getElementById('orderStatusSelect');
+            if (!statusSelect) return;
+
+            const status = statusSelect.value;
             try {
                 const res = await fetch(`/api/orders/${orderId}/status`, {
                     method: 'PUT',

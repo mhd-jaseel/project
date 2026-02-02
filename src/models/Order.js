@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'This order is confirmed and being packed', 'Shipped', 'Out For Delivery', 'Delivered', 'Cancelled', 'Returned'],
+        enum: ['Pending', 'Confirmed', 'Packed', 'Out For Delivery', 'Delivered', 'Cancelled', 'Returned'],
         default: 'Pending'
     },
     subtotal: {
@@ -68,6 +68,27 @@ const orderSchema = new mongoose.Schema({
     discountAmount: {
         type: Number,
         default: 0
+    },
+    viewedByAdmin: {
+        type: Boolean,
+        default: false
+    },
+    cancellationReason: {
+        type: String
+    },
+    cancelledAt: {
+        type: Date
+    },
+    returnStatus: {
+        type: String,
+        enum: ['None', 'Requested', 'Approved', 'Rejected'],
+        default: 'None'
+    },
+    returnReason: {
+        type: String
+    },
+    returnRequestedAt: {
+        type: Date
     }
 }, { timestamps: true });
 
