@@ -299,14 +299,18 @@
                         </div>
                     </div>
 
-                    <!-- Coupon (Placeholder) -->
+                    <!-- Coupon (Active) -->
                     <div class="row g-2 mb-4">
                         <div class="col-8">
-                            <input type="text" class="form-control py-3 border-secondary" placeholder="Coupon Code"
-                                disabled>
+                            <input type="text" id="couponCode" class="form-control py-3 border-secondary"
+                                placeholder="Coupon Code">
                         </div>
                         <div class="col-4">
-                            <button class="btn btn-danger w-100 py-3" disabled>Apply Coupon</button>
+                            <button id="apply-coupon-btn" class="btn btn-danger w-100 py-3">Apply Coupon</button>
+                        </div>
+                        <div class="col-12">
+                            <small id="coupon-message" class="text-success fw-bold d-none"></small>
+                            <small id="coupon-error" class="text-danger fw-bold d-none"></small>
                         </div>
                     </div>
 
@@ -335,6 +339,7 @@
 
     <script>
         const token = localStorage.getItem("userToken");
+        let appliedCouponCode = null;
 
         if (!token) {
             window.location.href = 'login.html';
@@ -346,6 +351,60 @@
             await fetchAddresses();
             await fetchWallet();
         }
+
+        // --- Coupon Logic ---
+        document.getElementById('apply-coupon-btn').addEventListener('click', async () => {
+            const codeInput = document.getElementById('couponCode');
+            const code = codeInput.value.trim();
+            const msg = document.getElementById('coupon-message');
+            const err = document.getElementById('coupon-error');
+
+            msg.classList.add('d-none');
+            err.classList.add('d-none');
+
+            if (!code) return;
+
+            // Get current subtotal from DOM
+            const subText = document.getElementById('checkout-subtotal').innerText.replace('₹', '');
+            const amount = parseFloat(subText);
+
+            try {
+                const res = await fetch('/api/coupons/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code, orderAmount: amount })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    appliedCouponCode = data.code;
+                    msg.innerText = `Coupon applied! You saved ₹${data.discountAmount}`;
+                    msg.classList.remove('d-none');
+
+                    // Calculate Final Total
+                    const deliveryEl = document.getElementById('checkout-delivery');
+                    const delivery = deliveryEl.innerText.includes('Free') ? 0 : parseFloat(deliveryEl.innerText.replace('₹', ''));
+                    const handling = parseFloat(document.getElementById('checkout-handling').innerText.replace('₹', ''));
+                    const finalTotal = data.newTotal + delivery + handling;
+
+                    document.getElementById('checkout-total').innerHTML = `
+                         <span class="text-muted text-decoration-line-through me-2">₹${amount + delivery + handling}</span>
+                         ₹${finalTotal}
+                     `;
+
+                    codeInput.disabled = true;
+                    document.getElementById('apply-coupon-btn').disabled = true;
+                    document.getElementById('apply-coupon-btn').innerText = 'Applied';
+                } else {
+                    err.innerText = data.message;
+                    err.classList.remove('d-none');
+                }
+            } catch (e) { console.error(e); }
+        });
 
         // --- Fetch & Render Cart ---
         async function fetchCart() {
@@ -585,7 +644,8 @@
                     body: JSON.stringify({
                         shippingAddress,
                         paymentMethod,
-                        saveAddressInfo
+                        saveAddressInfo,
+                        couponCode: appliedCouponCode
                     })
                 });
 

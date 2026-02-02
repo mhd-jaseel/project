@@ -337,30 +337,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#TRX-9988</td>
-                                <td>20 Jan, 2026</td>
-                                <td>Md Rimel</td>
-                                <td>$120.00</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Success</span></td>
-                                <td><i class="fab fa-cc-visa fa-lg text-primary"></i> Visa</td>
-                            </tr>
-                            <tr>
-                                <td>#TRX-9989</td>
-                                <td>19 Jan, 2026</td>
-                                <td>John Doe</td>
-                                <td>$45.50</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Success</span></td>
-                                <td><i class="fab fa-cc-mastercard fa-lg text-danger"></i> Master</td>
-                            </tr>
-                            <tr>
-                                <td>#TRX-9990</td>
-                                <td>19 Jan, 2026</td>
-                                <td>Sarah Smith</td>
-                                <td>$15.00</td>
-                                <td><span class="badge bg-danger bg-opacity-10 text-danger">Failed</span></td>
-                                <td><i class="fab fa-paypal fa-lg text-primary"></i> Paypal</td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -373,7 +349,6 @@
     <script>
         // Auth Check
         const token = localStorage.getItem("adminToken");
-
         const role = localStorage.getItem("role");
 
         if (!token || role !== "admin") {
@@ -387,6 +362,61 @@
                 sidebar.classList.toggle('show');
             });
         }
+
+        async function fetchTransactions() {
+            try {
+                const res = await fetch('/api/admin/transactions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const transactions = await res.json();
+                    const tbody = document.querySelector('tbody');
+                    tbody.innerHTML = '';
+
+                    if (transactions.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No transactions found.</td></tr>';
+                        return;
+                    }
+
+                    transactions.forEach(trx => {
+                        let statusBadge = 'bg-secondary';
+                        if (trx.paymentStatus === 'Completed') statusBadge = 'bg-success bg-opacity-10 text-success';
+                        else if (trx.paymentStatus === 'Pending') statusBadge = 'bg-warning bg-opacity-10 text-warning';
+                        else if (trx.paymentStatus === 'Failed') statusBadge = 'bg-danger bg-opacity-10 text-danger';
+                        else if (trx.paymentStatus === 'Refunded') statusBadge = 'bg-info bg-opacity-10 text-info';
+
+                        let methodIcon = '';
+                        let methodName = trx.paymentMethod || 'Unknown';
+
+                        if (methodName === 'COD') {
+                            methodIcon = '<i class="fas fa-money-bill-wave fa-lg text-success me-2"></i>';
+                            methodName = 'Cash on Delivery';
+                        } else if (methodName === 'Wallet') {
+                            methodIcon = '<i class="fas fa-wallet fa-lg text-primary me-2"></i>';
+                        } else if (methodName === 'Bank') {
+                            methodIcon = '<i class="fas fa-university fa-lg text-info me-2"></i>';
+                            methodName = 'Bank Transfer';
+                        }
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>#${trx._id.substring(0, 8).toUpperCase()}</td>
+                            <td>${new Date(trx.createdAt).toLocaleDateString()}</td>
+                            <td>${trx.shippingAddress ? trx.shippingAddress.firstName : 'Guest'}</td>
+                            <td>₹${trx.totalAmount}</td>
+                            <td><span class="badge ${statusBadge}">${trx.paymentStatus}</span></td>
+                            <td>${methodIcon}${methodName}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchTransactions);
     </script>
 </body>
 

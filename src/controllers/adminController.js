@@ -204,3 +204,17 @@ exports.deleteCustomer = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Get All Transactions (derived from Orders)
+exports.getAllTransactions = async (req, res) => {
+  try {
+    const transactions = await require('../models/Order').find()
+      .select('_id createdAt shippingAddress.firstName totalAmount paymentStatus paymentMethod')
+      .sort({ createdAt: -1 });
+
+    res.json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

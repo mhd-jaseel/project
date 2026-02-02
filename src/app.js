@@ -26,6 +26,7 @@ app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/address", require("./routes/addressRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
+app.use("/api/coupons", require("./routes/couponRoutes"));
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, "../public")));

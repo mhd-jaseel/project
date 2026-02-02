@@ -322,28 +322,46 @@
                 <div class="col-md-4">
                     <div class="card-custom">
                         <h5 class="fw-bold mb-4">Add New Coupon</h5>
-                        <form>
+                        <form id="couponForm">
                             <div class="mb-3">
-                                <label class="form-label small text-muted">Coupon Name</label>
-                                <input type="text" class="form-control" placeholder="e.g. SUMMER2024">
+                                <label class="form-label small text-muted">Coupon Code</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="code" placeholder="e.g. SUMMER2024"
+                                        required>
+                                    <button class="btn btn-outline-secondary" type="button" id="generateBtn"
+                                        title="Auto Generate"><i class="fas fa-magic"></i></button>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Discount Type</label>
-                                <select class="form-select">
-                                    <option>Percentage (%)</option>
-                                    <option>Fixed Amount ($)</option>
-                                </select>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-muted">Type</label>
+                                    <select class="form-select" id="discountType">
+                                        <option value="percentage">Percentage (%)</option>
+                                        <option value="fixed">Fixed Amount (₹)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-muted">Value</label>
+                                    <input type="number" class="form-control" id="discountValue" placeholder="10"
+                                        required>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Amount</label>
-                                <input type="number" class="form-control" placeholder="e.g. 20">
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-muted">Min Order</label>
+                                    <input type="number" class="form-control" id="minOrderAmount" value="0">
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-muted">Usage Limit</label>
+                                    <input type="number" class="form-control" id="usageLimit" placeholder="Total">
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small text-muted">Expiry Date</label>
-                                <input type="date" class="form-control">
+                                <input type="date" class="form-control" id="expiryDate" required>
                             </div>
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary-custom">Create Coupon</button>
+                                <button type="submit" class="btn btn-success">Create Coupon</button>
                             </div>
                         </form>
                     </div>
@@ -359,28 +377,14 @@
                                     <tr>
                                         <th>Code</th>
                                         <th>Discount</th>
+                                        <th>Used</th>
                                         <th>Status</th>
                                         <th>Expiry</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="fw-bold">WELCOME10</td>
-                                        <td>10% Off</td>
-                                        <td><span class="badge bg-success">Active</span></td>
-                                        <td>Dec 31, 2026</td>
-                                        <td><button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-bold">FREESHIP</td>
-                                        <td>$20 Off</td>
-                                        <td><span class="badge bg-danger">Expired</span></td>
-                                        <td>Jan 01, 2026</td>
-                                        <td><button class="btn btn-sm text-danger"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
+                                    <!-- Dynamic Data -->
                                 </tbody>
                             </table>
                         </div>
@@ -393,8 +397,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Auth Check
-       const token = localStorage.getItem("adminToken");
-
+        const token = localStorage.getItem("adminToken");
         const role = localStorage.getItem("role");
 
         if (!token || role !== "admin") {
@@ -409,40 +412,111 @@
             });
         }
 
-        // Global Delete Confirmation
-        document.body.addEventListener('click', function (e) {
-            // Target buttons with text-danger (usually delete/trash)
-            const deleteBtn = e.target.closest('.btn.text-danger') || e.target.closest('.btn-outline-danger');
-            if (deleteBtn) {
-                // Determine if it's strictly a delete action (look for trash icon or delete text)
-                // But user asked for "every delete button", so broad is okay, or restrict to trash.
-                // Let's stick to .text-danger with trash icon or explicit delete class if we had one.
-                // For now, checks if it has fa-trash or is btn-outline-danger (like in banner)?
-                // Actually sticking to the previous pattern: .btn.text-danger (which has trash icon in other files)
-                if (deleteBtn.querySelector('.fa-trash') || deleteBtn.textContent.toLowerCase().includes('delete') || deleteBtn.classList.contains('text-danger')) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire(
-                                'Deleted!',
-                                'The item has been deleted.',
-                                'success'
-                            ).then(() => {
-                                // Optional: Remove row from DOM
-                                const row = deleteBtn.closest('tr');
-                                if (row) row.remove();
-                            });
-                        }
-                    });
+        // Generate Random Code
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('code').value = result;
+        });
+
+        // Fetch Coupons
+        async function fetchCoupons() {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/coupons', { headers: { 'Authorization': `Bearer ${token}` } });
+                const coupons = await res.json();
+
+                if (coupons.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No coupons found</td></tr>';
+                    return;
                 }
+
+                coupons.forEach(c => {
+                    const isExpired = new Date() > new Date(c.expiryDate);
+                    const statusBadge = isExpired ? '<span class="badge bg-danger">Expired</span>' : '<span class="badge bg-success">Active</span>';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-bold text-uppercase">${c.code}</td>
+                        <td>${c.discountType === 'percentage' ? c.discountValue + '%' : '₹' + c.discountValue}</td>
+                        <td>${c.usedCount}</td>
+                        <td>${statusBadge}</td>
+                        <td>${new Date(c.expiryDate).toLocaleDateString()}</td>
+                        <td><button class="btn btn-sm text-danger delete-btn" data-id="${c._id}"><i class="fas fa-trash"></i></button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        fetchCoupons();
+
+        // Create Coupon
+        document.getElementById('couponForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                code: document.getElementById('code').value,
+                discountType: document.getElementById('discountType').value,
+                discountValue: document.getElementById('discountValue').value,
+                minOrderAmount: document.getElementById('minOrderAmount').value,
+                usageLimit: document.getElementById('usageLimit').value || null,
+                expiryDate: document.getElementById('expiryDate').value
+            };
+
+            try {
+                const res = await fetch('/api/coupons', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    Swal.fire('Success', 'Coupon created', 'success');
+                    fetchCoupons();
+                    e.target.reset();
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Server Error', 'error');
+            }
+        });
+
+        // Delete Listener
+        document.querySelector('tbody').addEventListener('click', async (e) => {
+            if (e.target.closest('.delete-btn')) {
+                const id = e.target.closest('.delete-btn').dataset.id;
+                Swal.fire({
+                    title: 'Delete?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const res = await fetch(`/api/coupons/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            if (res.ok) {
+                                Swal.fire('Deleted!', 'Coupon has been deleted.', 'success');
+                                fetchCoupons();
+                            }
+                        } catch (err) { Swal.fire('Error', 'Server Error', 'error'); }
+                    }
+                });
             }
         });
     </script>

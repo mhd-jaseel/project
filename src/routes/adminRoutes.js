@@ -13,6 +13,7 @@ router.get("/dashboard", auth, role("admin"), (req, res) => {
 router.get('/stats', auth, role('admin'), adminController.getDashboardStats);
 router.get('/customers', auth, role('admin'), adminController.getAllCustomers);
 router.delete('/customers/:id', auth, role('admin'), adminController.deleteCustomer);
+router.get('/transactions', auth, role('admin'), adminController.getAllTransactions);
 
 // Message Routes
 router.get('/messages', auth, role('admin'), contactController.getAllMessages);

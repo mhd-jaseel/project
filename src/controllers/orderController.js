@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // Place Order
 exports.placeOrder = async (req, res) => {
     try {
-        const { shippingAddress, paymentMethod, saveAddressInfo } = req.body;
+        const { shippingAddress, paymentMethod, saveAddressInfo, couponCode } = req.body;
         const userId = req.user.id; // Fixed: accessing id from decoded token
 
         // 1. Fetch User Cart
@@ -36,10 +36,49 @@ exports.placeOrder = async (req, res) => {
             });
         }
 
-        // 3. Apply Fees
+        // 3. Apply Fees & Coupon
         const deliveryCharge = subtotal > 2000 ? 0 : 25;
-        const handlingFee = 2; // Fixed fee matching cartController
-        const totalAmount = subtotal + deliveryCharge + handlingFee;
+        const handlingFee = 2;
+        let totalAmount = subtotal + deliveryCharge + handlingFee;
+        let discountAmount = 0;
+
+        // --- Coupon Logic Start ---
+        let couponToUpdate = null;
+        if (couponCode) {
+            const Coupon = require('../models/Coupon');
+            const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+
+            if (coupon) {
+                const now = new Date();
+                // Validate Validity
+                const isValidDate = coupon.isActive && now >= coupon.startDate && now <= coupon.expiryDate;
+                const isValidAmount = subtotal >= coupon.minOrderAmount;
+                const isLimitOk = (!coupon.usageLimit || coupon.usedCount < coupon.usageLimit);
+                const isUserLimitOk = coupon.usedUsers.filter(id => id.toString() === userId).length < coupon.perUserLimit;
+
+                if (isValidDate && isValidAmount && isLimitOk && isUserLimitOk) {
+                    // Calculator
+                    if (coupon.discountType === 'percentage') {
+                        discountAmount = (subtotal * coupon.discountValue) / 100;
+                        if (coupon.maxDiscountAmount && discountAmount > coupon.maxDiscountAmount) {
+                            discountAmount = coupon.maxDiscountAmount;
+                        }
+                    } else {
+                        discountAmount = coupon.discountValue;
+                    }
+
+                    // Security Cap
+                    if (discountAmount > subtotal) discountAmount = subtotal;
+
+                    totalAmount -= discountAmount;
+                    couponToUpdate = coupon;
+                }
+            }
+        }
+
+        totalAmount = Math.max(0, Math.round(totalAmount));
+        discountAmount = Math.round(discountAmount);
+        // --- Coupon Logic End ---
 
         // 4. Payment Logic
         let paymentStatus = 'Pending';
@@ -52,9 +91,14 @@ exports.placeOrder = async (req, res) => {
         } else if (paymentMethod === 'COD') {
             paymentStatus = 'Pending';
         } else if (paymentMethod === 'Bank') {
-            // For simplicity, we assume Bank transfer is external or verified later
-            // Could be 'Pending' until admin verifies
             paymentStatus = 'Pending';
+        }
+
+        // Update coupon usage if used
+        if (couponToUpdate) {
+            couponToUpdate.usedCount += 1;
+            couponToUpdate.usedUsers.push(userId);
+            await couponToUpdate.save();
         }
 
         // 5. Create Order
@@ -67,7 +111,9 @@ exports.placeOrder = async (req, res) => {
             subtotal,
             deliveryCharge,
             handlingFee,
-            totalAmount
+            totalAmount,
+            couponCode: couponToUpdate ? couponToUpdate.code : null,
+            discountAmount
         });
 
         const savedOrder = await newOrder.save();
