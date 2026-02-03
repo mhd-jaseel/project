@@ -483,7 +483,7 @@
             <div class="d-flex gap-2">
                 <button id="btn-clear-wishlist" class="btn btn-outline-danger btn-sm"><i
                         class="fas fa-trash me-2"></i>Clear All</button>
-                <button id="btn-move-all-cart" class="btn btn-dark btn-sm"><i class="fas fa-shopping-cart me-2"></i>Move
+                <button id="btn-add-all-cart" class="btn btn-dark btn-sm"><i class="fas fa-shopping-cart me-2"></i>Add
                     All to Cart</button>
             </div>
         </div>
@@ -587,7 +587,7 @@
             const wishlistContainer = document.getElementById("wishlist-container");
             const wishlistCount = document.getElementById("wishlist-count");
             const btnClear = document.getElementById("btn-clear-wishlist");
-            const btnMoveAll = document.getElementById("btn-move-all-cart");
+            const btnMoveAll = document.getElementById("btn-add-all-cart");
 
             if (!wishlistContainer) return;
 
@@ -741,49 +741,65 @@
             };
 
             /* ===============================
-               MOVE ALL TO CART
+               ADD ALL TO CART (Without Removing from Wishlist)
             ================================ */
             btnMoveAll.onclick = () => {
                 Swal.fire({
-                    title: 'Move All to Cart?',
-                    text: "This will move all wishlist items to your cart.",
+                    title: 'Add All to Cart?',
+                    text: "This will add all available wishlist items to your cart.",
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#2ecc71',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, move them!'
+                    confirmButtonText: 'Yes, add them!'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        const res = await fetch("/api/wishlist", {
-                            headers: { Authorization: "Bearer " + token }
-                        });
-                        const data = await res.json();
+                        try {
+                            // 1. Get Wishlist Items
+                            const res = await fetch("/api/wishlist", {
+                                headers: { Authorization: "Bearer " + token }
+                            });
+                            const data = await res.json();
 
-                        let cart = JSON.parse(localStorage.getItem("kmStoreCart")) || [];
-                        data.forEach(p => {
-                            // Check if stock allows (simple check)
-                            if (p.status !== 'Out of Stock') {
-                                const index = cart.findIndex(i => i.name === p.name);
-                                if (index > -1) cart[index].quantity++;
-                                else cart.push({ name: p.name, price: p.price, image: p.image, quantity: 1 });
+                            if (data.length === 0) {
+                                Swal.fire('Info', 'Wishlist is empty', 'info');
+                                return;
                             }
-                        });
-                        localStorage.setItem("kmStoreCart", JSON.stringify(cart));
 
-                        await fetch("/api/wishlist", {
-                            method: "DELETE",
-                            headers: { Authorization: "Bearer " + token }
-                        });
+                            // 2. Add each to cart via API
+                            let addedCount = 0;
+                            for (const p of data) {
+                                if (p.status !== 'Out of Stock') {
+                                    await fetch("/api/cart", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Authorization": "Bearer " + token
+                                        },
+                                        body: JSON.stringify({ id: p._id, quantity: 1 })
+                                    });
+                                    addedCount++;
+                                }
+                            }
 
-                        Swal.fire({
-                            title: 'Moved!',
-                            text: 'Items moved to cart successfully.',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            window.location.href = "cart.html";
-                        });
+                            if (addedCount > 0) {
+                                Swal.fire({
+                                    title: 'Added!',
+                                    text: `${addedCount} items added to cart successfully.`,
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.href = "cart.html";
+                                });
+                            } else {
+                                Swal.fire('Info', 'No available items to add (Check stock status)', 'info');
+                            }
+
+                        } catch (err) {
+                            console.error("Error moving items:", err);
+                            Swal.fire('Error', 'Failed to add items to cart', 'error');
+                        }
                     }
                 });
             };
@@ -809,7 +825,7 @@
                                     "Content-Type": "application/json",
                                     "Authorization": "Bearer " + token
                                 },
-                                body: JSON.stringify({ productId: id, quantity: 1 })
+                                body: JSON.stringify({ id: id, quantity: 1 })
                             });
 
                             if (res.ok) {
@@ -819,6 +835,8 @@
                                     text: `${name} has been added to cart.`,
                                     showConfirmButton: false,
                                     timer: 1500
+                                }).then(() => {
+                                    window.location.href = "cart.html";
                                 });
                             } else {
                                 const data = await res.json();
