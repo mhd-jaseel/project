@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Wallet = require("../models/Wallet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -31,7 +32,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
 
-    await User.create({
+    const user = await User.create({
       name,
       email,
       phoneNumber: phone,
@@ -42,6 +43,8 @@ exports.register = async (req, res) => {
       isEmailVerified: false
     });
 
+    // Create Wallet
+    await Wallet.create({ user: user._id });
 
     await transporter.sendMail({
       to: email,
@@ -209,10 +212,8 @@ exports.resetPassword = async (req, res) => {
 ====================== */
 exports.getWalletBalance = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.json({ balance: user.wallet || 0 });
+    const wallet = await Wallet.findOne({ user: req.user.id });
+    res.json({ balance: wallet ? wallet.balance : 0 });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }

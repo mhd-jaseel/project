@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Wallet = require('../models/Wallet');
+const Transaction = require('../models/Transaction');
 
 // Place Order
 exports.placeOrder = async (req, res) => {
@@ -82,11 +84,14 @@ exports.placeOrder = async (req, res) => {
 
         // 4. Payment Logic
         let paymentStatus = 'Pending';
+        let wallet = null;
+
         if (paymentMethod === 'Wallet') {
-            if (user.wallet < totalAmount) {
+            wallet = await Wallet.findOne({ user: userId });
+            if (!wallet || wallet.balance < totalAmount) {
                 return res.status(400).json({ message: 'Insufficient wallet balance' });
             }
-            user.wallet -= totalAmount; // Deduct from wallet
+            wallet.balance -= totalAmount; // Deduct from wallet (memory only)
             paymentStatus = 'Completed';
         } else if (paymentMethod === 'COD') {
             paymentStatus = 'Pending';
@@ -117,6 +122,20 @@ exports.placeOrder = async (req, res) => {
         });
 
         const savedOrder = await newOrder.save();
+
+        // Handle Wallet Transaction
+        if (paymentMethod === 'Wallet' && wallet) {
+            await wallet.save();
+            await Transaction.create({
+                wallet: wallet._id,
+                user: userId,
+                type: 'DEBIT',
+                amount: totalAmount,
+                reason: 'Order Payment',
+                orderId: savedOrder._id,
+                description: `Payment for Order #${savedOrder._id}`
+            });
+        }
 
         // 6. Clear Cart
         user.cart = [];
@@ -199,6 +218,14 @@ exports.updateOrderStatus = async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
+        if (order.returnStatus === 'Approved' || order.orderStatus === 'Returned') {
+            return res.status(400).json({ message: 'Cannot update status of a returned order' });
+        }
+
+        if (order.orderStatus === 'Cancelled') {
+            return res.status(400).json({ message: 'Cannot update status of a cancelled order' });
+        }
+
         order.orderStatus = status;
         if (status === 'Delivered' && order.paymentMethod === 'COD') {
             order.paymentStatus = 'Completed';
@@ -252,7 +279,45 @@ exports.cancelOrder = async (req, res) => {
         order.cancellationReason = reason || 'No reason provided';
         order.cancelledAt = new Date();
         order.viewedByAdmin = false; // Notify admin
+
+        // Wallet Refund (if paid)
+        if (order.paymentStatus === 'Completed' && ['Wallet', 'Bank'].includes(order.paymentMethod)) {
+            const wallet = await Wallet.findOne({ user: userId });
+            if (wallet) {
+                wallet.balance += order.totalAmount;
+                await wallet.save();
+
+                await Transaction.create({
+                    wallet: wallet._id,
+                    user: userId,
+                    type: 'CREDIT',
+                    amount: order.totalAmount,
+                    reason: 'Cancel Refund',
+                    orderId: order._id,
+                    description: `Refund for Cancelled Order #${order._id}`
+                });
+                order.paymentStatus = 'Refunded';
+            }
+        }
+
         await order.save();
+
+        // Revert Coupon Usage
+        if (order.couponCode) {
+            const Coupon = require('../models/Coupon');
+            const coupon = await Coupon.findOne({ code: order.couponCode });
+            if (coupon) {
+                if (coupon.usedCount > 0) {
+                    coupon.usedCount -= 1;
+                }
+                // Remove user from usedUsers (remove only one instance)
+                const userIndex = coupon.usedUsers.findIndex(u => u.toString() === userId);
+                if (userIndex > -1) {
+                    coupon.usedUsers.splice(userIndex, 1);
+                }
+                await coupon.save();
+            }
+        }
 
         res.json({ message: 'Order cancelled successfully', order });
 
@@ -325,7 +390,29 @@ exports.updateReturnStatus = async (req, res) => {
 
         if (status === 'Approved') {
             order.orderStatus = 'Returned';
-            order.paymentStatus = 'Refunded'; // Assume refund processed if approved
+
+            // Wallet Refund
+            if (order.paymentStatus === 'Completed') {
+                const wallet = await Wallet.findOne({ user: order.user });
+                if (wallet) {
+                    wallet.balance += order.totalAmount;
+                    await wallet.save();
+
+                    await Transaction.create({
+                        wallet: wallet._id,
+                        user: order.user,
+                        type: 'CREDIT',
+                        amount: order.totalAmount,
+                        reason: 'Return Refund',
+                        orderId: order._id,
+                        description: `Refund for Returned Order #${order._id}`
+                    });
+
+                    order.paymentStatus = 'Refunded';
+                }
+            } else {
+                order.paymentStatus = 'Refunded';
+            }
         }
 
         await order.save();

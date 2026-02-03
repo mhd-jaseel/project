@@ -377,7 +377,7 @@
                                     <tr>
                                         <th>Code</th>
                                         <th>Discount</th>
-                                        <th>Used</th>
+                                        <th>Usage / Limit</th>
                                         <th>Status</th>
                                         <th>Expiry</th>
                                         <th>Action</th>
@@ -444,7 +444,10 @@
                     tr.innerHTML = `
                         <td class="fw-bold text-uppercase">${c.code}</td>
                         <td>${c.discountType === 'percentage' ? c.discountValue + '%' : '₹' + c.discountValue}</td>
-                        <td>${c.usedCount}</td>
+                        <td>
+                            <span class="fw-bold">${c.usedCount}</span> / 
+                            <span class="text-muted">${c.usageLimit ? c.usageLimit : '∞'}</span>
+                        </td>
                         <td>${statusBadge}</td>
                         <td>${new Date(c.expiryDate).toLocaleDateString()}</td>
                         <td><button class="btn btn-sm text-danger delete-btn" data-id="${c._id}"><i class="fas fa-trash"></i></button></td>

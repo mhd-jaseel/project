@@ -233,6 +233,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -323,36 +325,29 @@
                                     class="fas fa-arrow-left me-2"></i>Back</a>
                         </div>
 
-                        <form>
+                        <form id="addBrandForm">
                             <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label text-muted small">Brand Name</label>
-                                    <input type="text" class="form-control" placeholder="e.g. DAAWAT">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label text-muted small">Card Background Color</label>
-                                    <input type="color" class="form-control form-control-color w-100" value="#0d5f22"
-                                        title="Choose your color">
-                                </div>
                                 <div class="col-12">
-                                    <label class="form-label text-muted small">Main Heading / Tagline</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Cook Exotic Dishes">
+                                    <label class="form-label text-muted small">Brand Image <span
+                                            class="text-danger">*</span></label>
+                                    <input type="file" class="form-control" name="image" id="brandImageInput"
+                                        accept="image/*" required>
+                                    <div class="form-text">Recommended size: High quality background image.</div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted small">Offer / Subtext</label>
-                                    <input type="text" class="form-control" placeholder="e.g. UP to 20% OFF">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted small">Brand Logo</label>
-                                    <input type="file" class="form-control">
-                                    <div class="form-text">Recommended size: 80x40px, PNG format.</div>
+
+                                <div class="col-12 mt-3 text-center d-none" id="brandPreviewContainer">
+                                    <img src="#" id="brandPreview" class="img-fluid rounded border shadow-sm"
+                                        style="max-height: 200px;" alt="Brand Preview">
                                 </div>
 
                                 <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-primary-custom px-5">Save Brand</button>
+                                    <button type="submit" class="btn btn-primary-custom px-5">Upload Brand
+                                        Image</button>
                                 </div>
                             </div>
                         </form>
+
+
                     </div>
                 </div>
             </div>
@@ -375,6 +370,55 @@
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('show');
+            });
+        }
+
+        // --- Brand Logic ---
+
+        // Preview Image
+        const imageInput = document.getElementById('brandImageInput');
+        if (imageInput) {
+            imageInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.getElementById('brandPreview').src = e.target.result;
+                        document.getElementById('brandPreviewContainer').classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Submit Form
+        const addBrandForm = document.getElementById('addBrandForm');
+        if (addBrandForm) {
+            addBrandForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+
+                // Get token here to ensure it's available
+                const authToken = localStorage.getItem("adminToken");
+
+                try {
+                    const res = await fetch('/api/brands/add', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${authToken}` },
+                        body: formData
+                    });
+
+                    if (res.ok) {
+                        Swal.fire('Success!', 'Brand added successfully!', 'success')
+                            .then(() => window.location.href = 'feature-brands.html');
+                    } else {
+                        const data = await res.json();
+                        Swal.fire('Error!', data.message || 'Failed to add brand.', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
             });
         }
     </script>

@@ -661,11 +661,23 @@
             const statusSelect = document.getElementById('orderStatusSelect');
             if (statusSelect) {
                 statusSelect.value = order.orderStatus;
+                if (order.returnStatus === 'Approved' || order.orderStatus === 'Returned' || order.orderStatus === 'Cancelled') {
+                    statusSelect.disabled = true;
+                } else {
+                    statusSelect.disabled = false;
+                }
             }
 
             // Save Button
             const saveBtn = document.querySelector('#orderDetailsModal .modal-footer .btn-primary-custom');
-            if (saveBtn) saveBtn.onclick = () => updateStatus(order._id);
+            if (saveBtn) {
+                saveBtn.onclick = () => updateStatus(order._id);
+                if (order.returnStatus === 'Approved' || order.orderStatus === 'Returned' || order.orderStatus === 'Cancelled') {
+                    saveBtn.style.display = 'none';
+                } else {
+                    saveBtn.style.display = 'inline-block';
+                }
+            }
 
             // Mark as viewed if not already
             if (!order.viewedByAdmin) {

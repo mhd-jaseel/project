@@ -789,7 +789,7 @@
             };
 
             /* ===============================
-               ADD TO CART (LOCAL)
+               ADD TO CART (API)
             ================================ */
             window.confirmAddToCart = (id, name, price, image) => {
                 Swal.fire({
@@ -800,25 +800,34 @@
                     confirmButtonColor: '#2ecc71',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, add it!'
-                }).then((result) => {
+                }).then(async (result) => {
                     if (result.isConfirmed) {
-                        let cart = JSON.parse(localStorage.getItem("kmStoreCart")) || [];
-                        const index = cart.findIndex(i => i.name === name);
+                        try {
+                            const res = await fetch("/api/cart", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": "Bearer " + token
+                                },
+                                body: JSON.stringify({ productId: id, quantity: 1 })
+                            });
 
-                        if (index > -1) cart[index].quantity++;
-                        else cart.push({ name, price, image, quantity: 1 });
-
-                        localStorage.setItem("kmStoreCart", JSON.stringify(cart));
-
-                        Swal.fire({
-                            title: 'Added!',
-                            text: `${name} has been added to your cart.`,
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        // Optional: Redirect or stay
-                        window.location.href = "cart.html";
+                            if (res.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Added!',
+                                    text: `${name} has been added to cart.`,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                const data = await res.json();
+                                Swal.fire('Error', data.message || 'Failed to add to cart', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Error adding to cart:', error);
+                            Swal.fire('Error', 'Something went wrong', 'error');
+                        }
                     }
                 });
             };

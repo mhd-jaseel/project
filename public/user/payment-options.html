@@ -512,50 +512,37 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="mb-1 opacity-75">KM Wallet Balance</p>
-                            <h2 class="fw-bold mb-0">₹2,500.00</h2>
+                            <h2 class="fw-bold mb-0" id="wallet-balance">Loading...</h2>
                         </div>
                         <button class="btn btn-light text-primary-custom fw-bold"><i
                                 class="fas fa-plus-circle me-2"></i>Add Money</button>
                     </div>
                 </div>
 
-                <!-- Saved Cards -->
-                <div class="card border-0 shadow-sm p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold text-primary-custom m-0">Saved Cards</h5>
-                        <button class="btn btn-primary-custom btn-sm">+ Add New Card</button>
-                    </div>
-
-                    <div class="row g-3">
-                        <!-- Card 1 -->
-                        <div class="col-md-6">
-                            <div class="card p-3 border h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <i class="fab fa-cc-visa fa-2x text-primary"></i>
-                                    <span class="badge bg-light text-dark border">Default</span>
-                                </div>
-                                <h6 class="fw-bold mb-1">Visa ending in 4242</h6>
-                                <p class="small text-muted mb-0">Expiry: 12/26</p>
-                                <div class="mt-3 text-end">
-                                    <a href="#" class="text-danger small text-decoration-none">Remove</a>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Card 2 -->
-                        <div class="col-md-6">
-                            <div class="card p-3 border h-100">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <i class="fab fa-cc-mastercard fa-2x text-danger"></i>
-                                </div>
-                                <h6 class="fw-bold mb-1">Mastercard ending in 8899</h6>
-                                <p class="small text-muted mb-0">Expiry: 08/25</p>
-                                <div class="mt-3 text-end">
-                                    <a href="#" class="text-danger small text-decoration-none">Remove</a>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Transaction History -->
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold text-primary-custom mb-3">Transaction History</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Reason</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-list">
+                                <tr>
+                                    <td colspan="5" class="text-center">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+                <!-- Saved Cards Removed -->
             </div>
         </div>
     </section>
@@ -600,7 +587,57 @@
                 &copy; 2024 KM Store. All rights reserved.
             </div>
         </div>
+        </div>
     </footer>
+
+    <!-- Transaction Details Modal -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-bottom-0 bg-light-green">
+                    <h5 class="modal-title fw-bold">Transaction Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <div id="tx-icon-container" class="mb-3">
+                            <i class="fas fa-wallet fa-3x text-primary-custom"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" id="tx-amount">Loading...</h3>
+                        <span class="badge bg-secondary" id="tx-type">LOADING</span>
+                    </div>
+
+                    <ul class="list-group list-group-flush rounded-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                            <span class="text-muted">Transaction ID</span>
+                            <span class="fw-bold" id="tx-id">...</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Date</span>
+                            <span class="fw-bold" id="tx-date">...</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                            <span class="text-muted">Reason</span>
+                            <span class="fw-bold text-end" id="tx-reason">...</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center" id="tx-order-row"
+                            style="display:none;">
+                            <span class="text-muted">Order ID</span>
+                            <span class="fw-bold" id="tx-order-id">...</span>
+                        </li>
+                        <!-- Extra details for refunds -->
+                        <li class="list-group-item" id="tx-extra-info" style="display:none;">
+                            <small class="text-muted d-block mb-1">Additional Info</small>
+                            <p class="mb-0 small fw-bold" id="tx-desc">...</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="btn btn-primary-custom w-100" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -639,18 +676,18 @@
                 if (accountLink) {
                     if (!document.getElementById('accountDropdown')) {
                         const dropdownHTML = `
-                            <div class="dropdown d-inline-block">
-                                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user me-1"></i> Account
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
-                                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
-                                </ul>
-                            </div>
-                        `;
+            <div class="dropdown d-inline-block">
+                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user me-1"></i> Account
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
+                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+                </ul>
+            </div>
+            `;
                         accountLink.outerHTML = dropdownHTML;
 
                         setTimeout(() => {
@@ -673,6 +710,126 @@
             }
         }
 
+        async function fetchWalletData() {
+            const token = localStorage.getItem("userToken");
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/wallet/my-wallet', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    document.getElementById('wallet-balance').innerText = `₹${data.balance ? data.balance.toFixed(2) : '0.00'}`;
+
+                    const list = document.getElementById('transaction-list');
+                    list.innerHTML = '';
+
+                    if (!data.transactions || data.transactions.length === 0) {
+                        list.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No transactions yet</td></tr>';
+                    } else {
+                        data.transactions.forEach(tx => {
+                            const date = new Date(tx.createdAt).toLocaleDateString();
+                            const color = tx.type === 'CREDIT' ? 'text-success' : 'text-danger';
+                            const sign = tx.type === 'CREDIT' ? '+' : '-';
+                            list.innerHTML += `
+                                 <tr>
+                                     <td>${date}</td>
+                                     <td>${tx.reason}</td>
+                                     <td><span class="badge ${tx.type === 'CREDIT' ? 'bg-success' : 'bg-danger'}">${tx.type}</span></td>
+                                     <td class="${color} fw-bold">${sign} ₹${tx.amount}</td>
+                                     <td>
+                                        <button class="btn btn-sm btn-light text-primary" onclick="viewTransaction('${tx._id}')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                     </td>
+                                 </tr>
+                             `;
+                        });
+                    }
+                }
+            } catch (e) { console.error("Wallet Fetch Error:", e); }
+        }
+
+        async function viewTransaction(txId) {
+            const token = localStorage.getItem("userToken");
+            if (!token) return;
+
+            try {
+                // Show skeleton/loading state
+                const modal = new bootstrap.Modal(document.getElementById('transactionModal'));
+                document.getElementById('tx-amount').innerText = 'Loading...';
+                modal.show();
+
+                const res = await fetch(`/api/wallet/transaction/${txId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const tx = await res.json();
+
+                    // Populate Modal
+                    document.getElementById('tx-amount').innerText = `₹${tx.amount}`;
+                    document.getElementById('tx-id').innerText = tx._id.substring(0, 10).toUpperCase();
+                    document.getElementById('tx-date').innerText = new Date(tx.createdAt).toLocaleString();
+                    document.getElementById('tx-reason').innerText = tx.reason;
+
+                    const typeBadge = document.getElementById('tx-type');
+                    typeBadge.innerText = tx.type;
+                    typeBadge.className = `badge ${tx.type === 'CREDIT' ? 'bg-success' : 'bg-danger'}`;
+
+                    const iconContainer = document.getElementById('tx-icon-container');
+                    iconContainer.innerHTML = tx.type === 'CREDIT'
+                        ? '<div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block"><i class="fas fa-arrow-down fa-2x text-success"></i></div>'
+                        : '<div class="rounded-circle bg-danger bg-opacity-10 p-3 d-inline-block"><i class="fas fa-arrow-up fa-2x text-danger"></i></div>';
+
+                    // Order Info
+                    const orderRow = document.getElementById('tx-order-row');
+                    const extraRow = document.getElementById('tx-extra-info');
+
+                    if (tx.orderId) {
+                        orderRow.style.display = 'flex';
+                        // Handle populated order object or just ID
+                        const orderId = typeof tx.orderId === 'object' ? tx.orderId._id : tx.orderId;
+                        document.getElementById('tx-order-id').innerText = `#${orderId.toString().substring(0, 8).toUpperCase()}`;
+
+                        // Check for specific reasons
+                        let extraText = '';
+                        if (tx.orderId.cancellationReason && tx.reason === 'Cancel Refund') {
+                            extraText = `Cancellation Reason: ${tx.orderId.cancellationReason}`;
+                        } else if (tx.orderId.returnReason && tx.reason === 'Return Refund') {
+                            extraText = `Return Reason: ${tx.orderId.returnReason}`;
+                        } else if (tx.description) {
+                            extraText = tx.description;
+                        }
+
+                        if (extraText && tx.type === 'CREDIT') {
+                            extraRow.style.display = 'block';
+                            document.getElementById('tx-desc').innerText = extraText;
+                        } else {
+                            extraRow.style.display = 'none';
+                        }
+
+                    } else {
+                        orderRow.style.display = 'none';
+                        if (tx.description && tx.type === 'CREDIT') {
+                            extraRow.style.display = 'block';
+                            document.getElementById('tx-desc').innerText = tx.description;
+                        } else {
+                            extraRow.style.display = 'none';
+                        }
+                    }
+
+                } else {
+                    Swal.fire('Error', 'Failed to fetch transaction details', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Server Error', 'error');
+            }
+        }
+
         updateHeaderAuth();
 
         const wishlistBtn = document.querySelector('a[href="wishlist.html"]');
@@ -682,41 +839,11 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             updateHeaderAuth();
+            fetchWalletData();
 
             // Payment Options Logic
-            document.body.addEventListener('click', function (e) {
-                // Handle "Remove" card button
-                // Identify by text content 'Remove' and being inside a card, or specific class interaction
-                if (e.target.tagName === 'A' && e.target.textContent.trim() === 'Remove') {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Remove Card?',
-                        text: "Are you sure you want to remove this saved card?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, remove it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const cardCol = e.target.closest('.col-md-6');
-                            if (cardCol) cardCol.remove();
-                            // If no cards left, maybe show message? Not critical for now.
-                            Swal.fire(
-                                'Removed!',
-                                'Card has been removed.',
-                                'success'
-                            )
-                        }
-                    })
-                }
-
-                // Add Money / Add Card Placeholders
-                if (e.target.innerText.includes('Add Money') || e.target.innerText.includes('Add New Card')) {
-                    // Just visual feedback or modal placeholder needed? None requested, but nice to have click handler.
-                    // For now, no action.
-                }
-            });
+            // Payment Options Logic
+            // (Saved cards logic moved/removed)
         });
     </script>
 </body>

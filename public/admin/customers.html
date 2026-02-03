@@ -589,12 +589,14 @@
                         tr.innerHTML = `
                             <td>${index + 1}</td>
                             <td><img src="https://ui-avatars.com/api/?name=${customer.name}&background=random" class="rounded-circle" width="30" height="30"></td>
-                            <td><span class="text-dark fw-bold">${customer.name}</span></td>
+                            <td><a href="customer-details.html?id=${customer._id}" class="text-decoration-none text-dark fw-bold">${customer.name}</a></td>
                             <td>${customer.email}</td>
                             <td>${customer.phoneNumber || 'N/A'}</td>
 
-                            <td>${customer.orderCount}</td>
+                            <td>${customer.orderCount || 0}</td>
                             <td>
+                                <a href="customer-details.html?id=${customer._id}" class="btn btn-sm btn-light text-primary"
+                                    title="View"><i class="fas fa-eye"></i></a>
                                 <button class="btn btn-sm btn-light text-warning" onclick="blockUser('${customer._id}')" title="Block"><i class="fas fa-ban"></i></button>
                                 <button class="btn btn-sm btn-light text-danger delete-btn" data-id="${customer._id}" title="Delete"><i class="fas fa-trash"></i></button>
                             </td>

@@ -516,45 +516,14 @@
     <!-- Hero Section -->
     <section class="hero-section container my-4">
         <div id="heroCarousel" class="carousel slide rounded-4 overflow-hidden" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
-                    aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <div class="carousel-indicators" id="hero-indicators">
+                <!-- Dynamic indicators -->
             </div>
-            <div class="carousel-inner">
-                <!-- Slide 1 -->
-                <div class="carousel-item active" data-bs-interval="3000">
-                    <div class="row align-items-center bg-warning bg-opacity-10 p-5 position-relative h-100">
-                        <div class="col-md-6 z-1">
-                            <span class="badge bg-warning text-dark mb-2">SUMMER SALE</span>
-                            <h1 class="display-4 fw-bold text-dark">Summer Vegetables Festival</h1>
-                            <p class="lead">Special discounts on all organic vegetables.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-danger p-2 fs-6">Up to 50% OFF</span>
-                                <a href="product.html" class="btn btn-primary-custom ms-2">Shop Now</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 z-1 text-center">
-                            <div class="yellow-circle"></div>
-                            <img src="../project images/veg.jfif" alt="Summer Vegetables" class="img-fluid hero-img">
-                        </div>
-                    </div>
-                </div>
-                <!-- Slide 2 -->
-                <div class="carousel-item" data-bs-interval="3000">
-                    <div class="row align-items-center bg-primary bg-opacity-10 p-5 position-relative h-100">
-                        <div class="col-md-6 z-1">
-                            <span class="badge bg-primary text-white mb-2">WINTER DELIGHTS</span>
-                            <h1 class="display-4 fw-bold text-dark">Winter Fruits Bonanza</h1>
-                            <p class="lead">Exclusive offers on apples, oranges and dry fruits.</p>
-                            <div class="mt-3">
-                                <span class="badge bg-success p-2 fs-6">Flat 20% OFF</span>
-                                <a href="product.html" class="btn btn-primary-custom ms-2">Explore Now</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 z-1 text-center">
-                            <div class="yellow-circle" style="background-color: rgba(13, 110, 253, 0.1);"></div>
-                            <img src="../project images/fruits.jfif" alt="Winter Fruits" class="img-fluid hero-img">
+            <div class="carousel-inner" id="hero-slides">
+                <div class="carousel-item active">
+                    <div class="d-flex align-items-center justify-content-center bg-light" style="height: 400px;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -571,6 +540,61 @@
             </button>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/banners/active');
+                if (!res.ok) throw new Error("Failed to fetch banners");
+                const banners = await res.json();
+
+                const indicators = document.getElementById('hero-indicators');
+                const slides = document.getElementById('hero-slides');
+
+                if (banners.length > 0) {
+                    indicators.innerHTML = '';
+                    slides.innerHTML = '';
+
+                    banners.forEach((banner, index) => {
+                        // Indicator
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.dataset.bsTarget = '#heroCarousel';
+                        btn.dataset.bsSlideTo = index;
+                        btn.ariaLabel = `Slide ${index + 1}`;
+                        if (index === 0) {
+                            btn.className = 'active';
+                            btn.ariaCurrent = 'true';
+                        }
+                        indicators.appendChild(btn);
+
+                        // Slide
+                        const item = document.createElement('div');
+                        item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                        item.dataset.bsInterval = 4000;
+
+                        item.innerHTML = `
+                            <div class="row align-items-center bg-light bg-opacity-10 p-4 p-md-5 position-relative h-100 banner-container" 
+                                 style="min-height: 400px; background: url('${banner.imageUrl}') no-repeat center center / cover;">
+                                
+                                <div class="col-md-7 col-lg-6 z-1 text-white p-4 rounded-3" 
+                                     style="background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);">
+                                    ${banner.subtitle ? `<span class="badge bg-warning text-dark mb-2">${banner.subtitle}</span>` : ''}
+                                    ${banner.title ? `<h1 class="display-5 fw-bold">${banner.title}</h1>` : ''}
+                                    <div class="mt-3">
+                                         <a href="product.html" class="btn btn-primary-custom ms-2 border-white">Shop Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        slides.appendChild(item);
+                    });
+                }
+            } catch (e) {
+                console.error("Banner Load Error", e);
+            }
+        });
+    </script>
 
     <!-- Categories Section -->
     <section class="container my-5">
@@ -605,49 +629,87 @@
 
     <div id="dynamic-category-sections"></div>
 
+    <style>
+        .brand-slider {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            padding: 20px 0;
+            background: #fff;
+        }
+
+        .brand-track {
+            display: flex;
+            width: fit-content;
+            animation: scroll 30s linear infinite;
+        }
+
+        .brand-item {
+            flex: 0 0 auto;
+            width: 180px;
+            height: 100px;
+            margin-right: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+
     <!-- Featured Brands Section -->
     <section class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold text-muted">Featured Brands</h3>
-            <a href="#" class="text-muted text-decoration-none small">View All <i class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 rounded-4 overflow-hidden shadow-sm" style="background-color: #0d5f22;">
-                    <div class="card-body text-white p-4">
-                        <img src="../project images/daawat baasmathi rice.avif" class="mb-3 bg-white rounded p-1"
-                            alt="Daawat" style="height: 60px; object-fit: contain;">
-                        <h5 class="fw-bold">Cook Exotic Dishes</h5>
-                        <p class="mb-0">UP to <span class="fw-bold fs-4">20% OFF</span></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 rounded-4 overflow-hidden shadow-sm" style="background-color: #f3e5ab;">
-                    <div class="card-body text-dark p-4 position-relative">
-                        <h6 class="fw-bold text-danger">0% MAIDA 100% ATTA</h6>
-                        <p class="small">Trusted by Millions of Mothers</p>
-                        <img src="../project images/aashirvaad ad.jfif" class="mt-3" alt="Aashirvaad"
-                            style="height: 60px; object-fit: contain;">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 rounded-4 overflow-hidden shadow-sm" style="background-color: #7cb342;">
-                    <div class="card-body text-white p-4">
-                        <h5 class="fw-bold">Green Tea</h5>
-                        <p class="mb-2">UP to <span class="fw-bold fs-4">25% OFF</span></p>
-                        <img src="../project images/Premium Tea.jfif" class="bg-white rounded p-1" alt="Spices"
-                            style="height: 60px; object-fit: contain;">
-                    </div>
-                </div>
+        <h3 class="fw-bold text-muted mb-4">Featured Brands</h3>
+        <div class="brand-slider shadow-sm rounded-4">
+            <div class="brand-track" id="featuredBrandsTrack">
+                <!-- Brands will be loaded here -->
             </div>
         </div>
-        <!-- Pagination Dots -->
-        <div class="text-center mt-3">
-            <i class="fas fa-minus text-success"></i> <i class="fas fa-circle text-light small"></i> <i
-                class="fas fa-circle text-light small"></i> <i class="fas fa-circle text-light small"></i>
-        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                try {
+                    const res = await fetch('/api/brands');
+                    if (!res.ok) throw new Error("Failed to fetch brands");
+                    const brands = await res.json();
+
+                    const track = document.getElementById('featuredBrandsTrack');
+
+                    if (brands.length > 0) {
+                        // Duplicate brands to create seamless infinite scroll
+                        // If minimal brands, repeat more times to fill width
+                        let displayBrands = [...brands, ...brands];
+                        if (brands.length < 5) displayBrands = [...displayBrands, ...brands, ...brands];
+
+                        track.innerHTML = displayBrands.map(brand => `
+                            <div class="brand-item">
+                                <img src="${brand.imageUrl}" alt="Brand">
+                            </div>
+                        `).join('');
+                    } else {
+                        track.innerHTML = '<div class="p-4 text-muted w-100 text-center">No brands available</div>';
+                        track.style.animation = 'none';
+                        track.style.display = 'block';
+                    }
+                } catch (e) {
+                    console.error("Brand Load Error", e);
+                }
+            });
+        </script>
     </section>
 
     <!-- Features Info Section -->
@@ -992,7 +1054,31 @@
         document.addEventListener("DOMContentLoaded", () => {
             updateHeaderAuth();
             loadHotDeals();
+            loadCategories();
         });
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/categories');
+                const categories = await res.json();
+                const container = document.getElementById('categoryContainer');
+
+                if (container) {
+                    container.innerHTML = categories.map(cat => `
+                        <div class="col-6 col-md-3 col-lg-2 mb-4 d-flex flex-column align-items-center">
+                            <a href="product.html?category=${cat._id}" class="text-decoration-none">
+                                <div class="category-circle mb-2 overflow-hidden shadow-sm border-white">
+                                    <img src="${cat.image}" alt="${cat.name}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                </div>
+                                <h6 class="text-dark fw-bold small">${cat.name}</h6>
+                            </a>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Failed to load categories", err);
+            }
+        }
         document.addEventListener("DOMContentLoaded", () => {
             const hotDealsTrack = document.getElementById("hot-deals-track");
             const prevBtn = document.getElementById("hot-deals-prev");
