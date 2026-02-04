@@ -226,9 +226,42 @@ exports.updateOrderStatus = async (req, res) => {
             return res.status(400).json({ message: 'Cannot update status of a cancelled order' });
         }
 
+        // Check for 24-hour lock if Delivered and no return requested
+        if (order.orderStatus === 'Delivered') {
+            const deliveredTime = order.deliveredAt ? new Date(order.deliveredAt).getTime() : 0;
+            const now = Date.now();
+            const hoursSinceDelivery = (now - deliveredTime) / (1000 * 60 * 60);
+
+            // If > 24h passed OR (no deliveredAt set but assuming old), and User hasn't requested return
+            // But if deliveredAt is null, we can't strict enforce, so we must set it properly moving forward.
+            // Assuming if we are HERE updating status, we are changing FROM delivered.
+
+            if (order.deliveredAt && hoursSinceDelivery > 24 && (!order.returnStatus || order.returnStatus === 'None')) {
+                return res.status(400).json({ message: 'Cannot change status: 24-hour return window has expired and no return was requested.' });
+            }
+        }
+
         order.orderStatus = status;
-        if (status === 'Delivered' && order.paymentMethod === 'COD') {
-            order.paymentStatus = 'Completed';
+        if (status === 'Delivered') {
+            // Set deliveredAt if first time delivering
+            if (!order.deliveredAt) {
+                order.deliveredAt = new Date();
+            }
+            if (order.paymentMethod === 'COD') {
+                order.paymentStatus = 'Completed';
+            }
+        } else if (order.paymentMethod === 'COD' && status !== 'Reported') {
+            // Reset payment if moved back from delivered? (Optional, implies unsafe operation usually)
+        }
+
+        // Sync item status if not already Cancelled or Returned
+        if (order.items && order.items.length > 0) {
+            order.items.forEach(item => {
+                const finalStatuses = ['Cancelled', 'Returned', 'Return Requested'];
+                if (!finalStatuses.includes(item.itemStatus)) {
+                    item.itemStatus = status;
+                }
+            });
         }
 
         await order.save();
@@ -375,6 +408,152 @@ exports.requestReturn = async (req, res) => {
     }
 };
 
+/* ======================
+    ITEM LIST ACTIONS
+====================== */
+
+// Cancel Single Order Item
+// Cancel Single Order Item
+exports.cancelOrderItem = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const { reason } = req.body;
+        const userId = req.user.id;
+
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        const item = order.items.id(itemId);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+
+        if (item.itemStatus === 'Cancelled') {
+            return res.status(400).json({ message: 'Item already cancelled' });
+        }
+
+        if (['Packed', 'Out For Delivery', 'Delivered'].includes(order.orderStatus)) {
+            return res.status(400).json({ message: 'Cannot cancel item at this stage' });
+        }
+
+        // 1. Mark Item Cancelled
+        item.itemStatus = 'Cancelled';
+        item.cancellationReason = reason || 'User requested';
+
+        // 2. Recalculate Totals
+        const oldTotalAmount = order.totalAmount;
+        let newSubtotal = 0;
+
+        order.items.forEach(i => {
+            if (i.itemStatus !== 'Cancelled') {
+                newSubtotal += i.price * i.quantity;
+            }
+        });
+
+        order.subtotal = newSubtotal;
+
+        // Recalculate Discount
+        if (order.couponCode) {
+            const Coupon = require('../models/Coupon');
+            const coupon = await Coupon.findOne({ code: order.couponCode });
+
+            if (coupon && coupon.discountType === 'percentage') {
+                let newDiscount = (newSubtotal * coupon.discountValue) / 100;
+                if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
+                    newDiscount = coupon.maxDiscountAmount;
+                }
+                order.discountAmount = Math.round(newDiscount);
+            } else if (coupon && coupon.discountType === 'fixed') {
+                // Keep fixed discount unless subtotal is 0
+                if (newSubtotal === 0) order.discountAmount = 0;
+                else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
+            }
+        } else {
+            // No coupon, ensure discount is 0 (or keep manual discount?)
+            // Usually ok to keep as is if no coupon code, assuming 0
+        }
+
+        // New Total
+        let newTotal = newSubtotal + order.deliveryCharge + order.handlingFee - order.discountAmount;
+        newTotal = Math.max(0, Math.round(newTotal));
+
+        order.totalAmount = newTotal;
+
+        // 3. Refund Logic (Difference)
+        if (order.paymentStatus === 'Completed' && ['Wallet', 'Bank'].includes(order.paymentMethod)) {
+            const refundAmount = oldTotalAmount - newTotal;
+
+            if (refundAmount > 0) {
+                const wallet = await Wallet.findOne({ user: userId });
+                if (wallet) {
+                    wallet.balance += refundAmount;
+                    await wallet.save();
+
+                    await Transaction.create({
+                        wallet: wallet._id,
+                        user: userId,
+                        type: 'CREDIT',
+                        amount: refundAmount,
+                        reason: 'Item Cancellation Refund',
+                        orderId: order._id,
+                        description: `Refund for cancelled item: ${item.name}`
+                    });
+                }
+            }
+        }
+
+        // Check if all items are cancelled
+        const allCancelled = order.items.every(i => i.itemStatus === 'Cancelled');
+        if (allCancelled) {
+            order.orderStatus = 'Cancelled';
+            order.cancellationReason = 'All items cancelled by user';
+            order.cancelledAt = new Date();
+        }
+
+        await order.save();
+        res.json({ message: 'Item cancelled successfully', order });
+
+    } catch (error) {
+        console.error("Error cancelling item:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Request Return Single Item
+exports.requestItemReturn = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const { reason } = req.body;
+        const userId = req.user.id;
+
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        const item = order.items.id(itemId);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+
+        if (order.orderStatus !== 'Delivered') {
+            return res.status(400).json({ message: 'Order not delivered yet' });
+        }
+
+        if (item.returnStatus !== 'None') {
+            return res.status(400).json({ message: 'Return already active for this item' });
+        }
+
+        item.returnStatus = 'Requested';
+        item.returnReason = reason || 'User requested';
+        item.itemStatus = 'Return Requested';
+
+        // Notify Admin
+        order.viewedByAdmin = false;
+
+        await order.save();
+        res.json({ message: 'Return requested for item', order });
+
+    } catch (error) {
+        console.error("Error requesting item return:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 // Update Return Status (Admin)
 exports.updateReturnStatus = async (req, res) => {
     try {
@@ -423,6 +602,105 @@ exports.updateReturnStatus = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+// Update Item Return Status (Admin)
+exports.updateItemReturnStatus = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const { status } = req.body; // Approved, Rejected
+
+        const order = await Order.findById(orderId);
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        const item = order.items.id(itemId);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+
+        item.returnStatus = status;
+
+        if (status === 'Approved') {
+            item.itemStatus = 'Returned';
+
+            // 1. Recalculate Totals (Similar to Cancel logic)
+            const oldTotalAmount = order.totalAmount;
+            let newSubtotal = 0;
+
+            order.items.forEach(i => {
+                // Exclude Cancelled AND Returned items from active subtotal
+                if (i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned') {
+                    newSubtotal += i.price * i.quantity;
+                }
+            });
+
+            order.subtotal = newSubtotal;
+
+            // 2. Recalculate Discount
+            if (order.couponCode) {
+                const Coupon = require('../models/Coupon');
+                const coupon = await Coupon.findOne({ code: order.couponCode });
+
+                if (coupon && coupon.discountType === 'percentage') {
+                    let newDiscount = (newSubtotal * coupon.discountValue) / 100;
+                    if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
+                        newDiscount = coupon.maxDiscountAmount;
+                    }
+                    order.discountAmount = Math.round(newDiscount);
+                } else if (coupon && coupon.discountType === 'fixed') {
+                    if (newSubtotal === 0) order.discountAmount = 0;
+                    else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
+                }
+            } else {
+                // If no coupon, maintain existing logic (usually 0)
+            }
+
+            // 3. New Total
+            let newTotal = newSubtotal + order.deliveryCharge + order.handlingFee - order.discountAmount;
+            newTotal = Math.max(0, Math.round(newTotal));
+            order.totalAmount = newTotal;
+
+            // 4. Refund Logic (Difference)
+            if (order.paymentStatus === 'Completed') {
+                const refundAmount = oldTotalAmount - newTotal;
+
+                if (refundAmount > 0) {
+                    const wallet = await Wallet.findOne({ user: order.user });
+                    if (wallet) {
+                        wallet.balance += refundAmount;
+                        await wallet.save();
+
+                        await Transaction.create({
+                            wallet: wallet._id,
+                            user: order.user,
+                            type: 'CREDIT',
+                            amount: refundAmount,
+                            reason: 'Item Return Refund',
+                            orderId: order._id,
+                            description: `Refund for Returned Item: ${item.name}`
+                        });
+
+                        // If all items returned, update payment status?
+                        // order.paymentStatus = 'RefundedPartial'; // Optional
+                    }
+                }
+            }
+        } else if (status === 'Rejected') {
+            // Revert item status to Delivered
+            item.itemStatus = 'Delivered';
+        }
+
+        // Do NOT change main order status unless ALL items are returned/cancelled
+        // (User Request: "The order status on the order page should change only when the entire order is cancelled.")
+        // But if all items are Returned, maybe we should mark order as Returned?
+        // User said: "If a single product is cancelled, the order status should not change."
+        // Let's implicitely follow this for Returns too.
+
+        await order.save();
+        res.json({ message: 'Item return status updated', order });
+
+    } catch (error) {
+        console.error("Error updating item return status:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 // Get My Returns
 exports.getMyReturns = async (req, res) => {
     try {

@@ -716,9 +716,16 @@
                             <td>${addr.phoneNumber}</td>
                             <td>${addr.isDefault ? '<span class="badge bg-success">Default</span>' : ''}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal('${addr._id}')" title="Edit"><i class="fas fa-edit"></i></button>
-                                ${!addr.isDefault ? `<button class="btn btn-sm btn-outline-success me-2" onclick="setDefault('${addr._id}')" title="Set Default"><i class="fas fa-check"></i></button>` : ''}
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteAddress('${addr._id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-ellipsis-v text-muted"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                        <li><a class="dropdown-item small" href="#" onclick="openEditModal('${addr._id}')"><i class="fas fa-edit me-2 text-primary"></i>Edit</a></li>
+                                        <li><a class="dropdown-item small" href="#" onclick="deleteAddress('${addr._id}')"><i class="fas fa-trash-alt me-2 text-danger"></i>Delete</a></li>
+                                        ${!addr.isDefault ? `<li><hr class="dropdown-divider"></li><li><a class="dropdown-item small" href="#" onclick="setDefault('${addr._id}')"><i class="fas fa-check me-2 text-success"></i>Set as Default</a></li>` : ''}
+                                    </ul>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(row);

@@ -506,51 +506,96 @@
                 </div>
             </div>
 
-            <!-- Profile Form -->
+            <!-- Profile Section -->
             <div class="col-md-9">
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold text-primary-custom mb-4">Edit Your Profile</h5>
-                    <form id="profile-form">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-muted">First Name</label>
-                                <input type="text" class="form-control bg-light border-0 py-2" value="Md">
+                <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+                    <h3 class="fw-bold mb-5">Profile</h3>
+
+                    <!-- Profile Picture -->
+                    <div class="d-flex justify-content-center mb-5 position-relative">
+                        <div class="position-relative">
+                            <img id="profilePreview" src="https://via.placeholder.com/150" alt="Profile"
+                                class="rounded-circle object-fit-cover shadow-sm" width="120" height="120"
+                                style="border: 4px solid white;">
+                            <label for="profileUpload"
+                                class="position-absolute bottom-0 end-0 bg-dark text-white rounded-circle d-flex justify-content-center align-items-center shadow"
+                                style="width: 35px; height: 35px; cursor: pointer; border: 2px solid white;">
+                                <i class="fas fa-pen fa-xs"></i>
+                            </label>
+                            <input type="file" id="profileUpload" class="d-none" accept="image/*">
+                        </div>
+                    </div>
+
+                    <!-- Details List -->
+                    <div class="profile-details px-md-4">
+
+                        <!-- Name Row -->
+                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                            <div class="col-md-3">
+                                <span class="text-muted small">Name</span>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-muted">Last Name</label>
-                                <input type="text" class="form-control bg-light border-0 py-2" value="Rimel">
+                            <div class="col-md-7">
+                                <span id="displayName" class="fw-bold fs-5 text-dark">Loading...</span>
+                                <input type="text" id="inputName" class="form-control d-none"
+                                    placeholder="Enter your name">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-muted">Email</label>
-                                <input type="email" class="form-control bg-light border-0 py-2"
-                                    value="rimel1111@gmail.com">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label small text-muted">Address</label>
-                                <input type="text" class="form-control bg-light border-0 py-2"
-                                    value="Kingston, 5236, United State">
+                            <div class="col-md-2 text-end">
+                                <button class="btn btn-sm fw-bold text-dark" id="editNameBtn"
+                                    onclick="toggleEdit('Name')">Edit</button>
+                                <div id="actionNameBtns" class="d-none gap-2 justify-content-end">
+                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Name')"><i
+                                            class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Name')"><i
+                                            class="fas fa-times"></i></button>
+                                </div>
                             </div>
                         </div>
 
-                        <h6 class="fw-bold mt-4 mb-3">Password Changes</h6>
-                        <div class="mb-3">
-                            <input type="password" class="form-control bg-light border-0 py-2"
-                                placeholder="Current Password">
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" class="form-control bg-light border-0 py-2"
-                                placeholder="New Password">
-                        </div>
-                        <div class="mb-4">
-                            <input type="password" class="form-control bg-light border-0 py-2"
-                                placeholder="Confirm New Password">
+                        <!-- Email Row -->
+                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                            <div class="col-md-3">
+                                <span class="text-muted small">Email</span>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="displayEmail" class="fw-bold fs-5 text-dark">Loading...</span>
+                                <input type="email" id="inputEmail" class="form-control d-none"
+                                    placeholder="Enter email">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button class="btn btn-sm fw-bold text-dark" id="editEmailBtn"
+                                    onclick="toggleEdit('Email')">Edit</button>
+                                <div id="actionEmailBtns" class="d-none gap-2 justify-content-end">
+                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Email')"><i
+                                            class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Email')"><i
+                                            class="fas fa-times"></i></button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-3">
-                            <button type="button" class="btn btn-link text-muted text-decoration-none">Cancel</button>
-                            <button type="submit" class="btn btn-primary-custom px-4">Save Changes</button>
+                        <!-- Phone Row -->
+                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                            <div class="col-md-3">
+                                <span class="text-muted small">Mobile Number</span>
+                            </div>
+                            <div class="col-md-7">
+                                <span id="displayPhone" class="fw-bold fs-5 text-dark">Loading...</span>
+                                <input type="tel" id="inputPhone" class="form-control d-none"
+                                    placeholder="Enter phone number">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button class="btn btn-sm fw-bold text-dark" id="editPhoneBtn"
+                                    onclick="toggleEdit('Phone')">Edit</button>
+                                <div id="actionPhoneBtns" class="d-none gap-2 justify-content-end">
+                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Phone')"><i
+                                            class="fas fa-check"></i></button>
+                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Phone')"><i
+                                            class="fas fa-times"></i></button>
+                                </div>
+                            </div>
                         </div>
-                    </form>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -690,6 +735,162 @@
         if (headerCartBtn) headerCartBtn.addEventListener('click', checkLogin);
 
         updateHeaderAuth();
+
+        /* --- Profile Logic --- */
+        const token = localStorage.getItem("userToken");
+
+        async function fetchProfile() {
+            if (!token) return;
+            try {
+                const res = await fetch("/api/auth/me", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error("Failed to fetch profile");
+                const user = await res.json();
+
+                // Name
+                document.getElementById("displayName").textContent = user.name || "N/A";
+                document.getElementById("inputName").value = user.name || "";
+
+                // Email
+                document.getElementById("displayEmail").textContent = user.email || "N/A";
+                document.getElementById("inputEmail").value = user.email || "";
+
+                // Phone
+                document.getElementById("displayPhone").textContent = user.phoneNumber || "N/A";
+                document.getElementById("inputPhone").value = user.phoneNumber || "";
+
+                // Image
+                if (user.profilePicture) {
+                    document.getElementById("profilePreview").src = user.profilePicture;
+                }
+
+            } catch (err) {
+                console.error(err);
+                // Swal.fire("Error", "Could not load profile data", "error");
+            }
+        }
+
+        function toggleEdit(field) {
+            const displayEl = document.getElementById(`display${field}`);
+            const inputEl = document.getElementById(`input${field}`);
+
+            displayEl.classList.add("d-none");
+            inputEl.classList.remove("d-none");
+
+            document.getElementById(`edit${field}Btn`).classList.add("d-none");
+            const actionBtns = document.getElementById(`action${field}Btns`);
+            actionBtns.classList.remove("d-none");
+            actionBtns.classList.add("d-flex");
+
+            inputEl.focus();
+        }
+
+        function cancelEdit(field) {
+            document.getElementById(`display${field}`).classList.remove("d-none");
+            document.getElementById(`input${field}`).classList.add("d-none");
+
+            document.getElementById(`edit${field}Btn`).classList.remove("d-none");
+            const actionBtns = document.getElementById(`action${field}Btns`);
+            actionBtns.classList.add("d-none");
+            actionBtns.classList.remove("d-flex");
+
+            // Reset value from display
+            const currentVal = document.getElementById(`display${field}`).textContent;
+            if (currentVal !== "Loading..." && currentVal !== "N/A") {
+                document.getElementById(`input${field}`).value = currentVal;
+            }
+        }
+
+        async function saveField(field) {
+            const newValue = document.getElementById(`input${field}`).value;
+            const body = {};
+            if (field === "Name") body.name = newValue;
+            if (field === "Email") body.email = newValue;
+            if (field === "Phone") body.phoneNumber = newValue;
+
+            try {
+                const res = await fetch("/api/auth/update-profile", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Update failed");
+
+                // Update UI
+                document.getElementById(`display${field}`).textContent = newValue || "N/A";
+                cancelEdit(field);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: 'Profile updated successfully',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    position: 'top-end',
+                    toast: true
+                });
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", err.message, "error");
+            }
+        }
+
+        // Image Upload
+        const profileUpload = document.getElementById("profileUpload");
+        if (profileUpload) {
+            profileUpload.addEventListener("change", async function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("profilePreview").src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+
+                // Upload
+                const formData = new FormData();
+                formData.append("profilePicture", file);
+
+                try {
+                    const res = await fetch("/api/auth/update-profile", {
+                        method: "PUT",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || "Upload failed");
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated',
+                        text: 'Profile picture updated',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        position: 'top-end',
+                        toast: true
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire("Error", err.message, "error");
+                }
+            });
+        }
+
+        // Load on start
+        fetchProfile();
     </script>
 </body>
 

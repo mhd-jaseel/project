@@ -517,27 +517,50 @@
             }
 
             orders.forEach(order => {
+                // Calculate Total dynamically - Source of Truth: Item Status
+                let listGross = 0;
+                let listCancelled = 0;
+                let listReturned = 0;
+
+                if (order.items) {
+                    order.items.forEach(itm => {
+                        const val = itm.price * itm.quantity;
+                        listGross += val;
+                        if (itm.itemStatus === 'Cancelled') listCancelled += val;
+                        if (itm.itemStatus === 'Returned') listReturned += val;
+                    });
+                }
+
+                const listDelivery = order.deliveryCharge || 0;
+                const listHandling = order.handlingFee || 0;
+                const listDiscount = order.discountAmount || 0;
+
+                const listTotal = Math.max(0, listGross - listCancelled - listReturned + listDelivery + listHandling - listDiscount);
+
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', order._id);
                 if (!order.viewedByAdmin) {
                     tr.classList.add('fw-bold');
                 }
 
-                let badgeClass = 'bg-secondary';
-                if (order.orderStatus === 'Pending') badgeClass = 'bg-warning text-dark';
-                if (order.orderStatus === 'Confirmed') badgeClass = 'bg-info text-dark';
-                if (order.orderStatus === 'Packed') badgeClass = 'bg-primary';
-                if (order.orderStatus === 'Out For Delivery') badgeClass = 'bg-primary';
-                if (order.orderStatus === 'Delivered') badgeClass = 'bg-success';
-                if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger';
+                let statusBadge = 'bg-secondary';
+                if (order.orderStatus === 'Pending') statusBadge = 'bg-warning text-dark';
+                if (order.orderStatus === 'Confirmed') statusBadge = 'bg-info text-dark';
+                if (order.orderStatus === 'Packed') statusBadge = 'bg-primary';
+                if (order.orderStatus === 'Out For Delivery') statusBadge = 'bg-primary';
+                if (order.orderStatus === 'Delivered') statusBadge = 'bg-success';
+                if (order.orderStatus === 'Cancelled') statusBadge = 'bg-danger';
+
+                const date = new Date(order.createdAt).toLocaleDateString();
+                const userName = order.user ? (order.user.name || order.user.email) : 'Guest';
 
                 tr.innerHTML = `
                     <td>#${order._id.substring(0, 8).toUpperCase()}</td>
-                    <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td>${order.shippingAddress?.firstName || 'Unknown'}</td>
+                    <td>${date}</td>
+                    <td><div class="d-flex align-items-center"><div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width:30px;height:30px;font-size:0.8em;">${userName.charAt(0).toUpperCase()}</div><span>${userName}</span></div></td>
                     <td>${order.shippingAddress?.city || 'Unknown'}</td>
-                    <td>₹${order.totalAmount}</td>
-                    <td><span class="badge ${badgeClass} bg-opacity-75">${order.orderStatus}</span></td>
+                    <td>₹${listTotal.toFixed(2)}</td>
+                    <td><span class="badge ${statusBadge} bg-opacity-75">${order.orderStatus}</span></td>
                     <td>
                         <button class="btn btn-sm btn-light text-primary view-order-btn" onclick="openOrderModal('${order._id}')" title="View"><i class="fas fa-eye"></i></button>
                     </td>
@@ -637,22 +660,74 @@
             // Replace the whole container content
             let itemsHtml = '';
             order.items.forEach(item => {
-                itemsHtml += `
-                    <div class="d-flex align-items-center mb-3 border-bottom pb-2">
-                        <img src="${item.image || 'https://via.placeholder.com/50'}" class="rounded me-3" style="width:50px;height:50px;object-fit:contain;">
-                        <div class="flex-grow-1">
-                            <h6 class="m-0">${item.name}</h6>
-                            <small class="text-muted">Qty: ${item.quantity} x ₹${item.price}</small>
+                let itemTotal = item.quantity * item.price;
+                let statusBadge = '';
+                let textClass = '';
+                let priceClass = 'fw-bold';
+                let imgClass = 'rounded me-3';
+                let actionButtons = '';
+
+                if (item.itemStatus === 'Cancelled') {
+                    statusBadge = '<span class="badge bg-danger ms-2" style="font-size: 0.7em;">Cancelled</span>';
+                    textClass = 'text-decoration-line-through text-muted';
+                    priceClass = 'fw-bold text-muted text-decoration-line-through';
+                    imgClass += ' opacity-50';
+                } else if (item.itemStatus === 'Return Requested') {
+                    statusBadge = '<span class="badge bg-warning text-dark ms-2" style="font-size: 0.7em;">Return Requested</span>';
+                    actionButtons = `
+                        <div class="mt-2 text-end">
+                            <small class="d-block text-muted mb-1 text-start">Reason: ${item.returnReason || 'N/A'}</small>
+                            <button class="btn btn-sm btn-success me-1" onclick="updateItemReturnStatus('${order._id}', '${item._id}', 'Approved')">Approve</button>
+                            <button class="btn btn-sm btn-danger" onclick="updateItemReturnStatus('${order._id}', '${item._id}', 'Rejected')">Reject</button>
                         </div>
-                        <span class="fw-bold">₹${item.quantity * item.price}</span>
+                     `;
+                } else if (item.itemStatus === 'Returned') {
+                    statusBadge = '<span class="badge bg-secondary ms-2" style="font-size: 0.7em;">Returned</span>';
+                    textClass = 'text-decoration-line-through text-muted';
+                    priceClass = 'fw-bold text-muted text-decoration-line-through';
+                    imgClass += ' opacity-50';
+                }
+
+                itemsHtml += `
+                    <div class="d-flex flex-column mb-3 border-bottom pb-2">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.image || 'https://via.placeholder.com/50'}" class="${imgClass}" style="width:50px;height:50px;object-fit:contain;">
+                            <div class="flex-grow-1">
+                                <h6 class="m-0 ${textClass}">${item.name} ${statusBadge}</h6>
+                                <small class="text-muted ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'text-decoration-line-through' : ''}">Qty: ${item.quantity} x ₹${item.price}</small>
+                            </div>
+                            <span class="${priceClass}">₹${itemTotal}</span>
+                        </div>
+                        ${actionButtons}
                     </div>
                 `;
             });
+
+            // Calculate Cancelled/Returned Totals for display
+            let cancelledTotal = 0;
+            let returnedTotal = 0;
+            let grossTotal = 0;
+            order.items.forEach(i => {
+                grossTotal += i.quantity * i.price;
+                if (i.itemStatus === 'Cancelled') cancelledTotal += i.quantity * i.price;
+                if (i.itemStatus === 'Returned') returnedTotal += i.quantity * i.price;
+            });
+
+            // Calculate final total locally to ensure display accuracy
+            const delivery = order.deliveryCharge || 0;
+            const handling = order.handlingFee || 0;
+            const discount = order.discountAmount || 0;
+            const calculatedTotal = Math.max(0, grossTotal - cancelledTotal - returnedTotal + delivery + handling - discount);
+
             // Add breakdown
             itemsHtml += `
-                <div class="d-flex justify-content-between small"><span>Subtotal:</span> <span>₹${order.subtotal}</span></div>
-                <div class="d-flex justify-content-between small"><span>Delivery:</span> <span>₹${order.deliveryCharge}</span></div>
-                <div class="d-flex justify-content-between small"><span>Handling:</span> <span>₹${order.handlingFee}</span></div>
+                <div class="d-flex justify-content-between small"><span>Subtotal (Gross):</span> <span>₹${grossTotal}</span></div>
+                ${cancelledTotal > 0 ? `<div class="d-flex justify-content-between small text-danger"><span>Cancelled:</span> <span>-₹${cancelledTotal}</span></div>` : ''}
+                ${returnedTotal > 0 ? `<div class="d-flex justify-content-between small text-secondary"><span>Returned:</span> <span>-₹${returnedTotal}</span></div>` : ''}
+                <div class="d-flex justify-content-between small"><span>Delivery:</span> <span>₹${delivery}</span></div>
+                <div class="d-flex justify-content-between small"><span>Handling:</span> <span>₹${handling}</span></div>
+                ${discount > 0 ? `<div class="d-flex justify-content-between small text-success"><span>Discount:</span> <span>-₹${discount}</span></div>` : ''}
+                <div class="d-flex justify-content-between small fw-bold border-top pt-2 mt-2"><span>Total:</span> <span>₹${calculatedTotal.toFixed(2)}</span></div>
             `;
 
             itemsContainer.innerHTML = itemsHtml;
@@ -740,6 +815,34 @@
                     fetchOrders(); // Refresh table
                 } else {
                     Swal.fire('Error', 'Failed to update status', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Server error', 'error');
+            }
+        }
+
+        async function updateItemReturnStatus(orderId, itemId, status) {
+            try {
+                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/return-status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    Swal.fire('Success', `Item return ${status.toLowerCase()}`, 'success');
+                    // Hide modal and refresh
+                    const modalEl = document.getElementById('orderDetailsModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    fetchOrders();
+                } else {
+                    const data = await res.json();
+                    Swal.fire('Error', data.message || 'Failed to update item return', 'error');
                 }
             } catch (error) {
                 console.error(error);

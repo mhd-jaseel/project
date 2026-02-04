@@ -184,11 +184,15 @@
             justify-content: center;
             transition: all 0.2s;
             background: white;
+            padding: 0;
+            border: 1px solid #dee2e6;
+            border-radius: 50%;
         }
 
         .btn-remove-wishlist:hover {
             background-color: #f8d7da;
             color: #dc3545;
+            border-color: #dc3545;
         }
 
         .btn-add-cart-wishlist {
@@ -679,7 +683,6 @@
                 const orders = await res.json();
 
                 // Get the tbody inside the table inside .table-responsive
-                // The previous HTML had nested tbody or multiple tbody tags in the example, let's target carefully
                 const tbody = document.querySelector('.table-responsive table tbody');
                 tbody.innerHTML = '';
 
@@ -699,40 +702,56 @@
 
                     const itemsJson = encodeURIComponent(JSON.stringify(order.items));
 
-                    let actionButtons = '';
+                    // Calculate Total dynamically to match Modal logic
+                    let listGross = 0;
+                    let listCancelled = 0;
+                    let listReturned = 0;
 
-                    // Cancel Button
-                    if (order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') {
-                        actionButtons += `<button class="btn btn-sm btn-outline-danger ms-1" onclick="cancelOrder('${order._id}')">Cancel</button>`;
+                    if (order.items) {
+                        order.items.forEach(itm => {
+                            const val = itm.price * itm.quantity;
+                            listGross += val;
+                            if (itm.itemStatus === 'Cancelled') listCancelled += val;
+                            if (itm.itemStatus === 'Returned') listReturned += val;
+                        });
                     }
 
-                    // Return Button
-                    if (order.orderStatus === 'Delivered') {
-                        if (!order.returnStatus || order.returnStatus === 'None') {
-                            actionButtons += `<button class="btn btn-sm btn-outline-warning ms-1" onclick="requestReturn('${order._id}')">Return</button>`;
-                        } else {
-                            // Show Badge
-                            let returnBadgeClass = 'bg-secondary';
-                            if (order.returnStatus === 'Requested') returnBadgeClass = 'bg-warning text-dark';
-                            if (order.returnStatus === 'Approved') returnBadgeClass = 'bg-success';
-                            if (order.returnStatus === 'Rejected') returnBadgeClass = 'bg-danger';
+                    const listDelivery = order.deliveryCharge || 0;
+                    const listHandling = order.handlingFee || 0;
+                    const listDiscount = order.discountAmount || 0;
 
-                            actionButtons += `<span class="badge ${returnBadgeClass} ms-1">Return: ${order.returnStatus}</span>`;
-                        }
-                    }
+                    const listTotal = Math.max(0, listGross - listCancelled - listReturned + listDelivery + listHandling - listDiscount);
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>#${order._id.substring(0, 8).toUpperCase()}</td>
                         <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td><span class="badge ${badgeClass}">${order.orderStatus}</span></td>
-                        <td>₹${order.totalAmount}</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary view-order-btn" 
-                                onclick="openOrderModal('${order._id}', '${order.createdAt}', '${order.totalAmount}', '${itemsJson}')">View Details</button>
-                            ${actionButtons}
+                        <td><span class="badge ${badgeClass}">${order.orderStatus}</span> 
+                            ${(order.returnStatus && order.returnStatus !== 'None') ? `<br><small class="text-secondary">Return: ${order.returnStatus}</small>` : ''
+                        }
                         </td>
-                    `;
+                        <td class="fw-bold">₹${listTotal.toFixed(2)}</td>
+                        <td></td>`;
+
+                    const newDropdown = `
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-ellipsis-v text-muted"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                <li><a class="dropdown-item small" href="#" onclick="openOrderModal('${order._id}', '${order.createdAt}', ${listTotal}, '${itemsJson}', ${order.subtotal || 0}, ${order.discountAmount || 0}, ${order.deliveryCharge || 0}, ${order.handlingFee || 0}, '${order.orderStatus}')"><i class="fas fa-eye me-2 text-primary"></i>View Details</a></li>
+                                
+                                ${(order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') ?
+                            `<li><a class="dropdown-item small text-danger" href="#" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2"></i>Cancel Order</a></li>` : ''
+                        }
+
+                                ${(order.orderStatus === 'Delivered' && (!order.returnStatus || order.returnStatus === 'None')) ?
+                            `<li><a class="dropdown-item small text-warning" href="#" onclick="requestReturn('${order._id}')"><i class="fas fa-undo me-2"></i>Request Return</a></li>` : ''
+                        }
+                            </ul>
+                        </div>
+                        `;
+                    tr.querySelector('td:last-child').innerHTML = newDropdown;
                     tbody.appendChild(tr);
                 });
 
@@ -743,8 +762,11 @@
             }
         }
 
-        window.openOrderModal = (id, date, total, itemsStr) => {
+        window.openOrderModal = (id, date, total, itemsStr, subtotal, discount, delivery, handling, orderStatus) => {
             const items = JSON.parse(decodeURIComponent(itemsStr));
+            let cancelledTotal = 0;
+            let returnedTotal = 0;
+            let grossTotal = 0;
 
             document.getElementById('modalOrderId').innerText = '#' + id.substring(0, 8).toUpperCase();
             document.getElementById('modalOrderDate').innerText = new Date(date).toLocaleDateString();
@@ -754,24 +776,202 @@
             list.innerHTML = '';
 
             items.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between align-items-center px-0';
-                li.innerHTML = `
+                const itemTotal = item.price * item.quantity;
+                grossTotal += itemTotal;
+                if (item.itemStatus === 'Cancelled') {
+                    cancelledTotal += itemTotal;
+                }
+                if (item.itemStatus === 'Returned') {
+                    returnedTotal += itemTotal;
+                }
+
+                let statusBadge = '';
+                let actionBtn = '';
+                let rowClass = 'list-group-item d-flex justify-content-between align-items-center px-0';
+                let priceHtml = `<span class="text-dark small fw-bold">₹${itemTotal.toFixed(2)}</span>`;
+                let nameHtml = `<h6 class="mb-0 text-dark small fw-bold">${item.name || 'Product'}</h6>`;
+
+                // Item Status Badge
+                if (item.itemStatus === 'Cancelled') {
+                    statusBadge = '<span class="badge bg-danger ms-2">Cancelled</span>';
+                    rowClass += ' bg-light';
+                    priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
+                    nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
+                } else if (item.itemStatus === 'Return Requested') {
+                    statusBadge = '<span class="badge bg-warning text-dark ms-2">Return Requested</span>';
+                } else if (item.itemStatus === 'Returned') {
+                    statusBadge = '<span class="badge bg-secondary ms-2">Returned</span>';
+                    priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
+                    nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
+                }
+
+                // Action Buttons
+                // Only allow cancelling item if order status allows it (Pending/Confirmed)
+                const isOrderCancellable = (orderStatus === 'Pending' || orderStatus === 'Confirmed');
+
+                if ((item.itemStatus === 'Pending' || item.itemStatus === 'Confirmed') && isOrderCancellable) {
+                    actionBtn = `<button class="btn btn-sm btn-outline-danger ms-auto" onclick="cancelItem('${id}', '${item._id}')">Cancel</button>`;
+                }
+
+                if (item.itemStatus === 'Delivered' || (item.itemStatus === 'Pending' && item.returnStatus !== 'None')) {
+                    if (item.returnStatus === 'None') {
+                        // Only allow return if order is Delivered
+                        if (orderStatus === 'Delivered') {
+                            actionBtn = `<button class="btn btn-sm btn-outline-warning ms-auto" onclick="requestItemReturn('${id}', '${item._id}')">Return</button>`;
+                        }
+                    } else {
+                        statusBadge += `<br><small class="text-muted">Return: ${item.returnStatus}</small>`;
+                    }
+                }
+
+                const listEl = document.createElement('li');
+                listEl.className = rowClass;
+                listEl.innerHTML = `
                     <div class="d-flex align-items-center">
-                        <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" 
+                         <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" 
                              onerror="this.src='https://via.placeholder.com/50'"
-                             style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded">
+                             style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'opacity-50' : ''}">
                         <div>
-                            <h6 class="mb-0 text-dark small fw-bold">${item.name || 'Product'}</h6>
-                            <small class="text-muted">Qty: ${item.quantity}</small>
+                            ${nameHtml}
+                            <small class="text-muted">Qty: ${item.quantity} x ₹${item.price}</small>
+                            ${statusBadge}
                         </div>
                     </div>
-                    <span class="text-dark small fw-bold">₹${(item.price * item.quantity).toFixed(2)}</span>
+                    <div class="text-end">
+                        ${priceHtml}
+                        <div class="mt-1">${actionBtn}</div>
+                    </div>
                 `;
-                list.appendChild(li);
+                list.appendChild(listEl);
             });
 
+            // Summary Section
+            let summaryDiv = document.getElementById('orderSummaryDetails');
+            if (!summaryDiv) {
+                summaryDiv = document.createElement('div');
+                summaryDiv.id = 'orderSummaryDetails';
+                summaryDiv.className = 'mt-3 pt-3 border-top';
+                const totalContainer = document.getElementById('modalOrderTotal').parentElement;
+                totalContainer.parentElement.insertBefore(summaryDiv, totalContainer);
+            }
+
+            summaryDiv.innerHTML = `
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Subtotal (Gross)</span>
+                    <span>₹${grossTotal.toFixed(2)}</span>
+                </div>
+                ${cancelledTotal > 0 ? `
+                <div class="d-flex justify-content-between small mb-2 text-danger">
+                    <span>Cancelled Items</span>
+                    <span>-₹${cancelledTotal.toFixed(2)}</span>
+                </div>` : ''
+                }
+                ${returnedTotal > 0 ? `
+                <div class="d-flex justify-content-between small mb-2 text-secondary">
+                    <span>Returned Items</span>
+                    <span>-₹${returnedTotal.toFixed(2)}</span>
+                </div>` : ''
+                }
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Delivery Charge</span>
+                    <span>+₹${delivery}</span>
+                </div>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Handling Fee</span>
+                    <span>+₹${handling}</span>
+                </div>
+                ${discount > 0 ? `
+                <div class="d-flex justify-content-between small mb-2 text-success">
+                    <span>Coupon Discount</span>
+                    <span>-₹${discount}</span>
+                </div>` : ''
+                }
+            `;
+
+            // Recalculate Total for Display to match the breakdown visually
+            const calculatedTotal = grossTotal - cancelledTotal - returnedTotal + delivery + handling - discount;
+            document.getElementById('modalOrderTotal').innerText = '₹' + Math.max(0, calculatedTotal).toFixed(2); // formatting fix
+
+
             new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
+        };
+
+        window.cancelItem = async (orderId, itemId) => {
+            const { value: reason } = await Swal.fire({
+                title: 'Cancel Item',
+                text: "Reason for cancellation?",
+                input: 'select',
+                inputOptions: {
+                    'Mistake': 'Ordered by mistake',
+                    'Changed Mind': 'Changed mind',
+                    'Found Cheaper': 'Found cheaper elsewhere',
+                    'Other': 'Other'
+                },
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Cancel Item'
+            });
+
+            if (reason) {
+                try {
+                    const res = await fetch(`/api/orders/${orderId}/items/${itemId}/cancel`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        Swal.fire('Cancelled', 'Item has been cancelled', 'success')
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        };
+
+        window.requestItemReturn = async (orderId, itemId) => {
+            const { value: reason } = await Swal.fire({
+                title: 'Return Item',
+                text: "Reason for return?",
+                input: 'select',
+                inputOptions: {
+                    'Defective': 'Defective or Damaged',
+                    'Wrong Item': 'Wrong Item Received',
+                    'Not as Described': 'Not as Described',
+                    'Other': 'Other'
+                },
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                confirmButtonText: 'Request Return'
+            });
+
+            if (reason) {
+                try {
+                    const res = await fetch(`/api/orders/${orderId}/items/${itemId}/return`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ reason })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        Swal.fire('Requested', 'Return request submitted', 'success')
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
         };
 
         window.cancelOrder = async (orderId) => {

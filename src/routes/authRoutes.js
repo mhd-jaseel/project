@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const rateLimit = require("express-rate-limit");
-const { register, login, verifyOTP, forgotPassword, resetPassword, getWalletBalance } = require("../controllers/authController");
+const { register, login, verifyOTP, forgotPassword, resetPassword, getWalletBalance, getProfile, updateProfile } = require("../controllers/authController");
+const upload = require("../middleware/upload"); // Import upload middleware
 
 // Rate limit for OTP generation (Register & Forgot Password)
 const otpLimiter = rateLimit({
@@ -24,5 +25,9 @@ router.post("/verify-otp", verifyLimiter, verifyOTP);
 router.post("/forgot-password", otpLimiter, forgotPassword);
 router.post("/reset-password", resetPassword);
 router.get("/wallet", authMiddleware, getWalletBalance);
+
+// Profile Routes
+router.get("/me", authMiddleware, getProfile);
+router.put("/update-profile", authMiddleware, upload.single("profilePicture"), updateProfile);
 
 module.exports = router;

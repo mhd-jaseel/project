@@ -218,3 +218,66 @@ exports.getAllTransactions = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+// Get Customer Details
+exports.getCustomerDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const Order = require('../models/Order');
+    const Address = require('../models/Address');
+
+    const user = await User.findById(id).select('-password -otp -resetToken');
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const orders = await Order.find({ user: id }).sort({ createdAt: -1 });
+    const addresses = await Address.find({ user: id });
+
+    // Calculate Stats
+    const totalOrders = orders.length;
+    const completedOrders = orders.filter(o => o.orderStatus === 'Delivered').length;
+    const cancelledOrders = orders.filter(o => o.orderStatus === 'Cancelled').length;
+
+    let totalSpend = 0;
+    // Last 6 months for chart
+    const monthlySpend = {};
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    // Init last 6 months 0
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`; // "Jan 2026"
+      monthlySpend[key] = 0;
+    }
+
+    orders.forEach(o => {
+      if (o.orderStatus !== 'Cancelled') {
+        totalSpend += o.totalAmount;
+
+        if (o.paymentStatus === 'Completed' || o.paymentStatus === 'Pending') { // Count mostly valid spends
+          const d = new Date(o.createdAt);
+          const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+          if (monthlySpend[key] !== undefined) {
+            monthlySpend[key] += o.totalAmount;
+          }
+        }
+      }
+    });
+
+    res.json({
+      user,
+      orders,
+      addresses,
+      stats: {
+        totalOrders,
+        completedOrders,
+        cancelledOrders,
+        totalSpend,
+        monthlySpend
+      }
+    });
+
+  } catch (error) {
+    console.error("Error fetching customer details:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

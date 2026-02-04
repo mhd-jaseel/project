@@ -218,3 +218,46 @@ exports.getWalletBalance = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+/* ======================
+   GET PROFILE
+====================== */
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password -otp -otpExpiry -resetToken");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ======================
+   UPDATE PROFILE
+====================== */
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email, phoneNumber, password } = req.body;
+    const updates = {};
+
+    if (name) updates.name = name;
+    if (email) updates.email = email;
+    if (phoneNumber) updates.phoneNumber = phoneNumber;
+
+    if (password) {
+      updates.password = await bcrypt.hash(password, 10);
+    }
+
+    // Handle Profile Picture
+    if (req.file) {
+      // Assuming static files are served from /uploads
+      updates.profilePicture = `/uploads/products/${req.file.filename}`;
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");
+
+    res.json({ message: "Profile updated successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

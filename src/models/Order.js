@@ -19,7 +19,19 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            image: String // Snapshot of image
+            image: String, // Snapshot of image
+            itemStatus: {
+                type: String,
+                enum: ['Pending', 'Confirmed', 'Packed', 'Out For Delivery', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
+                default: 'Pending'
+            },
+            cancellationReason: String,
+            returnStatus: {
+                type: String,
+                enum: ['None', 'Requested', 'Approved', 'Rejected'],
+                default: 'None'
+            },
+            returnReason: String
         }
     ],
     shippingAddress: {
@@ -77,6 +89,9 @@ const orderSchema = new mongoose.Schema({
         type: String
     },
     cancelledAt: {
+        type: Date
+    },
+    deliveredAt: {
         type: Date
     },
     returnStatus: {

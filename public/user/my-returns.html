@@ -517,7 +517,7 @@
                                     <th>Reason</th>
                                     <th>Date Requested</th>
                                     <th>Status</th>
-                                    <th>Refund Amount</th>
+                                    <th>Order Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -636,13 +636,77 @@
                     if (order.returnStatus === 'Approved') badgeClass = 'bg-success';
                     if (order.returnStatus === 'Rejected') badgeClass = 'bg-danger';
 
+                    // Calculate Refund Amount based on Returned items
+                    // If the whole order is returned (order.returnStatus === 'Approved' and order.orderStatus === 'Returned'), 
+                    // it might be the total. 
+                    // But for single items, we should look at items.
+
+                    let refundAmount = 0;
+                    let hasSingleItemsReturned = false;
+
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+                            if (item.itemStatus === 'Returned') {
+                                refundAmount += item.price * item.quantity;
+                                hasSingleItemsReturned = true;
+                            }
+                        });
+                    }
+
+                    // Fallback for legacy or full order returns where items might not be updated but main status is
+                    if (!hasSingleItemsReturned && order.returnStatus === 'Approved') {
+                        refundAmount = order.totalAmount;
+                    }
+
+                    // If return is just requested but not approved yet, maybe show estimated refund?
+                    // User request: "updated total amount should be shown... This calculation should be applied only after the admin accepts the return."
+                    // So if NOT approved, show 0 or "Pending"?
+                    // Or show the potential refund?
+                    // "updated total amount should be shown" usually implies the FINAL amount after deduction.
+                    // Wait, user said: "On the return page, in the total field... updated total amount should be shown."
+                    // This is ambiguous. Does "Total Field" mean "Order Total"? Or "Refund Amount"?
+                    // The table header says "Refund Amount".
+                    // If I return a product worth 100rs from a 500rs order.
+                    // Should this column show 100rs (Refund) or 400rs (New Order Total)?
+                    // "amount should be reduced accordingly and the updated total amount should be shown" implies 400rs.
+                    // But the header is "Refund Amount".
+                    // Let's assume the user wants to see the REFUND amount here if the header is Refund Amount.
+                    // modifying the column header to "Refunded Amount" might be clearer.
+
+                    // HOWEVER, re-reading: "amount should be reduced accordingly and the updated total amount should be shown"
+                    // visualizes: Old Total -> New Total.
+                    // If the column header is "Refund Amount", showing "New Total" is wrong.
+                    // Maybe the user wants the "Refund Amount" column to be "Order Total"?
+                    // Let's look at the table headers: Order #, Reason, Date, Status, Refund Amount.
+                    // If I change Refund Amount -> 25 (for the banana), that makes sense.
+
+                    // BUT, "amount should be reduced accordingly" sounds like subtraction.
+                    // "updated total amount should be shown" -> The Result of the subtraction.
+                    // So maybe the user wants to see the NEW Total of the order?
+                    // Let's change the Header to "Order Total" and show the reduced total.
+
+                    // Strategy:
+                    // 1. Change header "Refund Amount" to "Order Total".
+                    // 2. Show `order.totalAmount` (which is already reduced by backend).
+
+                    // But wait, if the return is NOT accepted yet?
+                    // "This calculation should be applied only after the admin accepts the return."
+                    // So if pending, show Original Total?
+                    // Backend `totalAmount` is reduced ONLY on approval.
+                    // So `order.totalAmount` IS the correct field to use!
+                    // If pending, it is full amount. If approved, it is reduced amount.
+
+                    // So simple fix: Rename header to "Order Total" and ensure we show `order.totalAmount`.
+
+                    const displayAmount = order.totalAmount;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                          <td>#${order._id.substring(0, 8).toUpperCase()}</td>
                          <td>${order.returnReason || 'N/A'}</td>
                          <td>${order.returnRequestedAt ? new Date(order.returnRequestedAt).toLocaleDateString() : 'N/A'}</td>
                          <td><span class="badge ${badgeClass}">${order.returnStatus}</span></td>
-                         <td>₹${order.totalAmount}</td>
+                         <td>₹${displayAmount}</td>
                      `;
                     tbody.appendChild(tr);
                 });

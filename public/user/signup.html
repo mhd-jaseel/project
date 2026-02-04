@@ -417,8 +417,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-user text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="fullName"
-                            placeholder="John Doe" required>
+                        <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="fullName" required>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -435,8 +434,7 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-phone text-muted"></i></span>
-                        <input type="tel" class="form-control border-start-0 ps-0 shadow-none" id="phone"
-                            placeholder="+1 234 567 890" required>
+                        <input type="tel" class="form-control border-start-0 ps-0 shadow-none" id="phone" required>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -444,8 +442,25 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-lock text-muted"></i></span>
-                        <input type="password" class="form-control border-start-0 ps-0 shadow-none" id="password"
-                            placeholder="********" required>
+                        <input type="password" class="form-control border-start-0 border-end-0 ps-0 shadow-none"
+                            id="password" placeholder="********" required>
+                        <span class="input-group-text bg-white border-start-0" style="cursor: pointer;"
+                            id="togglePasswordBtn">
+                            <i class="fas fa-eye text-muted" id="togglePasswordIcon"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label small text-muted">Confirm Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i
+                                class="fas fa-lock text-muted"></i></span>
+                        <input type="password" class="form-control border-start-0 border-end-0 ps-0 shadow-none"
+                            id="confirmPassword" placeholder="********" required>
+                        <span class="input-group-text bg-white border-start-0" style="cursor: pointer;"
+                            id="toggleConfirmPasswordBtn">
+                            <i class="fas fa-eye text-muted" id="toggleConfirmPasswordIcon"></i>
+                        </span>
                     </div>
                 </div>
 
@@ -477,13 +492,42 @@
     <script>
         const form = document.getElementById("signupForm");
 
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        document.getElementById("togglePasswordBtn").addEventListener("click", () => {
+            togglePasswordVisibility("password", "togglePasswordIcon");
+        });
+
+        document.getElementById("toggleConfirmPasswordBtn").addEventListener("click", () => {
+            togglePasswordVisibility("confirmPassword", "toggleConfirmPasswordIcon");
+        });
+
+
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
             const name = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
             const phone = document.getElementById("phone").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
 
             try {
                 const res = await fetch("/api/auth/register", {

@@ -327,154 +327,175 @@
         <div class="content-wrapper">
 
             <div class="row">
-                <!-- Left Column: Profile -->
-                <div class="col-lg-4">
-                    <div class="card-custom p-0 mb-4 overflow-hidden">
+                <!-- Left Column: Profile (Fixed Info) -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card-custom p-0 mb-4 overflow-hidden h-100">
                         <div class="profile-header-card text-center">
-                            <h5 class="fw-bold mb-0">Md Rimel</h5>
-                            <p class="small opacity-75">Customer ID: #CUST-101</p>
+                            <h5 class="fw-bold mb-0">Loading...</h5>
+                            <p class="small opacity-75">Customer ID: ...</p>
                         </div>
                         <div class="px-4 pb-4 pt-0 text-center">
-                            <img src="https://ui-avatars.com/api/?name=Md+Rimel&background=random&size=128"
-                                class="rounded-circle profile-avatar mb-3" alt="Avatar">
+                            <img src="https://via.placeholder.com/128" class="rounded-circle profile-avatar mb-3"
+                                alt="Avatar">
 
                             <div class="d-flex justify-content-center gap-2 mb-4">
-                                <button class="btn btn-sm btn-outline-primary rounded-circle"><i
-                                        class="fab fa-facebook-f"></i></button>
-                                <button class="btn btn-sm btn-outline-info rounded-circle"><i
-                                        class="fab fa-twitter"></i></button>
-                                <button class="btn btn-sm btn-outline-danger rounded-circle"><i
-                                        class="fab fa-instagram"></i></button>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-map-marker-alt me-1"></i>
+                                    City: N/A</span>
                             </div>
 
                             <div class="text-start border-top pt-4">
-                                <div class="mb-3">
-                                    <small class="text-muted d-block">Phone</small>
-                                    <span class="fw-bold">+1 234 567 890</span>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-box bg-light text-primary rounded-circle me-3"
+                                        style="width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Phone</small>
+                                        <span class="fw-bold" id="detailPhone">...</span>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <small class="text-muted d-block">Email</small>
-                                    <span class="fw-bold">rimel1111@gmail.com</span>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-box bg-light text-warning rounded-circle me-3"
+                                        style="width: 40px; height: 40px; font-size: 1rem;"><i
+                                            class="fas fa-envelope"></i></div>
+                                    <div>
+                                        <small class="text-muted d-block">Email</small>
+                                        <span class="fw-bold text-break" id="detailEmail">...</span>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <small class="text-muted d-block">Address</small>
-                                    <span class="fw-bold">Kingston, 5236, United State</span>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="icon-box bg-light text-danger rounded-circle me-3"
+                                        style="width: 40px; height: 40px; font-size: 1rem;"><i class="fas fa-map"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Address</small>
+                                        <span class="fw-bold" id="detailAddress">...</span>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <small class="text-muted d-block">Joined Date</small>
-                                    <span class="fw-bold">12 Jan, 2025</span>
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box bg-light text-info rounded-circle me-3"
+                                        style="width: 40px; height: 40px; font-size: 1rem;"><i
+                                            class="fas fa-calendar-alt"></i></div>
+                                    <div>
+                                        <small class="text-muted d-block">Joined Date</small>
+                                        <span class="fw-bold" id="detailJoined">...</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="card-custom mb-4">
-                        <h5 class="fw-bold mb-4">Wallet Balance</h5>
-                        <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded">
-                            <div>
-                                <small class="text-muted">Current Balance</small>
-                                <h3 class="fw-bold text-success mb-0" id="wallet-balance">Loading...</h3>
-                            </div>
-                            <div class="icon-box bg-white text-success shadow-sm"
-                                style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-wallet fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Transaction History (Small Widget Style) -->
-                    <div class="card-custom mb-4">
-                        <h5 class="fw-bold mb-3">Wallet History</h5>
-                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-sm table-borderless align-middle">
-                                <tbody id="transaction-history-body">
-                                    <tr>
-                                        <td class="text-center text-muted">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Stats & Orders -->
+                <!-- Right Column: Tabs for Overview, Orders, Wallet -->
                 <div class="col-lg-8">
-                    <!-- Stats Row -->
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <div class="card-custom p-3 text-center">
-                                <h3 class="fw-bold text-primary">150</h3>
-                                <small class="text-muted">Total Orders</small>
-                            </div>
+                    <div class="card-custom p-0 overflow-hidden">
+                        <div class="border-bottom px-4 pt-4 bg-white">
+                            <ul class="nav nav-tabs border-0" id="customerTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active border-0 border-bottom-2 fw-bold" id="overview-tab"
+                                        data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab"
+                                        aria-selected="true"><i class="fas fa-chart-pie me-2"></i>Overview</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link border-0 fw-bold" id="orders-tab" data-bs-toggle="tab"
+                                        data-bs-target="#orders" type="button" role="tab" aria-selected="false"><i
+                                            class="fas fa-shopping-bag me-2"></i>Orders</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link border-0 fw-bold" id="wallet-tab" data-bs-toggle="tab"
+                                        data-bs-target="#wallet" type="button" role="tab" aria-selected="false"><i
+                                            class="fas fa-wallet me-2"></i>Wallet & Transactions</button>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card-custom p-3 text-center">
-                                <h3 class="fw-bold text-success">140</h3>
-                                <small class="text-muted">Completed</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card-custom p-3 text-center">
-                                <h3 class="fw-bold text-danger">10</h3>
-                                <small class="text-muted">Cancelled</small>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Chart -->
-                    <div class="card-custom mb-4">
-                        <h5 class="fw-bold mb-4">Spending Overview</h5>
-                        <canvas id="customerSpendChart" height="100"></canvas>
-                    </div>
+                        <div class="tab-content p-4" id="customerTabsContent">
+                            <!-- Overview Tab -->
+                            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                                <!-- Stats Row -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded bg-light text-center h-100">
+                                            <h3 class="fw-bold text-primary mb-1" id="statTotalOrders">...</h3>
+                                            <small class="text-muted">Total Orders</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded bg-light text-center h-100">
+                                            <h3 class="fw-bold text-success mb-1" id="statCompleted">...</h3>
+                                            <small class="text-muted">Completed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded bg-light text-center h-100">
+                                            <h3 class="fw-bold text-danger mb-1" id="statCancelled">...</h3>
+                                            <small class="text-muted">Cancelled</small>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <!-- Order History -->
-                    <div class="card-custom">
-                        <h5 class="fw-bold mb-4">Recent Orders</h5>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#ORD-001</td>
-                                        <td>20 Jan, 2026</td>
-                                        <td>3 Items</td>
-                                        <td>$120.00</td>
-                                        <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-light text-primary"><i
-                                                    class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#ORD-005</td>
-                                        <td>15 Jan, 2026</td>
-                                        <td>1 Item</td>
-                                        <td>$25.00</td>
-                                        <td><span class="badge bg-success bg-opacity-10 text-success">Completed</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-light text-primary"><i
-                                                    class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#ORD-012</td>
-                                        <td>10 Jan, 2026</td>
-                                        <td>5 Items</td>
-                                        <td>$250.00</td>
-                                        <td><span class="badge bg-danger bg-opacity-10 text-danger">Cancelled</span>
-                                        </td>
-                                        <td><button class="btn btn-sm btn-light text-primary"><i
-                                                    class="fas fa-eye"></i></button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                <h6 class="fw-bold mb-3">Spending Analytics (Last 6 Months)</h6>
+                                <div class="border rounded p-3">
+                                    <canvas id="customerSpendChart" height="120"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Orders Tab -->
+                            <div class="tab-pane fade" id="orders" role="tabpanel">
+                                <h6 class="fw-bold mb-3">Order History</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle border">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Items</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ordersTableBody">
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Wallet Tab -->
+                            <div class="tab-pane fade" id="wallet" role="tabpanel">
+                                <div
+                                    class="d-flex align-items-center justify-content-between p-4 bg-light rounded mb-4 border">
+                                    <div>
+                                        <small class="text-muted">Current Wallet Balance</small>
+                                        <h2 class="fw-bold text-success mb-0" id="wallet-balance">...</h2>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-circle shadow-sm text-success">
+                                        <i class="fas fa-wallet fa-2x"></i>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-bold mb-3">Transaction History</h6>
+                                <div class="table-responsive border rounded"
+                                    style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light sticky-top">
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Reason</th>
+                                                <th>Date</th>
+                                                <th class="text-end">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transaction-history-body">
+                                            <tr>
+                                                <td colspan="4" class="text-center py-3">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -502,45 +523,119 @@
             });
         }
 
-        // Customer Spend Chart
-        const ctxSpend = document.getElementById('customerSpendChart').getContext('2d');
-        const customerSpendChart = new Chart(ctxSpend, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Spend ($)',
-                    data: [150, 200, 120, 300, 250, 180],
-                    backgroundColor: '#0f9d58',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        // Fetch Wallet Data
+        // Fetch Wallet Data and Customer Details
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('id');
+
+        if (userId) {
+            fetchCustomerDetails(userId);
+            fetchWallet(userId);
+        } else {
+            Swal.fire('Error', 'No user ID specified', 'error').then(() => {
+                window.location.href = 'customers.html';
+            });
+        }
+
+        async function fetchCustomerDetails(id) {
+            try {
+                const res = await fetch(`/api/admin/customers/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderCustomerInfo(data);
+                    renderStats(data.stats);
+                    renderOrders(data.orders);
+                } else {
+                    Swal.fire('Error', 'Failed to fetch customer details', 'error');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        function renderCustomerInfo(data) {
+            const user = data.user;
+            const address = data.addresses.length > 0 ? data.addresses[0] : null;
+
+            // Header
+            document.querySelector('.profile-header-card h5').innerText = user.name;
+            document.querySelector('.profile-header-card p').innerText = `Customer ID: #${user._id.substring(0, 8).toUpperCase()}`;
+
+            // Avatar
+            const avatarUrl = user.profilePicture || `https://ui-avatars.com/api/?name=${user.name}&background=random&size=128`;
+            document.querySelector('.profile-avatar').src = avatarUrl;
+
+            if (address) {
+                document.querySelector('.fa-map-marker-alt').nextSibling.nodeValue = ` City: ${address.city}`;
+            }
+
+            document.getElementById('detailPhone').innerText = user.phoneNumber || 'N/A';
+            document.getElementById('detailEmail').innerText = user.email;
+            document.getElementById('detailAddress').innerText = address ? `${address.streetAddress}, ${address.city}` : 'No address found';
+            document.getElementById('detailJoined').innerText = new Date(user.createdAt).toLocaleDateString();
+        }
+
+        function renderStats(stats) {
+            document.getElementById('statTotalOrders').innerText = stats.totalOrders;
+            document.getElementById('statCompleted').innerText = stats.completedOrders;
+            document.getElementById('statCancelled').innerText = stats.cancelledOrders;
+
+            // Chart
+            const ctxSpend = document.getElementById('customerSpendChart').getContext('2d');
+            const labels = Object.keys(stats.monthlySpend); // e.g., ["Aug 2025", ..., "Jan 2026"]
+            const values = Object.values(stats.monthlySpend);
+
+            new Chart(ctxSpend, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Spend (₹)',
+                        data: values,
+                        backgroundColor: '#0f9d58',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No orders found</td></tr>';
+                return;
+            }
+
+            orders.forEach(order => {
+                let badgeClass = 'bg-secondary';
+                if (order.orderStatus === 'Delivered') badgeClass = 'bg-success bg-opacity-10 text-success';
+                if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger bg-opacity-10 text-danger';
+                if (order.orderStatus === 'Pending') badgeClass = 'bg-warning bg-opacity-10 text-warning';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="fw-bold">#${order._id.substring(0, 8).toUpperCase()}</span></td>
+                    <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td>${order.items.length} Items</td>
+                    <td class="fw-bold">₹${order.totalAmount}</td>
+                    <td><span class="badge ${badgeClass}">${order.orderStatus}</span></td>
+                    <td><button class="btn btn-sm btn-light text-primary" onclick="window.location.href='order-management.html?id=${order._id}'"><i class="fas fa-eye"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
 
         if (userId) {
             fetchWallet(userId);
