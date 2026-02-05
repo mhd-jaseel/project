@@ -407,6 +407,23 @@
                                 </div>
                             </div>
 
+                            <div class="mb-2">
+                                <label class="form-label x-small fw-bold mb-1">Total Stock</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" id="productTotalStockValue" class="form-control"
+                                        placeholder="Qty" required>
+                                    <select class="form-select" id="productTotalStockUnit" style="max-width: 100px;">
+                                        <option value="kg">kg</option>
+                                        <option value="g">g</option>
+                                        <option value="l">l</option>
+                                        <option value="ml">ml</option>
+                                        <option value="pcs">pcs</option>
+                                        <option value="pkt">pkt</option>
+                                    </select>
+                                </div>
+                                <div class="form-text x-small">Auto-reduces per order</div>
+                            </div>
+
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
                                     <label class="form-label x-small fw-bold mb-1">Price ($)</label>
@@ -425,11 +442,7 @@
                                 <input type="date" class="form-control form-control-sm">
                             </div>
 
-                            <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" id="unlimitedStock" checked>
-                                <label class="form-check-label x-small fw-bold" for="unlimitedStock">Unlimited
-                                    Stock</label>
-                            </div>
+
                         </div>
                     </div>
 
@@ -737,6 +750,13 @@
                 formData.append("name", name);
                 formData.append("company", company);
                 formData.append("weight", weight); // Add this
+
+                const stockValue = document.getElementById('productTotalStockValue').value.trim();
+                const stockUnit = document.getElementById('productTotalStockUnit').value;
+                const totalStock = stockValue ? `${stockValue}${stockUnit}` : '';
+
+                if (totalStock) formData.append("totalStock", totalStock);
+
                 formData.append("price", price);
                 const discount = document.getElementById("productDiscount").value; // ✅ Capture discount
                 if (discount) formData.append("discount", discount);

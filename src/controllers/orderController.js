@@ -4,6 +4,35 @@ const Product = require('../models/Product');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
 
+// Helper: Parse weight string to grams/ml (base unit)
+// Helper: Parse weight string to grams/ml (base unit)
+const parseWeight = (str) => {
+    if (!str) return 0;
+
+    const s = str.toString().toLowerCase().trim();
+
+    // Implicit 1 unit for standalone words
+    if (['piece', 'pc', 'pcs', 'unit', 'each', 'item', 'packet', 'pkt', 'pack', 'packs'].includes(s)) return 1;
+
+    const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/);
+    if (!match) return 0;
+
+    const val = parseFloat(match[1]);
+    const unit = match[3] ? match[3].toLowerCase() : '';
+
+    // Mass
+    if (unit === 'kg') return val * 1000;
+    if (['g', 'gms', 'gm'].includes(unit)) return val;
+    if (unit === 'mg') return val / 1000;
+
+    // Volume
+    if (['l', 'ltr'].includes(unit)) return val * 1000;
+    if (unit === 'ml') return val;
+
+    // Units/Pieces (return raw value)
+    return val;
+};
+
 // Place Order
 exports.placeOrder = async (req, res) => {
     try {
@@ -28,6 +57,24 @@ exports.placeOrder = async (req, res) => {
             // Use the effective price (discount if available)
             const price = (item.product.discount && item.product.discount > 0) ? item.product.discount : item.product.price;
             subtotal += price * item.quantity;
+
+            // ✅ STOCK CHECK
+            const unitWeight = parseWeight(item.product.weight);
+            if (unitWeight > 0) {
+                const requiredStock = unitWeight * item.quantity;
+                if (item.product.totalStock < requiredStock) {
+                    return res.status(400).json({
+                        message: `Insufficient stock for ${item.product.name}. Please select a lower quantity.`
+                    });
+                }
+            } else {
+                // Fallback for non-standard units
+                if ((item.product.stockQty || 0) < item.quantity) {
+                    return res.status(400).json({
+                        message: `Insufficient stock for ${item.product.name}.`
+                    });
+                }
+            }
 
             orderItems.push({
                 product: item.product._id,
@@ -122,6 +169,44 @@ exports.placeOrder = async (req, res) => {
         });
 
         const savedOrder = await newOrder.save();
+
+        // Update Stock
+        for (const item of orderItems) {
+            const product = await Product.findById(item.product);
+            if (product) {
+                const unitWeight = parseWeight(product.weight);
+                if (unitWeight > 0) {
+                    const deduction = unitWeight * item.quantity;
+                    product.totalStock = Math.max(0, product.totalStock - deduction);
+
+                    // Status Updates
+                    if (product.totalStock <= unitWeight) {
+                        product.status = 'Out of Stock';
+                    } else if (product.initialStock > 0 && product.totalStock <= (product.initialStock * 0.2)) {
+                        product.status = 'Low Stock';
+                    } else {
+                        product.status = 'In Stock';
+                    }
+
+                    // Sync quantity
+                    product.stockQty = Math.floor(product.totalStock / unitWeight);
+                    await product.save();
+                } else {
+                    // Fallback for non-weight products
+                    if (product.stockQty >= item.quantity) {
+                        product.stockQty -= item.quantity;
+                        if (product.stockQty === 0) {
+                            product.status = 'Out of Stock';
+                        } else if (product.initialStock > 0 && product.stockQty <= (product.initialStock * 0.2)) {
+                            product.status = 'Low Stock';
+                        } else {
+                            product.status = 'In Stock';
+                        }
+                        await product.save();
+                    }
+                }
+            }
+        }
 
         // Handle Wallet Transaction
         if (paymentMethod === 'Wallet' && wallet) {
@@ -313,6 +398,27 @@ exports.cancelOrder = async (req, res) => {
         order.cancelledAt = new Date();
         order.viewedByAdmin = false; // Notify admin
 
+        // Restore Stock
+        for (const item of order.items) {
+            const product = await Product.findById(item.product);
+            if (product) {
+                const unitWeight = parseWeight(product.weight);
+                if (unitWeight > 0) {
+                    product.totalStock += (unitWeight * item.quantity);
+                    // Check if status improves
+                    if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                        product.status = 'In Stock';
+                    }
+                    product.stockQty = Math.floor(product.totalStock / unitWeight);
+                    await product.save();
+                } else {
+                    product.stockQty += item.quantity;
+                    if (product.stockQty > 0) product.status = 'In Stock';
+                    await product.save();
+                }
+            }
+        }
+
         // Wallet Refund (if paid)
         if (order.paymentStatus === 'Completed' && ['Wallet', 'Bank'].includes(order.paymentMethod)) {
             const wallet = await Wallet.findOne({ user: userId });
@@ -437,6 +543,24 @@ exports.cancelOrderItem = async (req, res) => {
         // 1. Mark Item Cancelled
         item.itemStatus = 'Cancelled';
         item.cancellationReason = reason || 'User requested';
+
+        // Restore Stock for Item
+        const product = await Product.findById(item.product);
+        if (product) {
+            const unitWeight = parseWeight(product.weight);
+            if (unitWeight > 0) {
+                product.totalStock += (unitWeight * item.quantity);
+                if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                    product.status = 'In Stock';
+                }
+                product.stockQty = Math.floor(product.totalStock / unitWeight);
+                await product.save();
+            } else {
+                product.stockQty += item.quantity;
+                if (product.stockQty > 0) product.status = 'In Stock';
+                await product.save();
+            }
+        }
 
         // 2. Recalculate Totals
         const oldTotalAmount = order.totalAmount;
@@ -570,6 +694,26 @@ exports.updateReturnStatus = async (req, res) => {
         if (status === 'Approved') {
             order.orderStatus = 'Returned';
 
+            // Restore Stock
+            for (const item of order.items) {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    const unitWeight = parseWeight(product.weight);
+                    if (unitWeight > 0) {
+                        product.totalStock += (unitWeight * item.quantity);
+                        if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                            product.status = 'In Stock';
+                        }
+                        product.stockQty = Math.floor(product.totalStock / unitWeight);
+                        await product.save();
+                    } else {
+                        product.stockQty += item.quantity;
+                        if (product.stockQty > 0) product.status = 'In Stock';
+                        await product.save();
+                    }
+                }
+            }
+
             // Wallet Refund
             if (order.paymentStatus === 'Completed') {
                 const wallet = await Wallet.findOne({ user: order.user });
@@ -618,6 +762,24 @@ exports.updateItemReturnStatus = async (req, res) => {
 
         if (status === 'Approved') {
             item.itemStatus = 'Returned';
+
+            // Restore Stock for Item
+            const product = await Product.findById(item.product);
+            if (product) {
+                const unitWeight = parseWeight(product.weight);
+                if (unitWeight > 0) {
+                    product.totalStock += (unitWeight * item.quantity);
+                    if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                        product.status = 'In Stock';
+                    }
+                    product.stockQty = Math.floor(product.totalStock / unitWeight);
+                    await product.save();
+                } else {
+                    product.stockQty += item.quantity;
+                    if (product.stockQty > 0) product.status = 'In Stock';
+                    await product.save();
+                }
+            }
 
             // 1. Recalculate Totals (Similar to Cancel logic)
             const oldTotalAmount = order.totalAmount;

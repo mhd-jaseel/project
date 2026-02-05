@@ -25,6 +25,11 @@ const productSchema = new mongoose.Schema(
 
     isHotDeal: { type: Boolean, default: false },
     featured: { type: Boolean, default: false },
+
+    // Weight-based Stock Management
+    totalStock: { type: Number, default: 0 }, // In grams or ml
+    initialStock: { type: Number, default: 0 }, // For calculating 90% usage
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"

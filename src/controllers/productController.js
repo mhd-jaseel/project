@@ -1,11 +1,40 @@
 const Product = require("../models/Product");
 
+// Helper: Parse weight string to grams/ml (base unit)
+// Helper: Parse weight string to grams/ml (base unit)
+const parseWeight = (str) => {
+  if (!str) return 0;
+
+  const s = str.toString().toLowerCase().trim();
+
+  // Implicit 1 unit for standalone words
+  if (['piece', 'pc', 'pcs', 'unit', 'each', 'item', 'packet', 'pkt', 'pack', 'packs'].includes(s)) return 1;
+
+  const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/);
+  if (!match) return 0;
+
+  const val = parseFloat(match[1]);
+  const unit = match[3] ? match[3].toLowerCase() : '';
+
+  // Mass
+  if (unit === 'kg') return val * 1000;
+  if (['g', 'gms', 'gm'].includes(unit)) return val;
+  if (unit === 'mg') return val / 1000;
+
+  // Volume
+  if (['l', 'ltr'].includes(unit)) return val * 1000;
+  if (unit === 'ml') return val;
+
+  // Units/Pieces (return raw value)
+  return val;
+};
+
 /* ============================
    ADMIN: ADD PRODUCT
 ============================ */
 exports.addProduct = async (req, res) => {
   try {
-    const { name, company, weight, price, discount, description, category, isHotDeal } = req.body;
+    const { name, company, weight, price, discount, description, category, isHotDeal, totalStock } = req.body;
 
     // ✅ Validation
     if (!name || !price || !category) {
@@ -13,6 +42,9 @@ exports.addProduct = async (req, res) => {
         message: "Name, price and category are required"
       });
     }
+
+    // Parse Stock
+    const stockVal = parseWeight(totalStock);
 
     const product = new Product({
       name,
@@ -23,6 +55,11 @@ exports.addProduct = async (req, res) => {
       isHotDeal: isHotDeal === 'true',
       description,
       category,
+      totalStock: stockVal,     // Store in base unit (g/ml)
+      initialStock: stockVal,   // Set initial stock reference
+      initialStock: stockVal,   // Set initial stock reference
+      stockQty: stockVal > 0 && parseWeight(weight) > 0 ? Math.floor(stockVal / parseWeight(weight)) : 0, // Approx count
+      status: (stockVal > 0 && stockVal > parseWeight(weight)) ? 'In Stock' : 'Out of Stock',
       image: req.files && req.files['image'] ? `/uploads/products/${req.files['image'][0].filename}` : null,
       images: req.files && req.files['extraImages']
         ? req.files['extraImages'].map(f => `/uploads/products/${f.filename}`)
@@ -65,7 +102,7 @@ exports.getAllProducts = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, company, weight, price, discount, description, category, status, featured, isHotDeal } = req.body;
+    const { name, company, weight, price, discount, description, category, status, featured, isHotDeal, totalStock } = req.body;
 
     let updateData = {
       name,
@@ -79,6 +116,30 @@ exports.updateProduct = async (req, res) => {
       featured: featured === 'true', // Convert string to boolean
       isHotDeal: isHotDeal === 'true'
     };
+
+    // If totalStock is being updated, update it and potentially reset initialStock?
+    // User didn't specify behavior for updates, but usually if you change stock string, you mean it.
+    if (totalStock) {
+      const stockVal = parseWeight(totalStock);
+      updateData.totalStock = stockVal;
+      // If we are restocking, we might want to update initialStock or keep it.
+      // Simple logic: if new stock is provided, treat it as current stock. 
+      // We might need to update initialStock to this new value if it's a re-stocking action.
+      // Let's assume manual update sets both for now to reset the "low stock" counter base.
+      updateData.initialStock = stockVal;
+
+      // Also update stockQty
+      const weightVal = parseWeight(weight);
+      if (weightVal > 0) {
+        updateData.stockQty = Math.floor(stockVal / weightVal);
+      }
+      // Auto-update status based on new stock level
+      if (stockVal <= weightVal) {
+        updateData.status = 'Out of Stock';
+      } else {
+        updateData.status = 'In Stock';
+      }
+    }
 
     // Update main image if provided
     if (req.files && req.files['image']) {

@@ -319,7 +319,6 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold m-0">All Products</h4>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-info text-white btn-sm"><i class="fas fa-boxes me-1"></i> Stock Info</button>
                     <a href="add-product.html" class="btn btn-primary-custom btn-sm"><i class="fas fa-plus"></i> Add New
                         Product</a>
                 </div>
@@ -334,6 +333,7 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th>Qty</th>
                                 <th>Stock</th>
                                 <th>Hot Deal</th>
                                 <th>Action</th>
@@ -383,23 +383,29 @@
                                         <label class="form-label">Weight/Unit</label>
                                         <input type="text" class="form-control" id="editProductWeight">
                                     </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Update Total Stock</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="editProductTotalStockValue"
+                                                placeholder="Qty">
+                                            <select class="form-select" id="editProductTotalStockUnit"
+                                                style="max-width: 100px;">
+                                                <option value="kg">kg</option>
+                                                <option value="g">g</option>
+                                                <option value="l">l</option>
+                                                <option value="ml">ml</option>
+                                                <option value="pcs">pcs</option>
+                                                <option value="pkt">pkt</option>
+                                            </select>
+                                        </div>
+                                        <small class="text-muted" id="editProductCurrentStockHelp"></small>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Stock Status</label>
-                                        <select class="form-select" id="editProductStatus">
-                                            <option value="In Stock">In Stock</option>
-                                            <option value="Low Stock">Low Stock</option>
-                                            <option value="Out of Stock">Out of Stock</option>
-                                        </select>
+                                        <!-- Placeholder to keep grid alignment if needed, or remove completely -->
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Featured (Hot Deal)</label>
-                                        <select class="form-select" id="editProductFeatured">
-                                            <option value="false">No</option>
-                                            <option value="true">Yes</option>
-                                        </select>
-                                    </div>
+
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Description</label>
@@ -542,13 +548,15 @@
           <td>₹${p.price}</td>
 
           <td>
-            <select class="form-select form-select-sm" 
-                    onchange="changeStockStatus('${p._id}', this.value)"
-                    style="width: 140px; font-weight: 500; color: ${p.status === 'Out of Stock' ? '#dc3545' : (p.status === 'Low Stock' ? '#ffc107' : '#198754')}; border-color: ${p.status === 'Out of Stock' ? '#dc3545' : (p.status === 'Low Stock' ? '#ffc107' : '#198754')};">
-                <option value="In Stock" ${(!p.status || p.status === 'In Stock') ? 'selected' : ''} style="color:#198754;">In Stock</option>
-                <option value="Low Stock" ${p.status === 'Low Stock' ? 'selected' : ''} style="color:#ffc107;">Low Stock</option>
-                <option value="Out of Stock" ${p.status === 'Out of Stock' ? 'selected' : ''} style="color:#dc3545;">Out of Stock</option>
-            </select>
+            <span class="badge bg-light text-dark border fw-bold">${p.stockQty || 0}</span>
+          </td>
+
+          <td>
+            <span class="badge ${p.status === 'Out of Stock' ? 'bg-danger' :
+                            (p.status === 'Low Stock' ? 'bg-warning text-dark' : 'bg-success')
+                        } bg-opacity-75 px-3 py-2 rounded-pill">
+                ${p.status || 'In Stock'}
+            </span>
           </td>
 
           <td>
@@ -558,16 +566,24 @@
           </td>
 
           <td>
-            <button 
-              class="btn btn-sm btn-primary me-2"
-              onclick="openEditModal('${p._id}')">
-              Edit
-            </button>
-            <button 
-              class="btn btn-sm btn-danger"
-              onclick="confirmDelete('${p._id}', this)">
-              Delete
-            </button>
+            <div class="dropdown">
+              <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-ellipsis-v text-muted"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="z-index: 1050;">
+                <li>
+                    <button class="dropdown-item py-2" type="button" onclick="openEditModal('${p._id}')">
+                        <i class="fas fa-edit me-2 text-primary"></i> Edit
+                    </button>
+                </li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li>
+                    <button class="dropdown-item py-2 text-danger" type="button" onclick="confirmDelete('${p._id}')">
+                        <i class="fas fa-trash-alt me-2"></i> Delete
+                    </button>
+                </li>
+              </ul>
+            </div>
           </td>
         </tr>
       `;
@@ -597,9 +613,24 @@
             document.getElementById('editProductPrice').value = product.price;
             document.getElementById('editProductDiscount').value = product.discount || "";
             document.getElementById('editProductWeight').value = product.weight || "";
-            document.getElementById('editProductStatus').value = product.status || "In Stock";
-            document.getElementById('editProductFeatured').value = product.featured ? "true" : "false";
-            document.getElementById('editProductDescription').value = product.description || "";
+            document.getElementById('editProductWeight').value = product.weight || "";
+            const descField = document.getElementById('editProductDescription');
+            if (descField) {
+                descField.value = product.description || "";
+            }
+
+            // Total Stock Field
+            const stockInputVal = document.getElementById('editProductTotalStockValue');
+            const stockInputUnit = document.getElementById('editProductTotalStockUnit');
+            stockInputVal.value = ""; // Reset on open
+            stockInputUnit.value = "kg"; // Default reset
+
+            const stockHelp = document.getElementById('editProductCurrentStockHelp');
+            if (product.totalStock !== undefined) {
+                stockHelp.textContent = `Current Stock Level: ${product.totalStock} (Base Units)`;
+            } else {
+                stockHelp.textContent = "";
+            }
 
             const imgPreview = document.getElementById('currentProductImage');
             if (product.image) {
@@ -621,8 +652,10 @@
             const price = document.getElementById('editProductPrice').value;
             const discount = document.getElementById('editProductDiscount').value;
             const weight = document.getElementById('editProductWeight').value;
-            const status = document.getElementById('editProductStatus').value;
-            const featured = document.getElementById('editProductFeatured').value;
+            const totalStockVal = document.getElementById('editProductTotalStockValue').value.trim();
+            const totalStockUnit = document.getElementById('editProductTotalStockUnit').value;
+            const totalStock = totalStockVal ? `${totalStockVal}${totalStockUnit}` : '';
+
             const description = document.getElementById('editProductDescription').value.trim();
             const imageInput = document.getElementById('editProductImage');
 
@@ -639,8 +672,8 @@
             formData.append("price", price);
             if (discount) formData.append("discount", discount);
             formData.append("weight", weight);
-            formData.append("status", status);
-            formData.append("featured", featured);
+            if (totalStock) formData.append("totalStock", totalStock);
+            // Status is auto-calculated by backend now
             formData.append("description", description);
 
             if (imageInput.files.length > 0) {
