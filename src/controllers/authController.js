@@ -261,3 +261,76 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/* ======================
+   CHANGE EMAIL
+====================== */
+exports.changeEmail = async (req, res) => {
+  try {
+    const { oldEmail, newEmail } = req.body;
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (user.email !== oldEmail) {
+      return res.status(400).json({ message: "Old email does not match." });
+    }
+
+    const emailExists = await User.findOne({ email: newEmail });
+    if (emailExists) {
+      return res.status(400).json({ message: "New email is already in use." });
+    }
+
+    user.email = newEmail;
+    await user.save();
+
+    // Send notification
+    try {
+      await transporter.sendMail({
+        to: newEmail,
+        subject: "Email Changed Successfully",
+        text: "Your Admin account email has been updated successfully."
+      });
+    } catch (mailError) {
+      console.error("Mail error:", mailError);
+    }
+
+    res.json({ message: "Email updated successfully. Notification sent.", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ======================
+   CHANGE PASSWORD
+====================== */
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect old password." });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    // Send notification
+    try {
+      await transporter.sendMail({
+        to: user.email,
+        subject: "Password Changed Successfully",
+        text: "Your account password has been updated successfully."
+      });
+    } catch (mailError) {
+      console.error("Mail error:", mailError);
+    }
+
+    res.json({ message: "Password updated successfully. Notification sent." });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

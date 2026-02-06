@@ -17,8 +17,10 @@ exports.adminLogin = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    // 3. Check password (plain OR bcrypt – adjust if using bcrypt)
-    if (admin.password !== password) {
+    // 3. Check password (bcrypt)
+    const bcrypt = require("bcryptjs");
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
 
@@ -278,6 +280,51 @@ exports.getCustomerDetails = async (req, res) => {
 
   } catch (error) {
     console.error("Error fetching customer details:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.getNotifications = async (req, res) => {
+  try {
+    const Order = require('../models/Order');
+    const query = {
+      viewedByAdmin: false,
+      $or: [
+        { orderStatus: 'Pending' },
+        { orderStatus: 'Cancelled' },
+        { returnStatus: 'Requested' },
+        { 'items.returnStatus': 'Requested' }
+      ]
+    };
+
+    const orders = await Order.find(query).sort({ updatedAt: -1 }).limit(20);
+    const notifications = orders.map(order => {
+      let msg = 'Update on Order';
+      let type = 'info';
+
+      if (order.returnStatus === 'Requested' || order.items.some(i => i.returnStatus === 'Requested')) {
+        msg = `Return Request: Order #${order._id.toString().substring(0, 8).toUpperCase()}`;
+        type = 'warning';
+      } else if (order.orderStatus === 'Cancelled') {
+        msg = `Cancelled: Order #${order._id.toString().substring(0, 8).toUpperCase()}`;
+        type = 'danger';
+      } else if (order.orderStatus === 'Pending') {
+        msg = `New Order #${order._id.toString().substring(0, 8).toUpperCase()}`;
+        type = 'success';
+      }
+
+      return {
+        id: order._id,
+        message: msg,
+        type: type,
+        time: order.updatedAt,
+        link: 'order-management.html'
+      };
+    });
+
+    res.json(notifications);
+  } catch (error) {
+    console.error("Notif Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };

@@ -232,6 +232,63 @@
             border: 4px solid #fff;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
+        /* Professional Notification Design */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
+        }
+
+        .user-profile .icon-btn {
+            background: none;
+            border: none;
+            color: #b5b5c3;
+            font-size: 1.4rem;
+            cursor: pointer;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .user-profile .icon-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .user-profile .icon-btn .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.65rem;
+            background-color: #f1416c;
+            color: #fff;
+            border: 2px solid #fff;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 50rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile .icon-btn .badge.pulse-animation {
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 
@@ -242,8 +299,6 @@
         <div class="brand">
             <i class="fas fa-leaf me-2 text-success"></i>KM Admin
         </div>
-
-        <div class="menu-label">Main Menu</div>
         <a href="dashboard.html" class="nav-link">
             <i class="fas fa-th-large"></i> Dashboard
         </a>
@@ -265,7 +320,6 @@
         <a href="transaction.html" class="nav-link active">
             <i class="fas fa-wallet"></i> Transaction
         </a>
-        <div class="menu-label mt-3">Products</div>
         <!-- ... sidebar items ... -->
         <a href="categories.html" class="nav-link">
             <i class="fas fa-th-list"></i> Categories
@@ -277,10 +331,8 @@
         <a href="feature-brands.html" class="nav-link">
             <i class="fas fa-star"></i> Featured Brands
         </a>
-
-        <div class="menu-label mt-3">Admin</div>
         <a href="admin-role.html" class="nav-link">
-            <i class="fas fa-user-shield"></i> Admin Role
+            <i class="fas fa-user-shield"></i> Settings
         </a>
         <div class="mt-auto p-4">
             <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
@@ -302,8 +354,20 @@
             </div>
             <div class="user-profile">
                 <!-- User Profile -->
-                <button class="icon-btn"><i class="far fa-bell"></i><span
-                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown d-inline-block position-relative me-3"><button
+                        class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i><span class="badge"
+                            id="notificationBadge" style="display: none;"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown"
+                        style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li>
+                        <div id="notificationList">
+                            <li class="dropdown-item text-center text-muted small p-3">No new notifications</li>
+                        </div>
+                        <li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary"
+                                href="order-management.html">View All Orders</a></li>
+                    </ul>
+                </div>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -418,6 +482,79 @@
 
         document.addEventListener('DOMContentLoaded', fetchTransactions);
     </script>
+
+    <!-- Notification Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const notifBadge = document.getElementById("notificationBadge");
+            const notifList = document.getElementById("notificationList");
+
+            async function loadNotifications() {
+                try {
+                    const token = localStorage.getItem("adminToken");
+                    if (!token) return;
+
+                    const res = await fetch("/api/admin/notifications", {
+                        headers: { "Authorization": "Bearer " + token }
+                    });
+
+                    if (!res.ok) return;
+
+                    const data = await res.json();
+
+                    if (data.length > 0) {
+                        if (notifBadge) {
+                            notifBadge.innerText = data.length > 9 ? '9+' : data.length;
+                            notifBadge.style.display = "flex";
+                            notifBadge.classList.add("pulse-animation");
+                        }
+
+                        if (notifList) {
+                            notifList.innerHTML = data.map(n => {
+                                let icon = 'fa-info-circle';
+                                let colorClass = 'text-primary';
+                                let bgClass = 'bg-primary-subtle';
+
+                                if (n.type === 'success') { icon = 'fa-check-circle'; colorClass = 'text-success'; bgClass = 'bg-success-subtle'; }
+                                if (n.type === 'warning') { icon = 'fa-exclamation-triangle'; colorClass = 'text-warning'; bgClass = 'bg-warning-subtle'; }
+                                if (n.type === 'danger' || n.type === 'error') { icon = 'fa-exclamation-circle'; colorClass = 'text-danger'; bgClass = 'bg-danger-subtle'; }
+
+                                const timeStr = new Date(n.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, month: 'short', day: 'numeric' });
+
+                                return `
+                                <li>
+                                    <a class="dropdown-item p-3 border-bottom position-relative notification-item" href="${n.link}?id=${n.id}&view=true" style="transition: all 0.2s;">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ${bgClass} ${colorClass}" style="width: 38px; height: 38px;">
+                                                <i class="fas ${icon} fa-lg"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h6 class="mb-0 fw-bold fs-7 text-dark" style="font-size: 0.9rem;">${n.title || 'Notification'}</h6>
+                                                    <small class="text-muted" style="font-size: 0.65rem;">${timeStr}</small>
+                                                </div>
+                                                <p class="mb-0 text-secondary small lh-sm text-wrap" style="font-size: 0.8rem;">${n.message}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            `;
+                            }).join("");
+                        }
+                    } else {
+                        if (notifBadge) notifBadge.style.display = "none";
+                        if (notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
+                    }
+                } catch (err) {
+                    console.error("Notif error", err);
+                }
+            }
+
+            loadNotifications();
+            setInterval(loadNotifications, 30000);
+        });
+    </script>
+
 </body>
 
 </html>

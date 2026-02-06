@@ -29,5 +29,7 @@ router.get("/wallet", authMiddleware, getWalletBalance);
 // Profile Routes
 router.get("/me", authMiddleware, getProfile);
 router.put("/update-profile", authMiddleware, upload.single("profilePicture"), updateProfile);
+router.put("/change-email", authMiddleware, require("../controllers/authController").changeEmail);
+router.put("/change-password", authMiddleware, require("../controllers/authController").changePassword);
 
 module.exports = router;

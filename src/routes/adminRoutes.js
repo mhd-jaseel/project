@@ -15,6 +15,7 @@ router.get('/customers', auth, role('admin'), adminController.getAllCustomers);
 router.delete('/customers/:id', auth, role('admin'), adminController.deleteCustomer);
 router.get('/customers/:id', auth, role('admin'), adminController.getCustomerDetails);
 router.get('/transactions', auth, role('admin'), adminController.getAllTransactions);
+router.get('/notifications', auth, role('admin'), adminController.getNotifications);
 
 // Message Routes
 router.get('/messages', auth, role('admin'), contactController.getAllMessages);

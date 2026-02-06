@@ -244,8 +244,6 @@
         <div class="brand">
             <i class="fas fa-leaf me-2 text-success"></i>KM Admin
         </div>
-
-        <div class="menu-label">Main Menu</div>
         <a href="dashboard.html" class="nav-link">
             <i class="fas fa-th-large"></i> Dashboard
         </a>
@@ -267,8 +265,6 @@
         <a href="transaction.html" class="nav-link">
             <i class="fas fa-wallet"></i> Transaction
         </a>
-
-        <div class="menu-label mt-3">Products</div>
         <a href="categories.html" class="nav-link">
             <i class="fas fa-th-list"></i> Categories
         </a>
@@ -279,10 +275,8 @@
         <a href="feature-brands.html" class="nav-link">
             <i class="fas fa-star"></i> Featured Brands
         </a>
-
-        <div class="menu-label mt-3">Admin</div>
         <a href="admin-role.html" class="nav-link">
-            <i class="fas fa-user-shield"></i> Admin Role
+            <i class="fas fa-user-shield"></i> Settings
         </a>
 
         <div class="mt-auto p-4">
@@ -306,10 +300,7 @@
 
             <div class="user-profile">
                 <!-- Same profile block as dashboard -->
-                <button class="icon-btn" onclick="filterUnviewedOrders()">
-                    <i class="far fa-bell"></i>
-                    <span class="badge bg-danger rounded-circle" style="display:none;">0</span>
-                </button>
+                <div class="dropdown d-inline-block position-relative me-3"><button class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="far fa-bell"></i><span class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1" id="notificationBadge" style="display: none; font-size: 0.6rem;">0</span></button><ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;"><li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li><div id="notificationList"><li class="dropdown-item text-center text-muted small p-3">No new notifications</li></div><li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary" href="order-management.html">View All Orders</a></li></ul></div>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -477,6 +468,14 @@
                     allOrders = orders;
                     renderOrders(orders);
                     updateNotificationCount();
+
+                    // Auto Open Modal if requested
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('view') === 'true' && urlParams.get('id')) {
+                        const oid = urlParams.get('id');
+                        // Ensure order exists in list (should be there as we fetched all)
+                        setTimeout(() => openOrderModal(oid), 500); // Small delay to ensure render
+                    }
                 } else {
                     console.error('Expected array of orders, got:', orders);
                 }
@@ -854,6 +853,61 @@
         fetchOrders();
 
     </script>
+
+<!-- Notification Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const notifBadge = document.getElementById("notificationBadge");
+        const notifList = document.getElementById("notificationList");
+        
+        async function loadNotifications() {
+            try {
+                const token = localStorage.getItem("adminToken");
+                if (!token) return;
+                
+                const res = await fetch("/api/admin/notifications", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                
+                if (!res.ok) return;
+                
+                const data = await res.json();
+                
+                if (data.length > 0) {
+                    if(notifBadge) {
+                        notifBadge.innerText = data.length;
+                        notifBadge.style.display = "inline-block";
+                    }
+                    
+                    if(notifList) {
+                        notifList.innerHTML = data.map(n => `
+                            <li>
+                                <a class="dropdown-item p-2 border-bottom" href="${n.link}?id=${n.id}&view=true">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <div class="mt-1 text-${n.type || "primary"}"><i class="fas fa-circle" style="font-size: 0.5rem;"></i></div>
+                                        <div>
+                                            <div class="small fw-semibold text-wrap">${n.message}</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">${new Date(n.time).toLocaleString()}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        `).join("");
+                    }
+                } else {
+                    if(notifBadge) notifBadge.style.display = "none";
+                    if(notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
+                }
+            } catch (err) {
+                console.error("Notif error", err);
+            }
+        }
+        
+        loadNotifications();
+        setInterval(loadNotifications, 30000);
+    });
+</script>
+
 </body>
 
 </html>

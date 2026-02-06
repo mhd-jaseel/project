@@ -142,16 +142,61 @@
             background: none;
             border: none;
             color: #b5b5c3;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            /* Slightly larger icon */
             cursor: pointer;
             position: relative;
+            width: 40px;
+            /* Fixed tap target */
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .user-profile .icon-btn:hover {
+            color: var(--primary-color);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
         }
 
         .user-profile .icon-btn .badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 0.6rem;
+            top: 2px;
+            right: 2px;
+            background-color: #f1416c;
+            /* Professional Vibrant Red */
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 50rem;
+            /* Pill shape */
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile .icon-btn .badge.pulse-animation {
+            animation: pulse 2s infinite;
         }
 
         .user-profile img {
@@ -244,8 +289,6 @@
         <div class="brand">
             <i class="fas fa-leaf me-2 text-success"></i>KM Admin
         </div>
-
-        <div class="menu-label">Main Menu</div>
         <a href="dashboard.html" class="nav-link">
             <i class="fas fa-th-large"></i> Dashboard
         </a>
@@ -267,8 +310,6 @@
         <a href="transaction.html" class="nav-link">
             <i class="fas fa-wallet"></i> Transaction
         </a>
-
-        <div class="menu-label mt-3">Products</div>
         <a href="categories.html" class="nav-link">
             <i class="fas fa-th-list"></i> Categories
         </a>
@@ -279,10 +320,8 @@
         <a href="feature-brands.html" class="nav-link">
             <i class="fas fa-star"></i> Featured Brands
         </a>
-
-        <div class="menu-label mt-3">Admin</div>
         <a href="admin-role.html" class="nav-link active">
-            <i class="fas fa-user-shield"></i> Admin Role
+            <i class="fas fa-user-shield"></i> Settings
         </a>
         <div class="mt-auto p-4">
             <a href="../user/login.html" class="btn btn-outline-danger w-100 btn-sm"><i
@@ -300,8 +339,20 @@
                 </button>
             </div>
             <div class="user-profile">
-                <button class="icon-btn"><i class="far fa-bell"></i><span
-                        class="badge bg-danger rounded-circle">3</span></button>
+                <div class="dropdown d-inline-block position-relative me-3"><button
+                        class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bell"></i><span class="badge"
+                            id="notificationBadge" style="display: none;"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown"
+                        style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li>
+                        <div id="notificationList">
+                            <li class="dropdown-item text-center text-muted small p-3">No new notifications</li>
+                        </div>
+                        <li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary"
+                                href="order-management.html">View All Orders</a></li>
+                    </ul>
+                </div>
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -318,12 +369,13 @@
         <!-- Content Area -->
         <div class="content-wrapper">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold m-0">Admin Profile</h4>
+                <h4 class="fw-bold m-0">Admin Profile & Settings</h4>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card-custom">
+            <div class="row">
+                <!-- Profile Section -->
+                <div class="col-lg-5 mb-4">
+                    <div class="card-custom h-100">
                         <div class="profile-header-card mb-4 text-center pb-5">
                             <h4 class="mt-2" id="displayRole">Admin</h4>
                             <p class="opacity-75" id="displayEmail">admin@kmstore.com</p>
@@ -333,141 +385,373 @@
                                 id="profileAvatar" class="profile-avatar rounded-circle mb-3">
                         </div>
 
-                        <form id="profileForm" class="px-4 pb-4">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="name" name="name">
+                        <div class="px-4 pb-4">
+                            <h5 class="fw-bold border-bottom pb-2 mb-3">Profile Details</h5>
+                            <form id="profileForm">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Full Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" disabled>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="email" name="email">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Email Address</label>
+                                    <input type="email" class="form-control bg-light" id="email" name="email" readonly>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="text" class="form-control" id="phone" name="phoneNumber">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Phone Number</label>
+                                    <input type="text" class="form-control" id="phone" name="phoneNumber" disabled>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Change Password</label>
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Leave blank to keep current">
+                                <div class="d-grid mt-4">
+                                    <button type="button" class="btn btn-primary-custom" id="editProfileBtn"
+                                        onclick="toggleEditProfile()">Edit Profile</button>
+                                    <button type="button" class="btn btn-success d-none" id="saveProfileBtn"
+                                        onclick="saveProfile()">Save Changes</button>
                                 </div>
-                                <!-- Profile Picture Upload (Optional if supported by backend upload middleware) -->
-                                <!-- <div class="col-12">
-                                    <label class="form-label">Profile Picture</label>
-                                    <input type="file" class="form-control" id="profilePicture" name="profilePicture">
-                                </div> -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-                                <div class="col-12 mt-4 text-end">
-                                    <button type="button" class="btn btn-primary-custom px-4"
-                                        onclick="updateProfile()">Save Changes</button>
-                                </div>
+                <!-- Settings Section -->
+                <div class="col-lg-7">
+                    <div class="card-custom mb-4">
+                        <h5 class="fw-bold border-bottom pb-2 mb-4">Account Security</h5>
+
+
+
+                        <!-- Change Password -->
+                        <div>
+                            <h6 class="fw-bold mb-3"><i class="fas fa-lock me-2 text-primary"></i>Change Password</h6>
+                            <div class="bg-light p-3 rounded">
+                                <form id="changePasswordForm">
+                                    <div class="mb-3">
+                                        <label class="form-label small">Old Password</label>
+                                        <input type="password" class="form-control" id="oldPassword">
+                                        <div class="text-end mt-1">
+                                            <a href="#" class="text-muted small text-decoration-none"
+                                                onclick="forgotAdminPassword(event)">Forgot Password?</a>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small">New Password</label>
+                                        <input type="password" class="form-control" id="newPassword">
+                                    </div>
+                                    <button type="button" class="btn btn-dark btn-sm" onclick="changePassword()">Update
+                                        Password</button>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
-    </div>
+        <script>
+            // Auth Check
+            const token = localStorage.getItem("adminToken");
+            const role = localStorage.getItem("role");
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Auth Check
-        const token = localStorage.getItem("adminToken");
-        const role = localStorage.getItem("role");
-
-        if (!token || role !== "admin") {
-            window.location.href = "/user/login.html";
-        }
-
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('show');
-            });
-        }
-
-        // Fetch Profile
-        async function fetchProfile() {
-            try {
-                const res = await fetch('/api/auth/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const user = await res.json();
-
-                if (res.ok) {
-                    document.getElementById('displayEmail').innerText = user.email;
-                    document.getElementById('name').value = user.name || '';
-                    document.getElementById('email').value = user.email || '';
-                    document.getElementById('phone').value = user.phoneNumber || '';
-
-                    // Update Avatars
-                    const avatarUrl = user.profilePicture || `https://ui-avatars.com/api/?name=${user.name || 'Admin'}&background=0D8ABC&color=fff`;
-                    document.getElementById('profileAvatar').src = avatarUrl;
-                    document.getElementById('headerProfileImg').src = avatarUrl;
-                }
-            } catch (error) {
-                console.error("Error fetching profile:", error);
+            if (!token || role !== "admin") {
+                window.location.href = "/user/login.html";
             }
-        }
 
-        async function updateProfile() {
-            const formData = new FormData(); // Use FormData if sending file, but here mostly JSON.
-            // But fetch expects JSON for the body if not using file upload, OR FormData if using upload.
-            // The route uses `upload.single('profilePicture')`, so it expects multipart form data if image is sent.
-            // However, common practice: if only text, JSON works if the middleware allows, but multer usually expects multipart.
-
-            // Let's stick to JSON since we aren't showing the file input yet, 
-            // OR use JSON and the backend handles text fields even if photo is missing.
-            // Actually `upload.single` might mess up raw JSON body parsing if boundary is missing.
-            // Safest: Use JSON for text fields if no file is selected? 
-            // Let's try sending JSON first. If backend fails because of multer expecting multipart, we switch.
-            // Wait, the backend route `router.put("/update-profile", ... upload.single ...)`
-            // Multer usually populates `req.body` only if content-type is multipart/form-data.
-            // So we MUST use keys in a multipart request if we want `req.body` to be populated by multer.
-            // BUT, if we send JSON with `Content-Type: application/json`, express's `express.json()` middleware MIGHT parse it BEFORE multer?
-            // Depends on middleware order in `app.js`. Typically `express.json()` is first.
-            // If so, `req.body` will be ready.
-
-            // Let's assume JSON works.
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phoneNumber = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-
-            const payload = { name, email, phoneNumber };
-            if (password) payload.password = password;
-
-            try {
-                const res = await fetch('/api/auth/update-profile', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('show');
                 });
+            }
 
-                const data = await res.json();
+            // Fetch Profile
+            async function fetchProfile() {
+                try {
+                    const res = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const user = await res.json();
 
-                if (res.ok) {
-                    Swal.fire('Success', 'Profile updated successfully!', 'success');
-                    fetchProfile(); // Refresh UI
-                    document.getElementById('password').value = ''; // Clear password field
+                    if (res.ok) {
+                        document.getElementById('displayEmail').innerText = user.email;
+                        document.getElementById('name').value = user.name || '';
+                        document.getElementById('email').value = user.email || '';
+                        document.getElementById('phone').value = user.phoneNumber || '';
+
+                        const avatarUrl = user.profilePicture || `https://ui-avatars.com/api/?name=${user.name || 'Admin'}&background=0D8ABC&color=fff`;
+                        document.getElementById('profileAvatar').src = avatarUrl;
+                        document.getElementById('headerProfileImg').src = avatarUrl;
+                    }
+                } catch (error) {
+                    console.error("Error fetching profile:", error);
+                }
+            }
+
+            // Toggle Edit
+            function toggleEditProfile() {
+                const nameInput = document.getElementById('name');
+                const phoneInput = document.getElementById('phone');
+                const editBtn = document.getElementById('editProfileBtn');
+                const saveBtn = document.getElementById('saveProfileBtn');
+
+                if (nameInput.disabled) {
+                    nameInput.disabled = false;
+                    phoneInput.disabled = false;
+                    editBtn.classList.add('d-none');
+                    saveBtn.classList.remove('d-none');
                 } else {
-                    Swal.fire('Error', data.message || 'Failed to update profile', 'error');
+                    nameInput.disabled = true;
+                    phoneInput.disabled = true;
+                    editBtn.classList.remove('d-none');
+                    saveBtn.classList.add('d-none');
                 }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Server Error', 'error');
             }
-        }
 
-        document.addEventListener('DOMContentLoaded', fetchProfile);
-    </script>
+            // Save Profile (Name/Phone only)
+            async function saveProfile() {
+                const name = document.getElementById('name').value;
+                const phoneNumber = document.getElementById('phone').value;
+
+                try {
+                    const res = await fetch('/api/auth/update-profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ name, phoneNumber })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        Swal.fire('Success', 'Profile updated', 'success');
+                        fetchProfile();
+                        toggleEditProfile();
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Server Error', 'error');
+                }
+            }
+
+
+
+            // Change Password
+            async function changePassword() {
+                const oldPassword = document.getElementById('oldPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+
+                if (!oldPassword || !newPassword) {
+                    Swal.fire('Error', 'Please fill all password fields', 'warning');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/auth/change-password', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ oldPassword, newPassword })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        Swal.fire('Success', data.message, 'success');
+                        document.getElementById('changePasswordForm').reset();
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', 'Server Error', 'error');
+                }
+            }
+
+            // Forgot Password Trigger
+            async function forgotAdminPassword(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value; // Get current admin email
+
+                if (!email) {
+                    Swal.fire('Error', 'No email found for this account', 'error');
+                    return;
+                }
+
+                // Confirm before sending
+                const confirm = await Swal.fire({
+                    title: 'Forgot Password?',
+                    text: `Is this your email address? ${email}. We will send an OTP to reset your password.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Send OTP',
+                    confirmButtonColor: '#0f9d58'
+                });
+
+                if (confirm.isConfirmed) {
+                    try {
+                        const res = await fetch('/api/auth/forgot-password', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            // Step 1: Enter OTP
+                            const { value: otp } = await Swal.fire({
+                                title: 'Enter OTP',
+                                input: 'text',
+                                inputLabel: 'An OTP has been sent to your email',
+                                inputPlaceholder: 'Enter 6-digit OTP',
+                                showCancelButton: true,
+                                confirmButtonText: 'Verify',
+                                preConfirm: (otp) => {
+                                    if (!otp) {
+                                        Swal.showValidationMessage('Please enter OTP');
+                                    }
+                                    return otp;
+                                }
+                            });
+
+                            if (otp) {
+                                // Step 2: Verify OTP
+                                try {
+                                    const verifyRes = await fetch('/api/auth/verify-otp', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ email, otp, purpose: 'forgot-password' })
+                                    });
+                                    const verifyData = await verifyRes.json();
+
+                                    if (verifyRes.ok) {
+                                        const resetToken = verifyData.resetToken;
+
+                                        // Step 3: Set New Password
+                                        // Note: We cannot display the OLD password as it is securely hashed.
+                                        // Instead, we allow setting a NEW password directly.
+                                        const { value: newPassword } = await Swal.fire({
+                                            title: 'Reset Password',
+                                            text: 'OTP Verified! Enter your new password below.',
+                                            input: 'password',
+                                            inputLabel: 'New Password',
+                                            inputPlaceholder: 'Enter new password',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Reset Password',
+                                            preConfirm: (pass) => {
+                                                if (!pass || pass.length < 6) {
+                                                    Swal.showValidationMessage('Password must be at least 6 characters');
+                                                }
+                                                return pass;
+                                            }
+                                        });
+
+                                        if (newPassword) {
+                                            // Step 4: Call Reset Password API
+                                            const resetRes = await fetch('/api/auth/reset-password', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ resetToken, newPassword })
+                                            });
+                                            const resetData = await resetRes.json();
+
+                                            if (resetRes.ok) {
+                                                Swal.fire('Success', 'Password has been reset successfully!', 'success');
+                                                document.getElementById('changePasswordForm').reset();
+                                            } else {
+                                                Swal.fire('Error', resetData.message, 'error');
+                                            }
+                                        }
+                                    } else {
+                                        Swal.fire('Error', verifyData.message, 'error');
+                                    }
+                                } catch (err) {
+                                    Swal.fire('Error', 'Verification failed', 'error');
+                                }
+                            }
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    } catch (err) {
+                        Swal.fire('Error', 'Failed to send request', 'error');
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', fetchProfile);
+
+        </script>
+
+        <!-- Notification Script -->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const notifBadge = document.getElementById("notificationBadge");
+                const notifList = document.getElementById("notificationList");
+
+                async function loadNotifications() {
+                    try {
+                        const token = localStorage.getItem("adminToken");
+                        if (!token) return;
+
+                        const res = await fetch("/api/admin/notifications", {
+                            headers: { "Authorization": "Bearer " + token }
+                        });
+
+                        if (!res.ok) return;
+
+                        const data = await res.json();
+
+                        if (data.length > 0) {
+                            if (notifBadge) {
+                                notifBadge.innerText = data.length > 9 ? '9+' : data.length;
+                                notifBadge.style.display = "flex";
+                                notifBadge.classList.add("pulse-animation");
+                            }
+
+                            if (notifList) {
+                                notifList.innerHTML = data.map(n => {
+                                    // Determine icon and color based on type
+                                    let icon = 'fa-info-circle';
+                                    let colorClass = 'text-primary';
+                                    let bgClass = 'bg-primary-subtle'; // Bootstrap 5.3
+
+                                    if (n.type === 'success') { icon = 'fa-check-circle'; colorClass = 'text-success'; bgClass = 'bg-success-subtle'; }
+                                    if (n.type === 'warning') { icon = 'fa-exclamation-triangle'; colorClass = 'text-warning'; bgClass = 'bg-warning-subtle'; }
+                                    if (n.type === 'danger' || n.type === 'error') { icon = 'fa-exclamation-circle'; colorClass = 'text-danger'; bgClass = 'bg-danger-subtle'; }
+
+                                    const timeStr = new Date(n.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, month: 'short', day: 'numeric' });
+
+                                    return `
+                                    <li>
+                                        <a class="dropdown-item p-3 border-bottom position-relative notification-item" href="${n.link}?id=${n.id}&view=true" style="transition: all 0.2s;">
+                                            <div class="d-flex align-items-start gap-3">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ${bgClass} ${colorClass}" style="width: 38px; height: 38px;">
+                                                    <i class="fas ${icon} fa-lg"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <h6 class="mb-0 fw-bold fs-7 text-dark" style="font-size: 0.9rem;">${n.title || 'Notification'}</h6>
+                                                        <small class="text-muted" style="font-size: 0.65rem;">${timeStr}</small>
+                                                    </div>
+                                                    <p class="mb-0 text-secondary small lh-sm text-wrap" style="font-size: 0.8rem;">${n.message}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    `;
+                                }).join("");
+                            }
+                        } else {
+                            if (notifBadge) notifBadge.style.display = "none";
+                            if (notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
+                        }
+                    } catch (err) {
+                        console.error("Notif error", err);
+                    }
+                }
+
+                loadNotifications();
+                setInterval(loadNotifications, 30000);
+            });
+        </script>
+
 </body>
 
 </html>
