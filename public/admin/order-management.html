@@ -298,22 +298,9 @@
                 </div>
             </div>
 
-            <div class="user-profile">
-                <!-- Same profile block as dashboard -->
-                <div class="dropdown d-inline-block position-relative me-3"><button class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="far fa-bell"></i><span class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1" id="notificationBadge" style="display: none; font-size: 0.6rem;">0</span></button><ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;"><li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li><div id="notificationList"><li class="dropdown-item text-center text-muted small p-3">No new notifications</li></div><li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary" href="order-management.html">View All Orders</a></li></ul></div>
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
-                        <div class="ms-2 d-none d-sm-block text-start">
-                            <div class="fw-bold small">Admin User</div>
-                        </div>
-                    </a>
-                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
-                    </ul>
-                </div>
-            </div>
+
+
+
         </header>
 
         <!-- Content Area -->
@@ -854,33 +841,33 @@
 
     </script>
 
-<!-- Notification Script -->
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const notifBadge = document.getElementById("notificationBadge");
-        const notifList = document.getElementById("notificationList");
-        
-        async function loadNotifications() {
-            try {
-                const token = localStorage.getItem("adminToken");
-                if (!token) return;
-                
-                const res = await fetch("/api/admin/notifications", {
-                    headers: { "Authorization": "Bearer " + token }
-                });
-                
-                if (!res.ok) return;
-                
-                const data = await res.json();
-                
-                if (data.length > 0) {
-                    if(notifBadge) {
-                        notifBadge.innerText = data.length;
-                        notifBadge.style.display = "inline-block";
-                    }
-                    
-                    if(notifList) {
-                        notifList.innerHTML = data.map(n => `
+    <!-- Notification Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const notifBadge = document.getElementById("notificationBadge");
+            const notifList = document.getElementById("notificationList");
+
+            async function loadNotifications() {
+                try {
+                    const token = localStorage.getItem("adminToken");
+                    if (!token) return;
+
+                    const res = await fetch("/api/admin/notifications", {
+                        headers: { "Authorization": "Bearer " + token }
+                    });
+
+                    if (!res.ok) return;
+
+                    const data = await res.json();
+
+                    if (data.length > 0) {
+                        if (notifBadge) {
+                            notifBadge.innerText = data.length;
+                            notifBadge.style.display = "inline-block";
+                        }
+
+                        if (notifList) {
+                            notifList.innerHTML = data.map(n => `
                             <li>
                                 <a class="dropdown-item p-2 border-bottom" href="${n.link}?id=${n.id}&view=true">
                                     <div class="d-flex align-items-start gap-2">
@@ -893,20 +880,20 @@
                                 </a>
                             </li>
                         `).join("");
+                        }
+                    } else {
+                        if (notifBadge) notifBadge.style.display = "none";
+                        if (notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
                     }
-                } else {
-                    if(notifBadge) notifBadge.style.display = "none";
-                    if(notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
+                } catch (err) {
+                    console.error("Notif error", err);
                 }
-            } catch (err) {
-                console.error("Notif error", err);
             }
-        }
-        
-        loadNotifications();
-        setInterval(loadNotifications, 30000);
-    });
-</script>
+
+            loadNotifications();
+            setInterval(loadNotifications, 30000);
+        });
+    </script>
 
 </body>
 

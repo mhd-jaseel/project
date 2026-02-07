@@ -353,46 +353,7 @@
                     <input type="text" placeholder="Search products..." id="searchInput">
                 </div>
             </div>
-            <div class="user-profile">
-                <!-- User Profile -->
-                <div class="dropdown d-inline-block position-relative me-3">
-                    <button class="icon-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="far fa-bell"></i>
-                        <span class="badge" id="notificationBadge" style="display: none;">0</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-0 rounded-3 overflow-hidden"
-                        aria-labelledby="notificationDropdown"
-                        style="width: 320px; max-height: 480px; overflow-y: auto;">
-                        <li
-                            class="dropdown-header bg-white border-bottom py-3 px-3 d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-dark mb-0">Notifications</span>
-                            <small class="text-muted cursor-pointer" onclick="markAllRead()"
-                                style="cursor:pointer;">Mark all read</small>
-                        </li>
-                        <div id="notificationList" class="pb-2">
-                            <!-- Dynamic Content -->
-                        </div>
-                        <li class="border-top text-center p-2 bg-light">
-                            <a class="dropdown-item small fw-bold text-primary rounded"
-                                href="order-management.html">View All Orders</a>
-                        </li>
-                    </ul>
-                </div>
-                <button class="icon-btn me-3" onclick="window.location.href='messages.html'">
-                    <i class="fas fa-envelope"></i>
-                    <span class="badge bg-danger rounded-circle" id="navMsgBadge" style="display:none;">0</span>
-                </button>
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
-                    </a>
-                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
-                    </ul>
-                </div>
-            </div>
+
         </header>
 
         <!-- Content Area -->
