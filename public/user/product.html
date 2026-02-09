@@ -1035,7 +1035,20 @@
                             position: 'top-end'
                         });
                     } else {
-                        throw new Error(data.message || 'Failed to add to cart');
+                        // Check if it's the "already in cart" message
+                        if (data.message === "Product already in cart") {
+                            Swal.fire({
+                                title: 'Info',
+                                text: data.message,
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                toast: true,
+                                position: 'top-end'
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to add to cart');
+                        }
                     }
                 } catch (err) {
                     console.error(err);

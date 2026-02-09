@@ -775,11 +775,14 @@
                     if (!row) return;
                     const id = row.getAttribute('data-id');
 
-                    // Quantity Update
-                    if (target.matches('.quantity-btn')) {
-                        const action = target.getAttribute('data-action');
+                    if (target.classList.contains('quantity-btn') || target.closest('.quantity-btn')) {
+                        const btn = target.closest('.quantity-btn');
+                        const action = btn.getAttribute('data-action');
+                        const row = btn.closest('tr');
+                        const id = row.getAttribute('data-id');
+
                         try {
-                            await fetch('/api/cart', {
+                            const res = await fetch('/api/cart', {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -787,12 +790,37 @@
                                 },
                                 body: JSON.stringify({ id, action })
                             });
-                            fetchCart(); // Refresh
-                        } catch (err) { console.error(err); }
-                    }
+                            const data = await res.json();
 
+                            if (!res.ok) {
+                                if (data.message && (data.message.includes('available') || data.message.includes('stock'))) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Out of Stock',
+                                        text: data.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'Failed to update quantity'
+                                    });
+                                }
+                                return; // Don't refresh if error
+                            }
+
+                            fetchCart(); // Refresh cart on success
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }
                     // Remove Item
                     if (target.closest('.btn-remove-cart')) {
+                        const row = target.closest('tr');
+                        const id = row.getAttribute('data-id');
+
                         Swal.fire({
                             title: 'Are you sure?',
                             text: "Remove this item from cart?",
@@ -811,7 +839,7 @@
                                     Swal.fire('Removed!', 'Item has been removed.', 'success');
                                 } catch (err) { console.error(err); }
                             }
-                        })
+                        });
                     }
                 });
             }

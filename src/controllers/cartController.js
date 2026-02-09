@@ -76,9 +76,12 @@ exports.addToCart = async (req, res) => {
         const cartItemIndex = user.cart.findIndex(item => item.product.toString() === id);
 
         if (cartItemIndex > -1) {
-            // Update quantity
-            user.cart[cartItemIndex].quantity += qty;
+            return res.status(400).json({ message: "Product already in cart" });
         } else {
+            // Check stock for new item
+            if (qty > product.stockQty) {
+                return res.status(400).json({ message: `Cannot add. Only ${product.stockQty} available.` });
+            }
             // Add new
             user.cart.push({ product: id, quantity: qty });
         }
@@ -108,6 +111,12 @@ exports.updateCartItem = async (req, res) => {
         }
 
         if (action === 'increase') {
+            const product = await Product.findById(user.cart[cartItemIndex].product);
+            if (!product) return res.status(404).json({ message: "Product not found" });
+
+            if (user.cart[cartItemIndex].quantity + 1 > product.stockQty) {
+                return res.status(400).json({ message: `Cannot increase. Only ${product.stockQty} available.` });
+            }
             user.cart[cartItemIndex].quantity += 1;
         } else if (action === 'decrease') {
             user.cart[cartItemIndex].quantity -= 1;
