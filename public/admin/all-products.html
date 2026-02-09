@@ -565,6 +565,33 @@
         let allProducts = [];
         let editProductModalObj;
 
+        function getDisplayQty(p) {
+            // Check for empty/missing weight
+            if (!p.weight || p.weight.trim() === "") {
+                if (p.totalStock > 0) {
+                    if (p.totalStock >= 1000) return Math.floor(p.totalStock / 1000);
+                    return p.totalStock;
+                }
+                return 0;
+            }
+            return p.stockQty || 0;
+        }
+
+        function getDisplayStatus(p) {
+            const qty = getDisplayQty(p);
+            if (qty > 0) {
+                if (p.status === 'Out of Stock') return 'In Stock';
+                return p.status || 'In Stock';
+            }
+            return 'Out of Stock';
+        }
+
+        function getStatusBadgeClass(status) {
+            if (status === 'Out of Stock') return 'bg-danger';
+            if (status === 'Low Stock') return 'bg-warning text-dark';
+            return 'bg-success';
+        }
+
         async function loadCategoriesForModal() {
             try {
                 const res = await fetch("/api/categories");
@@ -617,14 +644,12 @@
           <td>₹${p.price}</td>
 
           <td>
-            <span class="badge bg-light text-dark border fw-bold">${p.stockQty || 0}</span>
+            <span class="badge bg-light text-dark border fw-bold">${getDisplayQty(p)}</span>
           </td>
 
           <td>
-            <span class="badge ${p.status === 'Out of Stock' ? 'bg-danger' :
-                            (p.status === 'Low Stock' ? 'bg-warning text-dark' : 'bg-success')
-                        } bg-opacity-75 px-3 py-2 rounded-pill">
-                ${p.status || 'In Stock'}
+            <span class="badge ${getStatusBadgeClass(getDisplayStatus(p))} bg-opacity-75 px-3 py-2 rounded-pill">
+                ${getDisplayStatus(p)}
             </span>
           </td>
 
@@ -694,11 +719,11 @@
                           <td>${p.category?.name || "Uncategorized"}</td>
                           <td>₹${p.price}</td>
                           <td>
-                            <span class="badge bg-light text-dark border fw-bold">${p.stockQty || 0}</span>
+                            <span class="badge bg-light text-dark border fw-bold">${getDisplayQty(p)}</span>
                           </td>
                           <td>
-                            <span class="badge ${p.status === 'Out of Stock' ? 'bg-danger' : (p.status === 'Low Stock' ? 'bg-warning text-dark' : 'bg-success')} bg-opacity-75 px-3 py-2 rounded-pill">
-                                ${p.status || 'In Stock'}
+                            <span class="badge ${getStatusBadgeClass(getDisplayStatus(p))} bg-opacity-75 px-3 py-2 rounded-pill">
+                                ${getDisplayStatus(p)}
                             </span>
                           </td>
                           <td>

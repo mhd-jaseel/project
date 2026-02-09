@@ -36,46 +36,67 @@ exports.addProduct = async (req, res) => {
   try {
     const { name, company, weight, price, discount, description, category, isHotDeal, totalStock } = req.body;
 
-    // ✅ Validation
-    if (!name || !price || !category) {
-      return res.status(400).json({
-        message: "Name, price and category are required"
-      });
+    // Validation 
+    const errors = [];
+    if (!name || name.length < 3) errors.push("Product name must be at least 3 characters.");
+
+    // Price must be a positive number and not zero
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice) || numPrice <= 0) {
+      errors.push("Price must be a valid number greater than 0.");
     }
 
-    // Parse Stock
-    const stockVal = parseWeight(totalStock);
+    // Discount cannot be more than the price itself
+    const numDiscount = parseFloat(discount || 0);
+    if (numDiscount < 0 || numDiscount >= numPrice) {
+      errors.push("Discount cannot be negative or greater than the actual price.");
+    }
 
+    // Category and Stock check
+    if (!category) errors.push("Please select a valid category.");
+    const stockVal = parseWeight(totalStock); // Assumes your helper function exists
+    if (stockVal < 0) errors.push("Stock cannot be negative.");
+
+
+
+    // Return all errors at once if any exist
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: errors.join(" ") });
+    }
+
+    // Calculate stockQty
+    const weightVal = parseWeight(weight);
+    let calculatedStockQty = 0;
+    if (stockVal > 0) {
+      if (weightVal > 0) calculatedStockQty = Math.floor(stockVal / weightVal);
+      else if (stockVal >= 1000) calculatedStockQty = Math.floor(stockVal / 1000);
+      else calculatedStockQty = stockVal;
+    }
+
+    // 2. Success 
     const product = new Product({
       name,
       company,
       weight,
-      price,
-      discount, // ✅ Added discount field
+      price: numPrice,
+      discount: numDiscount,
       isHotDeal: isHotDeal === 'true',
       description,
       category,
-      totalStock: stockVal,     // Store in base unit (g/ml)
-      initialStock: stockVal,   // Set initial stock reference
-      initialStock: stockVal,   // Set initial stock reference
-      stockQty: stockVal > 0 && parseWeight(weight) > 0 ? Math.floor(stockVal / parseWeight(weight)) : 0, // Approx count
-      status: (stockVal > 0 && stockVal > parseWeight(weight)) ? 'In Stock' : 'Out of Stock',
-      image: req.files && req.files['image'] ? `/uploads/products/${req.files['image'][0].filename}` : null,
-      images: req.files && req.files['extraImages']
-        ? req.files['extraImages'].map(f => `/uploads/products/${f.filename}`)
-        : []
+      totalStock: stockVal,
+      initialStock: stockVal,
+      stockQty: calculatedStockQty,
+      status: calculatedStockQty > 0 ? 'In Stock' : 'Out of Stock',
+      image: `/uploads/products/${req.files['image'][0].filename}`,
+      images: req.files['extraImages'] ? req.files['extraImages'].map(f => `/uploads/products/${f.filename}`) : []
     });
 
     await product.save();
-
-    res.status(201).json({
-      success: true,
-      product
-    });
+    res.status(201).json({ success: true, product });
 
   } catch (err) {
     console.error("❌ Add product error:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: "Server error: " + err.message });
   }
 };
 
@@ -132,9 +153,13 @@ exports.updateProduct = async (req, res) => {
       const weightVal = parseWeight(weight);
       if (weightVal > 0) {
         updateData.stockQty = Math.floor(stockVal / weightVal);
+      } else {
+        // Fallback or missing weight: use 1000-rule
+        if (stockVal >= 1000) updateData.stockQty = Math.floor(stockVal / 1000);
+        else updateData.stockQty = stockVal;
       }
       // Auto-update status based on new stock level
-      if (stockVal <= weightVal) {
+      if (updateData.stockQty === 0) {
         updateData.status = 'Out of Stock';
       } else {
         updateData.status = 'In Stock';

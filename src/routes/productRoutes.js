@@ -21,7 +21,7 @@ router.post(
   "/",
   auth,
   adminOnly("admin"),
-  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'extraImages', maxCount: 4 }]),
+  upload.fields([{ name: 'image', maxCount: 1 }, { name: 'extraImages', maxCount: 3}]),
   addProduct
 );
 
