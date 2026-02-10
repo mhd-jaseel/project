@@ -3,16 +3,18 @@ const Wallet = require("../models/Wallet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const crypto = require("crypto");
+const crypto = require("crypto"); //Used to generate secure random tokens (reset password token).
 
-// Mail setup
+// Mail setup  // Configure email service and authentication for sending mails
+
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || "gmail",
+  service: process.env.EMAIL_SERVICE || "gmail",//Use email service from env file, otherwise Gmail
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   }
-});
+});// Object used to send emails
+
 
 // OTP generator
 const generateOTP = () =>
@@ -23,7 +25,7 @@ const generateOTP = () =>
 ====================== */
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone } = req.body;  //Get data from request body.
 
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "User already exists" });
@@ -31,7 +33,7 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
-
+          //Create new user in DB
     const user = await User.create({
       name,
       email,
@@ -43,8 +45,7 @@ exports.register = async (req, res) => {
       isEmailVerified: false
     });
 
-    // Create Wallet
-    await Wallet.create({ user: user._id });
+   
 
     await transporter.sendMail({
       to: email,
@@ -61,6 +62,8 @@ exports.register = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+   // Create Wallet
+    await Wallet.create({ user: user._id });
 };
 
 /* ======================
@@ -70,9 +73,9 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email });//Searches database for a user with this email
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
-
+          //Compares entered password with hashed password
     if (!(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -81,10 +84,11 @@ exports.login = async (req, res) => {
       return res.status(403).json({
         message: "Email not verified",
         email,
-        purpose: "signup"
-      });
-    }
+        purpose: "signup"  // Indicates this verification is for signup process
 
+      }); 
+    }
+       //Creates a JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -97,12 +101,14 @@ exports.login = async (req, res) => {
   }
 };
 
-/* ======================
+/* ======================   //Controller function to verify OTPCalled from frontend after user enters OTP                             Called from frontend after user enters OTP
    VERIFY OTP
 ====================== */
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp, purpose } = req.body;
+
+    // Find the user whose email, OTP, purpose match and whose OTP is not expired
 
     const user = await User.findOne({
       email,
@@ -116,17 +122,18 @@ exports.verifyOTP = async (req, res) => {
     }
 
     if (purpose === "signup") {
-      user.isEmailVerified = true;
+      user.isEmailVerified = true;  //Email verification completed
     }
 
     if (purpose === "forgot-password") {
-      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetToken = crypto.randomBytes(32).toString("hex");//Generates a secure random token for password reset.[.toString("hex")Converts that random data into a readable string]
       user.resetToken = crypto
-        .createHash("sha256")
-        .update(resetToken)
-        .digest("hex");
+        .createHash("sha256")   // Initialize SHA-256 hashing algorithm
+        .update(resetToken)     // Add the original reset token to be hashed 
+        .digest("hex");        // Convert the hashed result into a hexadecimal string
       user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
 
+        // Clear OTP data after successful verification to prevent reuse and improve security
       user.otp = undefined;
       user.otpExpiry = undefined;
       user.otpPurpose = undefined;
@@ -159,8 +166,9 @@ exports.forgotPassword = async (req, res) => {
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpiry = Date.now() + 5 * 60 * 1000;
-    user.otpPurpose = "forgot-password";
-    await user.save();
+    user.otpPurpose = "forgot-password";  //// Mark this OTP as password reset OTP (not signup)
+
+    await user.save(); //Saves OTP details in the database.
 
     await transporter.sendMail({
       to: email,
@@ -169,6 +177,7 @@ exports.forgotPassword = async (req, res) => {
     });
 
     res.json({ message: "OTP sent", email, purpose: "forgot-password" });
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -177,15 +186,16 @@ exports.forgotPassword = async (req, res) => {
 /* ======================
    RESET PASSWORD
 ====================== */
+//This runs after OTP verification in forgot-password flow.
 exports.resetPassword = async (req, res) => {
   try {
-    const { resetToken, newPassword } = req.body;
-
+    const { resetToken, newPassword } = req.body;    //resetToken → received after OTP verification
+     //Hash the reset token
     const hashedToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
-
+     //Find user with valid reset token
     const user = await User.findOne({
       resetToken: hashedToken,
       resetTokenExpiry: { $gt: Date.now() }
@@ -196,7 +206,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
-
+    //Clear reset token
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
     await user.save();
@@ -210,10 +220,11 @@ exports.resetPassword = async (req, res) => {
 /* ======================
    GET WALLET
 ====================== */
+//get logged-in user's wallet balance
 exports.getWalletBalance = async (req, res) => {
   try {
-    const wallet = await Wallet.findOne({ user: req.user.id });
-    res.json({ balance: wallet ? wallet.balance : 0 });
+    const wallet = await Wallet.findOne({ user: req.user.id }); // Find wallet document using the logged-in user's ID (from JWT middleware)
+    res.json({ balance: wallet ? wallet.balance : 0 }); //    // Send wallet balance if wallet exists, otherwise send 0
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -224,7 +235,7 @@ exports.getWalletBalance = async (req, res) => {
 ====================== */
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password -otp -otpExpiry -resetToken");
+    const user = await User.findById(req.user.id).select("-password -otp -otpExpiry -resetToken"); // Find user by ID from JWT and exclude sensitive fields
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (err) {
@@ -238,23 +249,24 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
-    const updates = {};
+    const updates = {}; //  // Object to store fields that need to be updated
+    
 
     if (name) updates.name = name;
     if (email) updates.email = email;
     if (phoneNumber) updates.phoneNumber = phoneNumber;
-
+     // If password is provided, hash it before saving
     if (password) {
       updates.password = await bcrypt.hash(password, 10);
     }
 
     // Handle Profile Picture
     if (req.file) {
-      // Assuming static files are served from /uploads
-      updates.profilePicture = `/uploads/products/${req.file.filename}`;
+       
+      updates.profilePicture = `/uploads/products/${req.file.filename}`;// Save profile picture path in database
     }
-
-    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");
+  
+    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");// Update user profile using logged-in user's ID
 
     res.json({ message: "Profile updated successfully", user });
   } catch (err) {
@@ -269,13 +281,13 @@ exports.changeEmail = async (req, res) => {
   try {
     const { oldEmail, newEmail } = req.body;
     const userId = req.user.id;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId); //Finds the user details from database using ID.
 
     if (user.email !== oldEmail) {
       return res.status(400).json({ message: "Old email does not match." });
     }
 
-    const emailExists = await User.findOne({ email: newEmail });
+    const emailExists = await User.findOne({ email: newEmail }); //Checks if new email already exists in database.
     if (emailExists) {
       return res.status(400).json({ message: "New email is already in use." });
     }
@@ -306,10 +318,10 @@ exports.changeEmail = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+    const userId = req.user.id; //Gets logged-in user ID from token
+    const user = await User.findById(userId);  //Fetches user details from database using ID.
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(oldPassword, user.password); // Compares entered old password with hashed password in database.
     if (!isMatch) {
       return res.status(400).json({ message: "Incorrect old password." });
     }
