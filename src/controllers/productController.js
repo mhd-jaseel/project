@@ -123,7 +123,7 @@ exports.getAllProducts = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, company, weight, price, discount, description, category, status, featured, isHotDeal, totalStock } = req.body;
+    const { name, company, weight, price, discount, description, category, isHotDeal, totalStock } = req.body;
 
     let updateData = {
       name,
@@ -133,8 +133,6 @@ exports.updateProduct = async (req, res) => {
       discount, // ✅ Added discount field
       description,
       category,
-      status, // e.g. "In Stock", "Out of Stock"
-      featured: featured === 'true', // Convert string to boolean
       isHotDeal: isHotDeal === 'true'
     };
 

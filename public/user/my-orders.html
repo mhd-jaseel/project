@@ -924,8 +924,17 @@
                     });
                     const data = await res.json();
                     if (res.ok) {
-                        Swal.fire('Cancelled', 'Item has been cancelled', 'success')
-                            .then(() => location.reload());
+                        if (data.couponCancelled) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Item Cancelled',
+                                text: 'Item cancelled successfully. Note: The applied coupon was removed because the new order total dropped below the minimum required amount.',
+                                confirmButtonColor: '#ffc107'
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire('Cancelled', 'Item has been cancelled', 'success')
+                                .then(() => location.reload());
+                        }
                     } else {
                         Swal.fire('Error', data.message, 'error');
                     }

@@ -354,6 +354,47 @@
                 </div>
             </div>
 
+            <div class="user-profile">
+                <!-- Notification Bell -->
+                <div class="dropdown d-inline-block position-relative me-3">
+                    <button class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="far fa-bell"></i>
+                        <span
+                            class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1"
+                            id="notificationBadge" style="display: none; font-size: 0.6rem;">0</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown"
+                        style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li>
+                        <div id="notificationList">
+                            <li class="dropdown-item text-center text-muted small p-3">No new notifications</li>
+                        </div>
+                        <li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary"
+                                href="order-management.html">View All Orders</a></li>
+                    </ul>
+                </div>
+
+                <!-- User Profile Dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="admin"
+                            id="adminAvatar" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                        <div class="ms-2 d-none d-sm-block text-start">
+                            <div class="fw-bold small" id="adminName">Admin User</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;" id="adminRole">Super Admin</div>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                        <li><a class="dropdown-item" href="admin-role.html">Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" id="headerLogoutBtn">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
         </header>
 
         <!-- Content Area -->
@@ -361,6 +402,12 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold m-0">All Products</h4>
                 <div class="d-flex gap-2">
+                    <select id="statusFilter" class="form-select form-select-sm" style="width: 150px; cursor: pointer;">
+                        <option value="All">All Status</option>
+                        <option value="In Stock">In Stock</option>
+                        <option value="Low Stock">Low Stock</option>
+                        <option value="Out of Stock">Out of Stock</option>
+                    </select>
                     <a href="add-product.html" class="btn btn-primary-custom btn-sm"><i class="fas fa-plus"></i> Add New
                         Product</a>
                 </div>
@@ -606,27 +653,18 @@
             }
         }
 
-        async function loadProducts() {
-            try {
-                const res = await fetch("/api/products");
-                allProducts = await res.json();
+        // Render Logic
+        function renderTable(products) {
+            const tbody = document.querySelector("tbody");
+            tbody.innerHTML = "";
 
-                const tbody = document.querySelector("tbody");
-                tbody.innerHTML = "";
+            if (!products.length) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No products found</td></tr>`;
+                return;
+            }
 
-                if (!allProducts.length) {
-                    tbody.innerHTML = `
-        <tr>
-          <td colspan="7" class="text-center text-muted">
-            No products found
-          </td>
-        </tr>
-      `;
-                    return;
-                }
-
-                allProducts.forEach(p => {
-                    tbody.innerHTML += `
+            products.forEach(p => {
+                tbody.innerHTML += `
         <tr>
           <td>
             <img 
@@ -681,80 +719,54 @@
           </td>
         </tr>
       `;
-                });
+            });
+        }
 
+        async function loadProducts() {
+            try {
+                const res = await fetch("/api/products");
+                allProducts = await res.json();
+                applyFilters(); // Initial render with filters (if any default)
             } catch (err) {
                 console.error("❌ Failed to load products", err);
             }
         }
 
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || 'All';
+
+            const filtered = allProducts.filter(p => {
+                // Search Filter
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm) ||
+                    (p.category?.name || '').toLowerCase().includes(searchTerm);
+
+                // Status Filter
+                let matchesStatus = true;
+                if (statusFilter !== 'All') {
+                    // Start of Selection
+                    const currentStatus = getDisplayStatus(p); // Use the helper to get calculated status
+                    matchesStatus = currentStatus === statusFilter;
+                }
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderTable(filtered);
+        }
+
         loadProducts();
         loadCategoriesForModal();
 
-        // Search Logic
+        // Event Listeners
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = allProducts.filter(p =>
-                    p.name.toLowerCase().includes(term) ||
-                    (p.category?.name || '').toLowerCase().includes(term)
-                );
+            searchInput.addEventListener('input', applyFilters);
+        }
 
-                const tbody = document.querySelector("tbody");
-                tbody.innerHTML = "";
-
-                if (filtered.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No products found</td></tr>`;
-                    return;
-                }
-
-                filtered.forEach(p => {
-                    tbody.innerHTML += `
-                        <tr>
-                          <td>
-                            <img src="${p.image || 'https://placehold.co/50'}" width="50" height="50" style="object-fit: cover;">
-                          </td>
-                          <td>${p.name}</td>
-                          <td>${p.category?.name || "Uncategorized"}</td>
-                          <td>₹${p.price}</td>
-                          <td>
-                            <span class="badge bg-light text-dark border fw-bold">${getDisplayQty(p)}</span>
-                          </td>
-                          <td>
-                            <span class="badge ${getStatusBadgeClass(getDisplayStatus(p))} bg-opacity-75 px-3 py-2 rounded-pill">
-                                ${getDisplayStatus(p)}
-                            </span>
-                          </td>
-                          <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" ${p.isHotDeal ? 'checked' : ''} onchange="toggleHotDeal('${p._id}', this.checked)" style="cursor: pointer;">
-                            </div>
-                          </td>
-                          <td>
-                            <div class="dropdown">
-                              <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-ellipsis-v text-muted"></i>
-                              </button>
-                              <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="z-index: 1050;">
-                                <li>
-                                    <button class="dropdown-item py-2" type="button" onclick="openEditModal('${p._id}')">
-                                        <i class="fas fa-edit me-2 text-primary"></i> Edit
-                                    </button>
-                                </li>
-                                <li><hr class="dropdown-divider my-1"></li>
-                                <li>
-                                    <button class="dropdown-item py-2 text-danger" type="button" onclick="confirmDelete('${p._id}')">
-                                        <i class="fas fa-trash-alt me-2"></i> Delete
-                                    </button>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                     `;
-                });
-            });
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', applyFilters);
         }
 
         /* =========================
@@ -1077,6 +1089,55 @@
         });
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem("adminToken");
+
+            // 1. Fetch & Update Admin Profile
+            if (token) {
+                try {
+                    const res = await fetch("/api/admin/me", {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+
+                    if (res.ok) {
+                        const admin = await res.json();
+
+                        const nameEl = document.getElementById("adminName");
+                        const roleEl = document.getElementById("adminRole");
+                        const avatarEl = document.getElementById("adminAvatar");
+
+                        if (nameEl) nameEl.textContent = admin.name;
+                        if (roleEl) roleEl.textContent = admin.role;
+
+                        if (avatarEl && admin.name) {
+                            const initials = admin.name.split(" ").map(n => n[0]).join("").toUpperCase();
+                            avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(admin.name)}&background=0D8ABC&color=fff`;
+                        }
+                    } else {
+                        console.warn("Failed to fetch admin profile");
+                    }
+                } catch (err) {
+                    console.error("Error loading admin profile", err);
+                }
+            }
+
+            // 2. Logout Logic (Shared)
+            const handleLogout = (e) => {
+                e.preventDefault();
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("role");
+                window.location.href = "../user/login.html";
+            };
+
+            const headerBtn = document.getElementById("headerLogoutBtn");
+            if (headerBtn) headerBtn.addEventListener("click", handleLogout);
+
+            // Existing sidebar button (try target by class if ID missing)
+            const sidebarBtn = document.querySelector(".sidebar .mt-auto a");
+            if (sidebarBtn) sidebarBtn.addEventListener("click", handleLogout);
+        });
+    </script>
 </body>
 
 </html>

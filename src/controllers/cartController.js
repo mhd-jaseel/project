@@ -6,10 +6,12 @@ const Product = require("../models/Product");
 ================================ */
 exports.getCart = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).populate("cart.product");
+        const user = await User.findById(req.user.id).populate("cart.product");//it replaces it with full Product document
         if (!user) return res.status(404).json({ message: "User not found" });
 
         let subtotal = 0;
+
+        //code processes the user’s cart by validating products, applying discounts, calculating subtotals, and returning a clean list of cart items along with the total price.
         const items = user.cart.map(item => {
             const product = item.product;
             if (!product) return null; // Handle deleted products

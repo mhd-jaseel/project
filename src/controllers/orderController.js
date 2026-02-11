@@ -616,24 +616,45 @@ exports.cancelOrderItem = async (req, res) => {
         order.subtotal = newSubtotal;
 
         // Recalculate Discount
+        const hadCoupon = !!order.couponCode;
+
         if (order.couponCode) {
             const Coupon = require('../models/Coupon');
             const coupon = await Coupon.findOne({ code: order.couponCode });
 
-            if (coupon && coupon.discountType === 'percentage') {
-                let newDiscount = (newSubtotal * coupon.discountValue) / 100;
-                if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
-                    newDiscount = coupon.maxDiscountAmount;
+            if (coupon) {
+                // Check if coupon is still valid for new subtotal
+                if (newSubtotal < coupon.minOrderAmount) {
+                    order.couponCode = null;
+                    order.discountAmount = 0;
+
+                    // Revert Coupon Usage
+                    if (coupon.usedCount > 0) coupon.usedCount -= 1;
+                    const uIdx = coupon.usedUsers.findIndex(u => u.toString() === userId.toString());
+                    if (uIdx > -1) coupon.usedUsers.splice(uIdx, 1);
+                    await coupon.save();
+
+                } else {
+                    // Recalculate Discount Value
+                    if (coupon.discountType === 'percentage') {
+                        let newDiscount = (newSubtotal * coupon.discountValue) / 100;
+                        if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
+                            newDiscount = coupon.maxDiscountAmount;
+                        }
+                        order.discountAmount = Math.round(newDiscount);
+                    } else if (coupon.discountType === 'fixed') {
+                        // Keep fixed discount unless subtotal is 0 or less than discount
+                        if (newSubtotal === 0) order.discountAmount = 0;
+                        else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
+                    }
                 }
-                order.discountAmount = Math.round(newDiscount);
-            } else if (coupon && coupon.discountType === 'fixed') {
-                // Keep fixed discount unless subtotal is 0
-                if (newSubtotal === 0) order.discountAmount = 0;
-                else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
+            } else {
+                // Coupon deleted or invalid code
+                order.couponCode = null;
+                order.discountAmount = 0;
             }
         } else {
-            // No coupon, ensure discount is 0 (or keep manual discount?)
-            // Usually ok to keep as is if no coupon code, assuming 0
+            order.discountAmount = 0;
         }
 
         // New Total
@@ -674,7 +695,13 @@ exports.cancelOrderItem = async (req, res) => {
         }
 
         await order.save();
-        res.json({ message: 'Item cancelled successfully', order });
+
+        // Return couponCancelled in response
+        res.json({
+            message: 'Item cancelled successfully',
+            order,
+            couponCancelled: hadCoupon && !order.couponCode
+        });
 
     } catch (error) {
         console.error("Error cancelling item:", error);

@@ -632,13 +632,23 @@
                 `;
             }
 
+            const addressParts = [
+                order.shippingAddress.companyName,
+                order.shippingAddress.apartment,
+                order.shippingAddress.streetAddress,
+                order.shippingAddress.city
+            ].filter(part => part && part.trim() !== '').join(', ');
+
             const customerCol = document.querySelector('#orderDetailsModal .col-md-6:last-child');
             customerCol.innerHTML = `
                 <h6 class="text-muted small">Customer Details</h6>
                 <p class="mb-1"><strong>Name:</strong> ${order.shippingAddress.firstName}</p>
                 <p class="mb-1"><strong>Email:</strong> ${order.shippingAddress.email}</p>
-                <p class="mb-0"><strong>Phone:</strong> ${order.shippingAddress.phoneNumber}</p>
-                <p class="mb-0 small text-muted mt-2">${order.shippingAddress.streetAddress}, ${order.shippingAddress.city}</p>
+                <p class="mb-1"><strong>Phone:</strong> ${order.shippingAddress.phoneNumber}</p>
+                <div class="mt-2">
+                    <p class="mb-0 fw-bold small">Shipping Address:</p>
+                    <p class="mb-0 small text-muted">${addressParts}</p>
+                </div>
             `;
 
             // Items

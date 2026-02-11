@@ -59,7 +59,6 @@ const couponSchema = new mongoose.Schema({
     ]
 }, { timestamps: true });
 
-// Index for getting active coupons quickly and ensuring code uniqueness
-couponSchema.index({ code: 1 }, { unique: true });
+
 
 module.exports = mongoose.model('Coupon', couponSchema);

@@ -49,6 +49,20 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Get Current Admin Details
+exports.getMe = async (req, res) => {
+  try {
+    const admin = await User.findById(req.user.id).select("-password");
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.json(admin);
+  } catch (err) {
+    console.error("Get Me Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 // Get Dashboard Stats
 exports.getDashboardStats = async (req, res) => {
   try {

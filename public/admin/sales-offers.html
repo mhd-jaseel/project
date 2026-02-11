@@ -384,85 +384,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Item 1 -->
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-warning bg-opacity-10 text-warning p-2 rounded me-3">
-                                            <i class="fas fa-sun"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Summer Vegetables Festival</h6>
-                                            <small class="text-muted">Vegetables Category</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-danger">Up to 50%</span></td>
-                                <td>01 Apr, 2024</td>
-                                <td>30 Jun, 2024</td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success">Active</span></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-light text-primary" data-bs-toggle="tooltip"
-                                            title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-light text-danger" data-bs-toggle="tooltip"
-                                            title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Item 2 -->
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary bg-opacity-10 text-primary p-2 rounded me-3">
-                                            <i class="fas fa-snowflake"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Winter Fruits Bonanza</h6>
-                                            <small class="text-muted">Fruits Category</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-success">Flat 20%</span></td>
-                                <td>01 Dec, 2023</td>
-                                <td>28 Feb, 2024</td>
-                                <td><span class="badge bg-secondary bg-opacity-10 text-secondary">Expired</span></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-light text-primary" data-bs-toggle="tooltip"
-                                            title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-light text-danger" data-bs-toggle="tooltip"
-                                            title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Item 3 -->
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-info bg-opacity-10 text-info p-2 rounded me-3">
-                                            <i class="fas fa-birthday-cake"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Anniversary Sale</h6>
-                                            <small class="text-muted">All Categories</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-info text-dark">Flat 10%</span></td>
-                                <td>15 Aug, 2024</td>
-                                <td>20 Aug, 2024</td>
-                                <td><span class="badge bg-warning bg-opacity-10 text-warning text-dark">Upcoming</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-light text-primary" data-bs-toggle="tooltip"
-                                            title="Edit"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-light text-danger" data-bs-toggle="tooltip"
-                                            title="Delete"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <!-- Offers will be populated dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -490,16 +412,100 @@
             });
         }
         // Initialize Tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
 
+        // Fetch and Render Offers
+        async function fetchOffers() {
+            try {
+                const res = await fetch('/api/offers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                const offers = await res.json();
+
+                const tbody = document.querySelector('tbody');
+
+                if (offers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No offers found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = offers.map(offer => {
+                    const startDate = new Date(offer.startDate).toLocaleDateString();
+                    const endDate = new Date(offer.endDate).toLocaleDateString();
+
+                    const now = new Date();
+                    const start = new Date(offer.startDate);
+                    const end = new Date(offer.endDate);
+
+                    let statusBadge;
+                    if (!offer.isActive) {
+                        statusBadge = '<span class="badge bg-secondary">Inactive</span>';
+                    } else if (now < start) {
+                        statusBadge = '<span class="badge bg-info text-dark">Scheduled</span>';
+                    } else if (now > end) {
+                        statusBadge = '<span class="badge bg-danger">Expired</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-success bg-opacity-10 text-success">Active</span>';
+                    }
+
+                    // Theme color icon/bg mapping
+                    let icon = 'fa-tag';
+                    if (offer.themeColor === 'warning') icon = 'fa-sun';
+                    if (offer.themeColor === 'primary') icon = 'fa-snowflake';
+                    if (offer.themeColor === 'danger') icon = 'fa-fire';
+
+                    return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-${offer.themeColor || 'primary'} bg-opacity-10 text-${offer.themeColor || 'primary'} p-2 rounded me-3">
+                                    <i class="fas ${icon}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">${offer.title}</h6>
+                                    <small class="text-muted">${offer.subtitle || ''}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">${offer.description ? 'See Description' : 'No Details'}</span></td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="add-offer.html?id=${offer._id}" class="btn btn-sm btn-light text-primary" data-bs-toggle="tooltip" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-light text-danger delete-btn" data-id="${offer._id}" data-bs-toggle="tooltip" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error("Failed to load offers", err);
+            }
+        }
+
+        fetchOffers();
+
         // Global Delete Confirmation
         document.body.addEventListener('click', function (e) {
-            // Check for the button or its icon content
-            const deleteBtn = e.target.closest('.btn.text-danger');
+            const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
                 e.preventDefault();
+                const id = deleteBtn.dataset.id;
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
@@ -508,17 +514,22 @@
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
+                }).then(async (result) => {
                     if (result.isConfirmed) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The offer has been deleted.',
-                            'success'
-                        ).then(() => {
-                            // Optional: Remove row from DOM
-                            const row = deleteBtn.closest('tr');
-                            if (row) row.remove();
-                        });
+                        try {
+                            const res = await fetch(`/api/offers/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            if (res.ok) {
+                                Swal.fire('Deleted!', 'The offer has been deleted.', 'success');
+                                fetchOffers();
+                            } else {
+                                Swal.fire('Error', 'Failed to delete offer', 'error');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                        }
                     }
                 });
             }

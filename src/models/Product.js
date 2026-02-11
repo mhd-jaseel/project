@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema(
     },
 
     isHotDeal: { type: Boolean, default: false },
-    featured: { type: Boolean, default: false },
+
 
     // Weight-based Stock Management
     totalStock: { type: Number, default: 0 }, // In grams or ml

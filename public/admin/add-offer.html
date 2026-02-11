@@ -349,7 +349,8 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="sales-offers.html"
                                     class="text-decoration-none text-muted">Sales Offers</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Add New Offer</li>
+                            <li class="breadcrumb-item active" aria-current="page" id="breadcrumbText">Add New Offer
+                            </li>
                         </ol>
                     </nav>
                 </div>
@@ -360,29 +361,31 @@
         <!-- Content Area -->
         <div class="content-wrapper">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold m-0">Create New Offer</h4>
+                <h4 class="fw-bold m-0" id="pageTitle">Create New Offer</h4>
                 <a href="sales-offers.html" class="btn btn-outline-secondary btn-sm"><i
                         class="fas fa-arrow-left me-1"></i> Back to Offers</a>
             </div>
 
             <div class="row">
                 <!-- Form Column -->
-                <div class="col-lg-8">
+                <div class="col-12">
                     <div class="card-custom">
                         <form>
                             <div class="mb-4">
                                 <label class="form-label fw-bold">Offer Title</label>
-                                <input type="text" class="form-control" placeholder="e.g. SUMMER SALE">
+                                <input type="text" class="form-control" id="title" placeholder="e.g. SUMMER SALE"
+                                    required>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Subtitle / Tagline</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Up to 50% Off">
+                                    <input type="text" class="form-control" id="subtitle"
+                                        placeholder="e.g. Up to 50% Off">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Offer Description</label>
-                                    <input type="text" class="form-control"
+                                    <input type="text" class="form-control" id="description"
                                         placeholder="e.g. Special discounts on all organic vegetables.">
                                 </div>
                             </div>
@@ -390,73 +393,78 @@
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Start Date</label>
-                                    <input type="date" class="form-control">
+                                    <input type="date" class="form-control" id="startDate" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">End Date</label>
-                                    <input type="date" class="form-control">
+                                    <input type="date" class="form-control" id="endDate" required>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Discount Type</label>
+                                    <select class="form-select" id="discountType">
+                                        <option value="percentage">Percentage (%)</option>
+                                        <option value="fixed">Fixed Amount (₹)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Discount Value</label>
+                                    <input type="number" class="form-control" id="discountValue" placeholder="e.g. 20"
+                                        min="0">
                                 </div>
                             </div>
 
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Theme Color</label>
-                                    <select class="form-select">
-                                        <option value="warning">Orange (Summer)</option>
-                                        <option value="primary">Blue (Winter)</option>
-                                        <option value="success">Green (Spring)</option>
-                                        <option value="danger">Red (Flash Sale)</option>
-                                    </select>
+                                    <div class="d-flex gap-2">
+                                        <input type="color" class="form-control form-control-color" id="themeColor"
+                                            value="#0f9d58" title="Background Color">
+                                        <input type="color" class="form-control form-control-color" id="textColor"
+                                            value="#ffffff" title="Text Color">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Background & Text Color</small>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Status</label>
-                                    <select class="form-select">
-                                        <option value="active">Active</option>
-                                        <option value="draft">Draft</option>
+                                    <label class="form-label fw-bold">Link Category (Optional)</label>
+                                    <select class="form-select mb-2" id="categorySelect">
+                                        <option value="">Select Category (Overrides Link)</option>
                                     </select>
+                                    <input type="text" class="form-control" id="link"
+                                        placeholder="Or Custom Link e.g. /product.html?id=123">
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Banner Image</label>
-                                <input type="file" class="form-control mb-2">
-                                <small class="text-muted">Recommended size: 800x600px. PNG or JPG.</small>
+                                <label class="form-label fw-bold">Banner Image (Product Image)</label>
+                                <input type="file" class="form-control mb-2" id="image">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="isFullBackground">
+                                    <label class="form-check-label" for="isFullBackground">Use image as full
+                                        background?</label>
+                                </div>
+                                <small class="text-muted">If unchecked, image will appear on the right side with solid
+                                    background color.</small>
                             </div>
 
                             <div class="d-flex align-items-center gap-2">
-                                <button type="submit" class="btn btn-primary-custom px-4">Create Offer</button>
+                                <button type="submit" class="btn btn-primary-custom px-4" id="submitBtn">Create
+                                    Offer</button>
                                 <button type="reset" class="btn btn-light px-4">Reset</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <!-- Preview Column -->
-                <div class="col-lg-4">
-                    <h5 class="fw-bold mb-3">Preview</h5>
-                    <div class="card-custom p-0 overflow-hidden">
-                        <div class="bg-warning p-4 text-center text-dark position-relative overflow-hidden">
-                            <h3 class="fw-bold position-relative z-1">OFFER TITLE</h3>
-                            <p class="lead position-relative z-1">Offer Subtitle</p>
-                            <img src="https://placehold.co/400x300/png?text=Preview"
-                                class="position-absolute top-50 start-50 translate-middle opacity-25"
-                                style="width: 120%;" alt="Bg">
-                        </div>
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="badge bg-success">Active</span>
-                                <small class="text-muted">Ends: DD MMM, YYYY</small>
-                            </div>
-                            <h5 class="fw-bold">Description Heading</h5>
-                            <p class="text-muted small">Short description will appear here.</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Auth Check
@@ -474,6 +482,181 @@
                 sidebar.classList.toggle('show');
             });
         }
+
+        // Check for Edit Mode
+        const params = new URLSearchParams(window.location.search);
+        const offerId = params.get('id');
+
+        // Theme Color Toggle Logic
+        const isFullBgCheckbox = document.getElementById('isFullBackground');
+        const themeColorInput = document.getElementById('themeColor');
+
+        // Fetch Categories
+        async function fetchCategories() {
+            try {
+                const res = await fetch('/api/categories');
+                const categories = await res.json();
+                const select = document.getElementById('categorySelect');
+
+                // Add All Products Option
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.innerText = 'All Products';
+                select.appendChild(allOption);
+
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat._id;
+                    option.innerText = cat.name;
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error("Failed to fetch categories", e);
+            }
+        }
+        const categoriesLoaded = fetchCategories();
+
+        function toggleThemeColor() {
+            if (isFullBgCheckbox.checked) {
+                themeColorInput.disabled = true;
+                themeColorInput.style.opacity = '0.5';
+            } else {
+                themeColorInput.disabled = false;
+                themeColorInput.style.opacity = '1';
+            }
+        }
+
+        isFullBgCheckbox.addEventListener('change', toggleThemeColor);
+        // Initial check
+        toggleThemeColor();
+
+        if (offerId) {
+            document.getElementById('pageTitle').innerText = 'Edit Offer';
+            document.getElementById('breadcrumbText').innerText = 'Edit Offer';
+            document.getElementById('submitBtn').innerText = 'Update Offer';
+
+            fetchOfferDetails(offerId);
+        }
+
+        async function fetchOfferDetails(id) {
+            try {
+                const res = await fetch(`/api/offers/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const offer = await res.json();
+
+                // Ensure categories are loaded before setting selection
+                await categoriesLoaded;
+
+                if (res.ok) {
+                    document.getElementById('title').value = offer.title;
+                    document.getElementById('subtitle').value = offer.subtitle || '';
+                    document.getElementById('description').value = offer.description || '';
+                    document.getElementById('startDate').value = offer.startDate ? new Date(offer.startDate).toISOString().split('T')[0] : '';
+                    document.getElementById('endDate').value = offer.endDate ? new Date(offer.endDate).toISOString().split('T')[0] : '';
+                    document.getElementById('endDate').value = offer.endDate ? new Date(offer.endDate).toISOString().split('T')[0] : '';
+                    document.getElementById('discountType').value = offer.discountType || 'percentage';
+                    document.getElementById('discountValue').value = offer.discountValue || '';
+                    document.getElementById('themeColor').value = offer.themeColor && offer.themeColor.startsWith('#') ? offer.themeColor : '#0f9d58';
+                    document.getElementById('textColor').value = offer.textColor || '#ffffff';
+                    document.getElementById('link').value = offer.link || '';
+                    document.getElementById('themeColor').value = offer.themeColor && offer.themeColor.startsWith('#') ? offer.themeColor : '#0f9d58';
+                    document.getElementById('textColor').value = offer.textColor || '#ffffff';
+                    document.getElementById('link').value = offer.link || '';
+
+                    if (offer.category) {
+                        document.getElementById('categorySelect').value = offer.category;
+                    } else if (offer.link === '/product.html') {
+                        document.getElementById('categorySelect').value = 'all';
+                    } else {
+                        document.getElementById('categorySelect').value = '';
+                    }
+
+                    document.getElementById('isFullBackground').checked = offer.isFullBackground || false;
+                    toggleThemeColor();
+                }
+            } catch (e) {
+                console.error("Failed to fetch offer", e);
+            }
+        }
+
+        // Form Submission
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('subtitle', document.getElementById('subtitle').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('startDate', document.getElementById('startDate').value);
+            formData.append('endDate', document.getElementById('endDate').value);
+            formData.append('discountType', document.getElementById('discountType').value);
+            formData.append('discountValue', document.getElementById('discountValue').value);
+            formData.append('themeColor', document.getElementById('themeColor').value);
+            formData.append('textColor', document.getElementById('textColor').value);
+
+            const categoryId = document.getElementById('categorySelect').value;
+            const customLink = document.getElementById('link').value;
+
+
+
+            if (categoryId === 'all') {
+                formData.append('category', ''); // Clear category
+                formData.append('link', '/product.html');
+            } else if (categoryId) {
+                formData.append('category', categoryId);
+                formData.append('link', `/product.html?category=${categoryId}`);
+            } else {
+                formData.append('category', ''); // Clear category if custom link
+                formData.append('link', customLink);
+            }
+
+            formData.append('isFullBackground', document.getElementById('isFullBackground').checked);
+
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            const url = offerId ? `/api/offers/${offerId}` : '/api/offers';
+            const method = offerId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: offerId ? 'Offer updated successfully!' : 'Offer created successfully!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = 'sales-offers.html';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to create offer'
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Server error'
+                });
+            }
+        });
     </script>
 
     <!-- Notification Script -->

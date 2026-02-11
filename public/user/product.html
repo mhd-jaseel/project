@@ -541,22 +541,7 @@
                         <div id="mobile-sidebar-categories" class="mb-4"></div>
 
                         <!-- Offers Filter -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-2">Offers</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="m_off1">
-                                <label class="form-check-label small" for="m_off1">Hot Deals</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="m_off2">
-                                <label class="form-check-label small" for="m_off2">Discount Items</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="m_off3">
-                                <label class="form-check-label small" for="m_off3">Inside Offer</label>
-                            </div>
-                            <a href="#" class="text-success small text-decoration-none mt-1 d-block">view all</a>
-                        </div>
+                        <div id="mobile-sidebar-offers" class="mb-4"></div>
                     </div>
                 </div>
 
@@ -567,22 +552,7 @@
                     <div id="sidebar-categories" class="mb-4"></div>
 
                     <!-- Offers Filter -->
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-2">Offers</h6>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="off1">
-                            <label class="form-check-label small" for="off1">Hot Deals</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="off2">
-                            <label class="form-check-label small" for="off2">Discount Items</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="off3">
-                            <label class="form-check-label small" for="off3">Inside Offer</label>
-                        </div>
-                        <a href="#" class="text-success small text-decoration-none mt-1 d-block">view all</a>
-                    </div>
+                    <div id="sidebar-offers" class="mb-4"></div>
                 </div>
             </div>
 
@@ -862,6 +832,16 @@
                 const res = await fetch(url);
                 const products = await res.json();
 
+                // Fetch active offers to find the selected one if any
+                const offersRes = await fetch('/api/offers/active');
+                const activeOffers = await offersRes.json();
+
+                // Identify if an offer is currently selected (naive check by matching link or via potential query param if we added one)
+                // Since we don't have ?offer=ID yet, we can try to match by category or 'all'.
+                // Ideally, we should pass ?offer=ID. But for now, let's look for an offer that matches the current category or all products link.
+
+                // Match offers per product inside loop
+
                 const grid = document.getElementById("productGrid");
                 grid.innerHTML = "";
 
@@ -892,9 +872,36 @@
                     // Quantity Display
                     const quantityText = p.weight ? p.weight : '';
 
+                    // Discount Badge Logic
+                    // Check active offers for this specific product
+                    let productOffer = activeOffers.find(o =>
+                        (o.category && p.category && (o.category === p.category._id || o.category === p.category)) ||
+                        (!o.category && o.link === '/product.html') // Global offer
+                    );
+
+                    let discountBadge = '';
+
+                    if (productOffer) {
+                        let badgeText = '';
+                        if (productOffer.discountType === 'percentage') {
+                            badgeText = `-${productOffer.discountValue}%`;
+                        } else if (productOffer.discountType === 'fixed') {
+                            badgeText = `-₹${productOffer.discountValue}`;
+                        }
+
+                        // Only show if there is a value
+                        if (productOffer.discountValue > 0) {
+                            discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
+                        }
+                    }
+
                     // Stock Status Logic
                     const isOutOfStock = p.status === 'Out of Stock';
-                    const badge = isOutOfStock ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
+                    // If out of stock, it overrides the discount badge or stacks with it. Let's stack or prioritize.
+                    // Prioritizing Out of Stock badge position-wise or placing them differently.
+                    // Request is "top of the product card". Let's put Discount Top-Left and Out of Stock Top-Right.
+
+                    const stockBadge = isOutOfStock ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
                     const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : '';
                     const btnText = isOutOfStock ? 'Out of Stock' : 'Add to cart';
 
@@ -902,7 +909,8 @@
                     grid.innerHTML += `
         <div class="col">
                 <div class="card product-card h-100 position-relative">
-                    ${badge}
+                    ${stockBadge}
+                    ${discountBadge}
                     <a href="single-product.html?id=${p._id}">
                         <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top p-3" alt="${p.name}" style="opacity: ${isOutOfStock ? 0.6 : 1}">
                     </a>
@@ -985,6 +993,72 @@
             }
         }
         loadSidebarCategories();
+
+        async function loadSidebarOffers() {
+            try {
+                const res = await fetch('/api/offers/active');
+                const offers = await res.json();
+
+                const containers = ['sidebar-offers', 'mobile-sidebar-offers'];
+                const urlParams = new URLSearchParams(window.location.search);
+                const activeCat = urlParams.get('category');
+                // Check if current category matches an offer's category or global offer
+                // In URL, ?category=ID. If offer is global, it links to /product.html (activeCat is null)
+                // We don't have a unique ID for "offer selection" in URL distinct from category yet.
+                // We will rely on category matching.
+
+                containers.forEach(id => {
+                    const container = document.getElementById(id);
+                    if (!container) return;
+
+                    if (!offers || offers.length === 0) {
+                        container.innerHTML = '';
+                        return;
+                    }
+
+                    let html = '<h6 class="fw-bold mb-2">Offers</h6>';
+
+                    offers.forEach(o => {
+                        // Determine if checked
+                        let isChecked = false;
+                        if (o.category) {
+                            if (activeCat === o.category) isChecked = true;
+                        } else {
+                            // Global offer (All Products)
+                            // Checked if we are at root /product.html without category
+                            if (!activeCat && window.location.pathname.includes('product.html') && o.link === '/product.html') {
+                                // Potentially check this? Or maybe better to leave unchecked unless explicitly filtered?
+                                // Let's leave unchecked for "All Products" generally unless we add ?offer=ID logic.
+                                // But requested behavior is filtering.
+                            }
+                        }
+
+                        // We render radio or link behavior
+                        // User wants "The offer displayed there should be the one added by admin".
+                        // Clicking it should filter.
+                        html += `
+                        <div class="form-check">
+                            <input class="form-check-input offer-filter-radio" type="radio" name="offer_filter_${id}" id="off_${o._id}_${id}" value="${o._id}" data-link="${o.link}" ${isChecked ? 'checked' : ''}>
+                            <label class="form-check-label small" for="off_${o._id}_${id}" style="cursor: pointer;">${o.title}</label>
+                        </div>`;
+                    });
+
+                    container.innerHTML = html;
+                });
+
+                // Listener
+                document.body.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('offer-filter-radio')) {
+                        const link = e.target.getAttribute('data-link');
+                        if (link) window.location.href = link;
+                    }
+                });
+
+            } catch (err) {
+                console.error("Failed sidebar offers", err);
+            }
+        }
+        loadSidebarOffers();
 
         // Add to Cart Logic (Event Delegation)
         document.addEventListener('click', async (e) => {

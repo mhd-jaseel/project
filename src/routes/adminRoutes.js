@@ -10,6 +10,8 @@ router.get("/dashboard", auth, role("admin"), (req, res) => {
   res.json({ message: "Welcome Admin" });
 });
 
+router.get("/me", auth, role("admin"), adminController.getMe);
+
 router.get('/stats', auth, role('admin'), adminController.getDashboardStats);
 router.get('/customers', auth, role('admin'), adminController.getAllCustomers);
 router.delete('/customers/:id', auth, role('admin'), adminController.deleteCustomer);

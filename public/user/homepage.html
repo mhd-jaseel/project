@@ -440,6 +440,74 @@
             height: 100%;
             object-fit: cover;
         }
+
+        /* Promotional Offer Cards */
+        .offer-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            min-height: 220px;
+            display: flex;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .offer-content {
+            z-index: 2;
+            position: relative;
+            padding: 2rem;
+            width: 60%;
+            /* Occupy left side */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .offer-image-side {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 45%;
+            height: 90%;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            pointer-events: none;
+        }
+
+        .offer-image-side img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            /* Allow image to overflow slightly or sit nicely */
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-offer {
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 24px;
+            border: none;
+            transition: all 0.2s;
+            width: fit-content;
+            margin-top: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-offer:hover {
+            transform: scale(1.05);
+            opacity: 0.95;
+        }
     </style>
 </head>
 
@@ -627,6 +695,22 @@
         </div>
     </section>
 
+
+    <!-- Promotional Offers Section (Dynamic) -->
+    <section class="container my-5" id="promotional-offers-section" style="display: none;">
+        <div class="row g-4" id="promotional-offers-container">
+            <!-- Dynamic Cards -->
+        </div>
+    </section>
+
+    <!-- Upcoming Offers Section -->
+    <section class="container my-5" id="upcoming-offers-section" style="display: none;">
+        <h3 class="fw-bold mb-4">Upcoming Offers</h3>
+        <div class="row g-4" id="upcoming-offers-container">
+            <!-- Dynamic Upcoming Cards -->
+        </div>
+    </section>
+
     <div id="dynamic-category-sections"></div>
 
     <style>
@@ -744,7 +828,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold mb-1">Free delivery</h6>
-                        <p class="text-muted small mb-0">Do purchase over $50 and get free delivery anywhere</p>
+                        <p class="text-muted small mb-0">Do purchase over 2000 and get free delivery anywhere</p>
                     </div>
                 </div>
             </div>
@@ -998,6 +1082,13 @@
             const products = await res.json();
             const hotDeals = products.filter(p => p.isHotDeal);
 
+            // Fetch Active Offers
+            let activeOffers = [];
+            try {
+                const offersRes = await fetch('/api/offers/active');
+                if (offersRes.ok) activeOffers = await offersRes.json();
+            } catch (e) { console.error("Failed to load offers", e); }
+
             container.innerHTML = "";
 
             hotDeals.forEach(p => {
@@ -1007,7 +1098,21 @@
                     ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>`
                     : '';
 
+                // Discount Badge Logic (from Offer)
+                let discountBadge = '';
+                // Check if product has relevant active offer
+                const productOffer = activeOffers.find(o =>
+                    (o.category && p.category && (o.category === p.category._id || o.category === p.category.toString())) ||
+                    (!o.category && o.link === '/product.html')
+                );
+
+                if (productOffer && productOffer.discountValue > 0) {
+                    let badgeText = productOffer.discountType === 'percentage' ? `-${productOffer.discountValue}%` : `-₹${productOffer.discountValue}`;
+                    discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
+                }
+
                 // Price Display
+
                 let priceHtml = `<span class="product-price">₹${p.price}</span>`;
                 if (p.discount && p.discount > 0) {
                     priceHtml = `
@@ -1016,30 +1121,34 @@
          `;
                 }
 
-                // Weight
-                const weightHtml = p.weight ? `<p class="product-weight text-center mb-2">${p.weight}</p>` : '';
+                // Company Display 
+                let companyHtml = '';
+                if (p.company) {
+                    companyHtml = `<div class="text-start small text-muted mb-1" style="font-size: 0.8rem;">${p.company}</div>`;
+                }
+
+                // Weight Display (standardized)
+                const quantityText = p.weight ? p.weight : '';
 
                 container.innerHTML += `
         <div class="col-6 col-md-3 mb-4">
           <div class="card product-card h-100 position-relative">
             ${badge}
+            ${discountBadge}
             <a href="single-product.html?id=${p._id}">
-              <img src="${p.image}" class="card-img-top p-3" style="opacity: ${isOutOfStock ? 0.6 : 1}">
+              <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top p-3" alt="${p.name}" style="opacity: ${isOutOfStock ? 0.6 : 1}">
             </a>
-            <div class="card-body text-center p-2">
-              <h6 class="product-title">${p.name}</h6>
-              ${weightHtml}
-              <div class="mb-2">
-                ${priceHtml}
-              </div>
-              <div class="d-flex gap-2 justify-content-center">
-                <button class="btn btn-wishlist" data-product-id="${p._id}">
-                  <i class="far fa-heart"></i>
-                </button>
-                <button class="btn btn-add-cart w-100" data-product-id="${p._id}" ${isOutOfStock ? 'disabled style="background-color: #ccc;"' : ''}>
-                    ${isOutOfStock ? 'Out of Stock' : 'Add to cart'}
-                </button>
-              </div>
+            <div class="card-body p-2">
+                ${companyHtml}
+                <h6 class="product-title text-center">${p.name}</h6>
+                <p class="product-weight text-center">${quantityText}</p>
+                <div class="mb-3 text-start ps-2">
+                    ${priceHtml}
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-wishlist" data-product-id="${p._id}"><i class="far fa-heart"></i></button>
+                    <button class="btn btn-add-cart w-100" data-product-id="${p._id}" ${isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : ''}>${isOutOfStock ? 'Out of Stock' : 'Add to cart'}</button>
+                </div>
             </div>
           </div>
         </div>`;
@@ -1055,7 +1164,93 @@
             updateHeaderAuth();
             loadHotDeals();
             loadCategories();
+            loadPromotionalOffers();
+            loadUpcomingOffers();
         });
+
+        function createOfferCard(offer, isUpcoming = false) {
+            const bgColor = (offer.themeColor && offer.themeColor.startsWith('#')) ? offer.themeColor : '#2ecc71';
+            const txtColor = offer.textColor || '#ffffff';
+            const isFullBg = offer.isFullBackground;
+            const startDate = new Date(offer.startDate).toLocaleDateString();
+
+            let cardStyle = `background-color: ${bgColor}; color: ${txtColor};`;
+
+            if (isFullBg && offer.image) {
+                // Full Background Image
+                cardStyle = `background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${offer.image}') no-repeat center center / cover; color: ${txtColor};`;
+            }
+
+            const imgHtml = (!isFullBg && offer.image) ?
+                `<div class="offer-image-side">
+                      <img src="${offer.image}" alt="${offer.title}">
+                  </div>` : '';
+
+            const isTextLight = txtColor.toLowerCase() === '#ffffff' || txtColor.toLowerCase() === '#fff';
+            const btnClass = isTextLight ? 'bg-white text-dark shadow-sm' : 'bg-dark text-white shadow-sm';
+
+            const btnHtml = isUpcoming
+                ? `<button class="btn-offer ${btnClass} opacity-75" disabled>Coming Soon</button>`
+                // Use the link generated from the backend (which includes category logic)
+                : `<a href="${offer.link || '#'}" class="btn-offer ${btnClass}">Order Now</a>`;
+
+            return `
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card offer-card border-0 h-100" style="${cardStyle}">
+                        <div class="offer-content">
+                            ${isUpcoming ? `<span class="badge bg-white text-dark mb-2 align-self-start shadow-sm">Starts: ${startDate}</span>` : ''}
+                            ${offer.subtitle ? `<span class="badge ${isTextLight ? 'bg-white bg-opacity-25 text-white' : 'bg-dark bg-opacity-10 text-dark'} mb-2 align-self-start" style="backdrop-filter: blur(4px);">${offer.subtitle}</span>` : ''}
+                            
+                            <h3 class="fw-bold mb-2 lh-sm" style="font-size: 1.75rem;">${offer.title}</h3>
+                            <p class="mb-0 opacity-75 small text-truncate-2" style="font-weight: 500;">${offer.description || ''}</p>
+                            
+                            <div class="mt-auto pt-3">
+                                ${btnHtml}
+                            </div>
+                        </div>
+                        ${imgHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadUpcomingOffers() {
+            try {
+                const res = await fetch('/api/offers/upcoming');
+                if (!res.ok) return;
+                const offers = await res.json();
+
+                const container = document.getElementById('upcoming-offers-container');
+                const section = document.getElementById('upcoming-offers-section');
+
+                if (offers && offers.length > 0) {
+                    section.style.display = 'block';
+                    container.innerHTML = offers.map(offer => createOfferCard(offer, true)).join('');
+                } else {
+                    section.style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Failed to load upcoming offers", err);
+            }
+        }
+
+        async function loadPromotionalOffers() {
+            try {
+                const res = await fetch('/api/offers/active');
+                if (!res.ok) return;
+                const offers = await res.json();
+
+                const container = document.getElementById('promotional-offers-container');
+                const section = document.getElementById('promotional-offers-section');
+
+                if (offers && offers.length > 0) {
+                    section.style.display = 'block';
+                    container.innerHTML = offers.map(offer => createOfferCard(offer, false)).join('');
+                }
+            } catch (err) {
+                console.error("Failed to load offers", err);
+            }
+        }
 
         async function loadCategories() {
             try {

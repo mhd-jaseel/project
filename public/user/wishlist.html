@@ -608,10 +608,20 @@
                FETCH WISHLIST (DB)
             ================================ */
             async function loadWishlist() {
+                // Fetch Wishlist Items
                 const res = await fetch("/api/wishlist", {
                     headers: { Authorization: "Bearer " + token }
                 });
                 const data = await res.json();
+
+                // Fetch Active Offers for Badges
+                let activeOffers = [];
+                try {
+                    const offersRes = await fetch('/api/offers/active');
+                    if (offersRes.ok) activeOffers = await offersRes.json();
+                } catch (e) {
+                    console.error("Failed to load offers", e);
+                }
 
                 wishlistContainer.innerHTML = "";
                 wishlistCount.innerText = data.length;
@@ -630,6 +640,18 @@
                         : '';
                     const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : '';
                     const btnText = isOutOfStock ? 'Out of Stock' : 'Add to cart';
+
+                    // Offer Badge Logic
+                    let discountBadge = '';
+                    const productOffer = activeOffers.find(o =>
+                        (o.category && product.category && (o.category === product.category._id || o.category === product.category)) ||
+                        (!o.category && o.link === '/product.html')
+                    );
+
+                    if (productOffer && productOffer.discountValue > 0) {
+                        let badgeText = productOffer.discountType === 'percentage' ? `-${productOffer.discountValue}%` : `-₹${productOffer.discountValue}`;
+                        discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
+                    }
 
                     // Price Logic
                     let priceHtml = `<span class="product-price">₹${product.price}</span>`;
@@ -656,6 +678,7 @@
         <div class="col">
           <div class="card product-card h-100 position-relative">
             ${badge}
+            ${discountBadge}
             <a href="single-product.html?id=${product._id}">
                 <img src="${product.image}" class="card-img-top p-3" alt="${product.name}" style="opacity: ${isOutOfStock ? 0.6 : 1}; height: 200px; object-fit: contain;">
             </a>
