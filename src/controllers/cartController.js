@@ -1,43 +1,73 @@
 const User = require("../models/User");
 const Product = require("../models/Product");
+const Offer = require("../models/Offer");
 
 /* ===============================
    GET CART
 ================================ */
 exports.getCart = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).populate("cart.product");//it replaces it with full Product document
+        const user = await User.findById(req.user.id).populate("cart.product"); // Populates product details
         if (!user) return res.status(404).json({ message: "User not found" });
+
+        // Fetch Active Offers
+        const currentDate = new Date();
+        const activeOffers = await Offer.find({
+            isActive: true,
+            startDate: { $lte: currentDate },
+            endDate: { $gte: currentDate }
+        });
 
         let subtotal = 0;
 
-        //code processes the user’s cart by validating products, applying discounts, calculating subtotals, and returning a clean list of cart items along with the total price.
         const items = user.cart.map(item => {
             const product = item.product;
             if (!product) return null; // Handle deleted products
 
-            // Calculate effective price (discounted if available)
-            const price = (product.discount && product.discount > 0) ? product.discount : product.price;
-            subtotal += price * item.quantity;
+            // Determine Effective Price & Discount
+            let finalPrice = product.price; // Default to original
+            let isDiscounted = false;
+
+            // 1. Check Product-Level Discount (Priority)
+            if (product.discount && product.discount > 0) {
+                finalPrice = product.discount;
+                isDiscounted = true;
+            }
+            // 2. Check Offer-Level Discount
+            else {
+                const productOffer = activeOffers.find(o =>
+                    (o.category && product.category && (o.category.toString() === product.category.toString())) ||
+                    (!o.category && o.link === '/product.html')
+                );
+
+                if (productOffer && productOffer.discountValue > 0) {
+                    const discountAmount = (product.price * productOffer.discountValue) / 100;
+                    finalPrice = Math.round(product.price - discountAmount);
+                    isDiscounted = true;
+                }
+            }
+
+            subtotal += finalPrice * item.quantity;
 
             return {
                 _id: product._id,
                 name: product.name,
                 image: product.image,
-                price: product.price,
-                discount: product.discount,
+                price: product.price, // Original Price
+                discount: isDiscounted ? finalPrice : 0, // Frontend uses this property as "Discounted Price" if > 0
                 quantity: item.quantity,
                 stock: product.stock,
                 status: product.status,
-                subtotal: price * item.quantity
+                subtotal: finalPrice * item.quantity
             };
-        }).filter(item => item !== null); // Filter out nulls
+        }).filter(item => item !== null);
 
         const handlingCharge = 2; // Fixed as seen in HTML
         const deliveryCharge = subtotal > 2000 ? 0 : 25;
         const total = subtotal + handlingCharge + deliveryCharge;
+
+        // Calculate Savings based on original price vs effective price
         const savings = items.reduce((acc, item) => {
-            // Calculate savings if discount exists
             if (item.discount && item.discount > 0) {
                 return acc + ((item.price - item.discount) * item.quantity);
             }

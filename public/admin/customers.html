@@ -373,6 +373,7 @@
                                 <th>Phone</th>
 
                                 <th>Orders</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -625,6 +626,16 @@
                     customers.forEach((customer, index) => {
                         const tr = document.createElement('tr');
                         tr.setAttribute('data-id', customer._id);
+
+                        const isBlocked = customer.isBlocked ? true : false;
+                        const statusBadge = isBlocked
+                            ? '<span class="badge bg-danger">Blocked</span>'
+                            : '<span class="badge bg-success">Active</span>';
+
+                        const blockBtn = isBlocked
+                            ? `<button class="btn btn-sm btn-light text-success" onclick="window.blockUser('${customer._id}', true)" title="Unblock"><i class="fas fa-unlock"></i></button>`
+                            : `<button class="btn btn-sm btn-light text-warning" onclick="window.blockUser('${customer._id}', false)" title="Block"><i class="fas fa-ban"></i></button>`;
+
                         tr.innerHTML = `
                             <td>${index + 1}</td>
                             <td><img src="https://ui-avatars.com/api/?name=${customer.name}&background=random" class="rounded-circle" width="30" height="30"></td>
@@ -633,10 +644,11 @@
                             <td>${customer.phoneNumber || 'N/A'}</td>
 
                             <td>${customer.orderCount || 0}</td>
+                            <td>${statusBadge}</td>
                             <td>
                                 <a href="customer-details.html?id=${customer._id}" class="btn btn-sm btn-light text-primary"
                                     title="View"><i class="fas fa-eye"></i></a>
-                                <button class="btn btn-sm btn-light text-warning" onclick="blockUser('${customer._id}')" title="Block"><i class="fas fa-ban"></i></button>
+                                ${blockBtn}
                                 <button class="btn btn-sm btn-light text-danger delete-btn" data-id="${customer._id}" title="Delete"><i class="fas fa-trash"></i></button>
                             </td>
                          `;
@@ -665,9 +677,40 @@
             }
         }
 
-        window.blockUser = (id) => {
-            Swal.fire('Block', 'Block feature coming soon', 'info');
-        }
+        window.blockUser = async (id, currentStatus) => {
+            const action = currentStatus ? 'Unblock' : 'Block';
+            const confirm = await Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${action.toLowerCase()} this user?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: currentStatus ? '#3085d6' : '#d33',
+                confirmButtonText: `Yes, ${action}!`
+            });
+
+            if (confirm.isConfirmed) {
+                try {
+                    const res = await fetch(`/api/admin/customers/${id}/block`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ isBlocked: !currentStatus })
+                    });
+
+                    if (res.ok) {
+                        Swal.fire('Success', `User has been ${action}ed.`, 'success');
+                        fetchCustomers();
+                    } else {
+                        const data = await res.json();
+                        Swal.fire('Error', data.message || 'Failed to update user status', 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', 'Server error', 'error');
+                }
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', fetchCustomers);
 

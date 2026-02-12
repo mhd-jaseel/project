@@ -22,7 +22,7 @@ exports.createOffer = async (req, res) => {
             textColor,
             isFullBackground: isFullBackground === 'true',
             category: category || null,
-            discountType: discountType || 'percentage',
+            discountType: 'percentage',
             discountValue: discountValue || 0,
             isActive: true
         });
@@ -123,7 +123,7 @@ exports.updateOffer = async (req, res) => {
         if (category !== undefined) {
             offer.category = category || null;
         }
-        offer.discountType = discountType || offer.discountType;
+        offer.discountType = 'percentage';
         offer.discountValue = discountValue !== undefined ? discountValue : offer.discountValue;
 
         if (isFullBackground !== undefined) {

@@ -473,22 +473,12 @@ exports.cancelOrder = async (req, res) => {
 
         await order.save();
 
-        // Revert Coupon Usage
+        // Revert Coupon Usage - REMOVED to prevent reuse
+        /*
         if (order.couponCode) {
-            const Coupon = require('../models/Coupon');
-            const coupon = await Coupon.findOne({ code: order.couponCode });
-            if (coupon) {
-                if (coupon.usedCount > 0) {
-                    coupon.usedCount -= 1;
-                }
-                // Remove user from usedUsers (remove only one instance)
-                const userIndex = coupon.usedUsers.findIndex(u => u.toString() === userId);
-                if (userIndex > -1) {
-                    coupon.usedUsers.splice(userIndex, 1);
-                }
-                await coupon.save();
-            }
+            // Coupon usage is NOT reverted on cancellation as per requirement.
         }
+        */
 
         res.json({ message: 'Order cancelled successfully', order });
 
@@ -628,11 +618,13 @@ exports.cancelOrderItem = async (req, res) => {
                     order.couponCode = null;
                     order.discountAmount = 0;
 
-                    // Revert Coupon Usage
+                    // Revert Coupon Usage - REMOVED (Strict one-time use)
+                    /*
                     if (coupon.usedCount > 0) coupon.usedCount -= 1;
                     const uIdx = coupon.usedUsers.findIndex(u => u.toString() === userId.toString());
                     if (uIdx > -1) coupon.usedUsers.splice(uIdx, 1);
                     await coupon.save();
+                    */
 
                 } else {
                     // Recalculate Discount Value

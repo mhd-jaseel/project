@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KM Store - Tomato</title>
+    <title>KM Store - Product Details</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for Icons -->
@@ -406,7 +406,7 @@
                         <i class="fas fa-truck-fast text-primary-custom fs-4 mt-1"></i>
                         <div>
                             <h6 class="fw-bold mb-1">Free delivery</h6>
-                            <p class="text-muted small mb-0">Do purchase over ₹50 and get free delivery anywhere</p>
+                            <p class="text-muted small mb-0">Do purchase over ₹2000 and get free delivery anywhere</p>
                         </div>
                     </div>
                 </div>
@@ -438,16 +438,7 @@
                 <h5 class="fw-bold mb-3">PRODUCT DETAILS</h5>
                 <h6 class="fw-bold">Description</h6>
                 <p class="text-muted small" id="product-desc-text">
-                    Contains Folic acid, Vitamin C and Amino acid .Vitamin C acts as a powerful antioxidant and also
-                    helps formation of collagen that is responsible for skin and hair health., Vitamin A, C & K Rich
-                    <span id="more-text" style="display: none;">
-                        <br><br>
-                        Beyond these key nutrients, tomatoes are also an excellent source of potassium, which is
-                        beneficial for blood pressure control and cardiovascular health. The high water content in
-                        tomatoes helps keep you hydrated and supports healthy digestion. Including tomatoes in your
-                        daily diet can also contribute to better vision and protect your eyes from light-induced damage.
-                        They fit perfectly into salads, soups, sauces, and sandwiches.
-                    </span>
+                    Loading description...
                 </p>
                 <div class="text-center">
                     <button class="btn btn-link text-primary-custom text-decoration-none small" id="view-more-btn"
@@ -621,19 +612,48 @@
                 document.getElementById('product-name').textContent = product.name;
 
                 // Price Display Logic
+                // Fetch Active Offers
+                let activeOffers = [];
+                try {
+                    const offersRes = await fetch('/api/offers/active');
+                    if (offersRes.ok) activeOffers = await offersRes.json();
+                } catch (e) { console.error("Failed to load offers", e); }
+
+                // Check for Offer
+                let productOffer = null;
+                if (!product.discount || product.discount <= 0) {
+                    productOffer = activeOffers.find(o =>
+                        (o.category && product.category && (o.category === product.category._id || o.category === product.category)) ||
+                        (!o.category && o.link === '/product.html')
+                    );
+                }
+
                 // Price & Quantity Logic
                 const priceEl = document.getElementById('product-price');
                 const basePrice = product.price;
-                const baseDiscount = (product.discount && product.discount > 0) ? product.discount : null;
+                let finalBasePrice = basePrice;
+                let hasDiscount = false;
+
+                if (product.discount && product.discount > 0) {
+                    finalBasePrice = product.discount;
+                    hasDiscount = true;
+                } else if (productOffer && productOffer.discountValue > 0) {
+                    let discountAmount = (basePrice * productOffer.discountValue) / 100;
+                    finalBasePrice = Math.round(basePrice - discountAmount);
+                    hasDiscount = true;
+                }
 
                 function updatePriceDisplay(qty) {
-                    if (baseDiscount) {
+                    const currentTotal = finalBasePrice * qty;
+                    const originalTotal = basePrice * qty;
+
+                    if (hasDiscount) {
                         priceEl.innerHTML = `
-                            <span class="text-danger">₹${baseDiscount * qty}</span>
-                            <span class="text-muted text-decoration-line-through fs-5 ms-2">₹${basePrice * qty}</span>
+                            <span class="text-danger">₹${currentTotal}</span>
+                            <span class="text-muted text-decoration-line-through fs-5 ms-2">₹${originalTotal}</span>
                         `;
                     } else {
-                        priceEl.textContent = `₹${basePrice * qty}`;
+                        priceEl.textContent = `₹${currentTotal}`;
                     }
                 }
 

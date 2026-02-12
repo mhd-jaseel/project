@@ -189,6 +189,7 @@ exports.getAllCustomers = async (req, res) => {
         $project: {
           name: 1,
           email: 1,
+          isBlocked: 1,
           createdAt: 1,
           orderCount: { $size: "$orders" },
           // Get phone from User profile first, then Address
@@ -217,6 +218,28 @@ exports.deleteCustomer = async (req, res) => {
     res.json({ message: "Customer deleted successfully" });
   } catch (error) {
     console.error("Error deleting customer:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Toggle Block Status
+exports.toggleBlockStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isBlocked } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Prevent blocking admin
+    if (user.role === 'admin') return res.status(400).json({ message: "Cannot block admin" });
+
+    user.isBlocked = isBlocked;
+    await user.save();
+
+    res.json({ message: `User ${isBlocked ? 'blocked' : 'unblocked'} successfully`, isBlocked: user.isBlocked });
+  } catch (error) {
+    console.error("Error toggling block status:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };

@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
-          //Create new user in DB
+    //Create new user in DB
     const user = await User.create({
       name,
       email,
@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
       isEmailVerified: false
     });
 
-   
+
 
     await transporter.sendMail({
       to: email,
@@ -62,8 +62,8 @@ exports.register = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-   // Create Wallet
-    await Wallet.create({ user: user._id });
+  // Create Wallet
+  await Wallet.create({ user: user._id });
 };
 
 /* ======================
@@ -75,7 +75,12 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });//Searches database for a user with this email
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
-          //Compares entered password with hashed password
+
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "Your account has been blocked. Please contact support." });
+    }
+
+    //Compares entered password with hashed password
     if (!(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -86,9 +91,9 @@ exports.login = async (req, res) => {
         email,
         purpose: "signup"  // Indicates this verification is for signup process
 
-      }); 
+      });
     }
-       //Creates a JWT token
+    //Creates a JWT token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -133,7 +138,7 @@ exports.verifyOTP = async (req, res) => {
         .digest("hex");        // Convert the hashed result into a hexadecimal string
       user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
 
-        // Clear OTP data after successful verification to prevent reuse and improve security
+      // Clear OTP data after successful verification to prevent reuse and improve security
       user.otp = undefined;
       user.otpExpiry = undefined;
       user.otpPurpose = undefined;
@@ -163,6 +168,10 @@ exports.forgotPassword = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "Your account has been blocked." });
+    }
+
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpiry = Date.now() + 5 * 60 * 1000;
@@ -177,7 +186,7 @@ exports.forgotPassword = async (req, res) => {
     });
 
     res.json({ message: "OTP sent", email, purpose: "forgot-password" });
-    
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -190,12 +199,12 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { resetToken, newPassword } = req.body;    //resetToken → received after OTP verification
-     //Hash the reset token
+    //Hash the reset token
     const hashedToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
-     //Find user with valid reset token
+    //Find user with valid reset token
     const user = await User.findOne({
       resetToken: hashedToken,
       resetTokenExpiry: { $gt: Date.now() }
@@ -250,22 +259,22 @@ exports.updateProfile = async (req, res) => {
   try {
     const { name, email, phoneNumber, password } = req.body;
     const updates = {}; //  // Object to store fields that need to be updated
-    
+
 
     if (name) updates.name = name;
     if (email) updates.email = email;
     if (phoneNumber) updates.phoneNumber = phoneNumber;
-     // If password is provided, hash it before saving
+    // If password is provided, hash it before saving
     if (password) {
       updates.password = await bcrypt.hash(password, 10);
     }
 
     // Handle Profile Picture
     if (req.file) {
-       
+
       updates.profilePicture = `/uploads/products/${req.file.filename}`;// Save profile picture path in database
     }
-  
+
     const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");// Update user profile using logged-in user's ID
 
     res.json({ message: "Profile updated successfully", user });

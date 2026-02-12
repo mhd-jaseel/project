@@ -396,6 +396,10 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label small text-muted">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" required>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label small text-muted">Expiry Date</label>
                                 <input type="date" class="form-control" id="expiryDate" required>
                             </div>
@@ -418,7 +422,7 @@
                                         <th>Discount</th>
                                         <th>Usage / Limit</th>
                                         <th>Status</th>
-                                        <th>Expiry</th>
+                                        <th>Dates</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -428,6 +432,63 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Coupon Modal -->
+    <div class="modal fade" id="editCouponModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCouponForm">
+                        <input type="hidden" id="editCouponId">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Coupon Code</label>
+                            <input type="text" class="form-control" id="editCode" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Type</label>
+                                <select class="form-select" id="editDiscountType">
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Fixed Amount (₹)</option>
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Value</label>
+                                <input type="number" class="form-control" id="editDiscountValue" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Min Order</label>
+                                <input type="number" class="form-control" id="editMinOrderAmount">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Usage Limit</label>
+                                <input type="number" class="form-control" id="editUsageLimit">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Start Date</label>
+                                <input type="date" class="form-control" id="editStartDate" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Expiry Date</label>
+                                <input type="date" class="form-control" id="editExpiryDate" required>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Update Coupon</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -461,6 +522,8 @@
             document.getElementById('code').value = result;
         });
 
+        let allCoupons = []; // Store fetched coupons
+
         // Fetch Coupons
         async function fetchCoupons() {
             const tbody = document.querySelector('tbody');
@@ -469,6 +532,7 @@
             try {
                 const res = await fetch('/api/coupons', { headers: { 'Authorization': `Bearer ${token}` } });
                 const coupons = await res.json();
+                allCoupons = coupons; // Update global store
 
                 if (coupons.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center">No coupons found</td></tr>';
@@ -476,8 +540,21 @@
                 }
 
                 coupons.forEach(c => {
-                    const isExpired = new Date() > new Date(c.expiryDate);
-                    const statusBadge = isExpired ? '<span class="badge bg-danger">Expired</span>' : '<span class="badge bg-success">Active</span>';
+                    const now = new Date();
+                    const startDate = c.startDate ? new Date(c.startDate) : null;
+                    const expiryDate = new Date(c.expiryDate);
+
+                    let statusBadge;
+                    if (now > expiryDate) {
+                        statusBadge = '<span class="badge bg-danger">Expired</span>';
+                    } else if (startDate && now < startDate) {
+                        statusBadge = '<span class="badge bg-info text-dark">Upcoming</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-success">Active</span>';
+                    }
+
+                    const startStr = c.startDate ? new Date(c.startDate).toLocaleDateString() : '-';
+                    const endStr = new Date(c.expiryDate).toLocaleDateString();
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -488,8 +565,11 @@
                             <span class="text-muted">${c.usageLimit ? c.usageLimit : '∞'}</span>
                         </td>
                         <td>${statusBadge}</td>
-                        <td>${new Date(c.expiryDate).toLocaleDateString()}</td>
-                        <td><button class="btn btn-sm text-danger delete-btn" data-id="${c._id}"><i class="fas fa-trash"></i></button></td>
+                        <td><small>${startStr} - ${endStr}</small></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary edit-btn me-1" data-id="${c._id}"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm text-danger delete-btn" data-id="${c._id}"><i class="fas fa-trash"></i></button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -508,6 +588,7 @@
                 discountValue: document.getElementById('discountValue').value,
                 minOrderAmount: document.getElementById('minOrderAmount').value,
                 usageLimit: document.getElementById('usageLimit').value || null,
+                startDate: document.getElementById('startDate').value,
                 expiryDate: document.getElementById('expiryDate').value
             };
 
@@ -534,8 +615,9 @@
             }
         });
 
-        // Delete Listener
+        // Edit & Delete Listener
         document.querySelector('tbody').addEventListener('click', async (e) => {
+            // Delete
             if (e.target.closest('.delete-btn')) {
                 const id = e.target.closest('.delete-btn').dataset.id;
                 Swal.fire({
@@ -560,7 +642,111 @@
                     }
                 });
             }
+
+            // Edit
+            if (e.target.closest('.edit-btn')) {
+                const id = e.target.closest('.edit-btn').dataset.id;
+                const coupon = allCoupons.find(c => c._id === id);
+
+                if (coupon) {
+                    document.getElementById('editCouponId').value = coupon._id;
+                    document.getElementById('editCode').value = coupon.code;
+                    document.getElementById('editDiscountType').value = coupon.discountType;
+                    document.getElementById('editDiscountValue').value = coupon.discountValue;
+                    document.getElementById('editMinOrderAmount').value = coupon.minOrderAmount || 0;
+                    document.getElementById('editUsageLimit').value = coupon.usageLimit || '';
+
+                    // Format dates for input type=date (YYYY-MM-DD)
+                    if (coupon.startDate) {
+                        document.getElementById('editStartDate').value = new Date(coupon.startDate).toISOString().split('T')[0];
+                    }
+                    if (coupon.expiryDate) {
+                        document.getElementById('editExpiryDate').value = new Date(coupon.expiryDate).toISOString().split('T')[0];
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById('editCouponModal'));
+                    modal.show();
+                }
+            }
         });
+
+        // Update Coupon Handler
+        document.getElementById('editCouponForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('editCouponId').value;
+            const data = {
+                code: document.getElementById('editCode').value,
+                discountType: document.getElementById('editDiscountType').value,
+                discountValue: document.getElementById('editDiscountValue').value,
+                minOrderAmount: document.getElementById('editMinOrderAmount').value,
+                usageLimit: document.getElementById('editUsageLimit').value || null,
+                startDate: document.getElementById('editStartDate').value,
+                expiryDate: document.getElementById('editExpiryDate').value
+            };
+
+            try {
+                const res = await fetch(`/api/coupons/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    // Hide Modal
+                    const modalEl = document.getElementById('editCouponModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    modalInstance.hide();
+
+                    Swal.fire('Success', 'Coupon updated', 'success');
+                    fetchCoupons();
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                }
+
+            } catch (err) {
+                Swal.fire('Error', 'Server Error', 'error');
+            }
+        });
+
+        // Date Validation Helper
+        function setupDateValidation(startId, expiryId) {
+            const startInput = document.getElementById(startId);
+            const expiryInput = document.getElementById(expiryId);
+
+            if (!startInput || !expiryInput) return;
+
+            function validate() {
+                if (startInput.value) {
+                    expiryInput.min = startInput.value;
+
+                    if (expiryInput.value && expiryInput.value < startInput.value) {
+                        expiryInput.value = '';
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'warning',
+                            title: 'Expiry date reset: cannot be earlier than Start Date',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
+                }
+            }
+
+            startInput.addEventListener('change', validate);
+            expiryInput.addEventListener('change', validate);
+        }
+
+        setupDateValidation('startDate', 'expiryDate');
+        setupDateValidation('editStartDate', 'editExpiryDate');
+
+
     </script>
 
     <!-- Notification Script -->

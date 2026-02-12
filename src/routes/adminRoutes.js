@@ -15,6 +15,7 @@ router.get("/me", auth, role("admin"), adminController.getMe);
 router.get('/stats', auth, role('admin'), adminController.getDashboardStats);
 router.get('/customers', auth, role('admin'), adminController.getAllCustomers);
 router.delete('/customers/:id', auth, role('admin'), adminController.deleteCustomer);
+router.put('/customers/:id/block', auth, role('admin'), adminController.toggleBlockStatus);
 router.get('/customers/:id', auth, role('admin'), adminController.getCustomerDetails);
 router.get('/transactions', auth, role('admin'), adminController.getAllTransactions);
 router.get('/notifications', auth, role('admin'), adminController.getNotifications);

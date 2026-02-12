@@ -853,15 +853,8 @@
                 }
 
                 products.forEach(p => {
-                    // Calculate original price if discount exists
-                    let priceHtml = `<span class="product-price">₹${p.price}</span>`;
-
-                    if (p.discount && p.discount > 0) {
-                        priceHtml = `
-                            <span class="product-price">₹${p.discount}</span>
-                            <span class="product-price-old">₹${p.price}</span>
-                        `;
-                    }
+                    // Stock Status Logic
+                    const isOutOfStock = p.status === 'Out of Stock';
 
                     // Company Display
                     let companyHtml = '';
@@ -872,34 +865,39 @@
                     // Quantity Display
                     const quantityText = p.weight ? p.weight : '';
 
-                    // Discount Badge Logic
-                    // Check active offers for this specific product
-                    let productOffer = activeOffers.find(o =>
-                        (o.category && p.category && (o.category === p.category._id || o.category === p.category)) ||
-                        (!o.category && o.link === '/product.html') // Global offer
-                    );
-
-                    let discountBadge = '';
-
-                    if (productOffer) {
-                        let badgeText = '';
-                        if (productOffer.discountType === 'percentage') {
-                            badgeText = `-${productOffer.discountValue}%`;
-                        } else if (productOffer.discountType === 'fixed') {
-                            badgeText = `-₹${productOffer.discountValue}`;
-                        }
-
-                        // Only show if there is a value
-                        if (productOffer.discountValue > 0) {
-                            discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
-                        }
+                    // Discount Badge Logic (Dynamic from Offer)
+                    // Check active offers for this specific product ONLY if no product-specific discount exists
+                    let productOffer = null;
+                    if (!p.discount || p.discount <= 0) {
+                        productOffer = activeOffers.find(o =>
+                            (o.category && p.category && (o.category === p.category._id || o.category === p.category)) ||
+                            (!o.category && o.link === '/product.html') // Global offer
+                        );
                     }
 
-                    // Stock Status Logic
-                    const isOutOfStock = p.status === 'Out of Stock';
-                    // If out of stock, it overrides the discount badge or stacks with it. Let's stack or prioritize.
-                    // Prioritizing Out of Stock badge position-wise or placing them differently.
-                    // Request is "top of the product card". Let's put Discount Top-Left and Out of Stock Top-Right.
+                    let discountBadge = '';
+                    let finalPrice = p.discount > 0 ? p.discount : p.price;
+                    let originalPrice = p.price;
+                    let priceHtml = `<span class="product-price">₹${p.price}</span>`;
+
+                    if (p.discount && p.discount > 0) {
+                        priceHtml = `
+                            <span class="product-price text-danger">₹${p.discount}</span>
+                            <span class="product-price-old">₹${p.price}</span>
+                        `;
+                    } else if (productOffer && productOffer.discountValue > 0) {
+                        // Calculate Offer Price
+                        let discountAmount = (originalPrice * productOffer.discountValue) / 100;
+                        finalPrice = Math.round(originalPrice - discountAmount);
+
+                        let badgeText = `-${productOffer.discountValue}%`;
+                        discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
+
+                        priceHtml = `
+                            <span class="product-price text-danger">₹${finalPrice}</span>
+                            <span class="product-price-old">₹${originalPrice}</span>
+                        `;
+                    }
 
                     const stockBadge = isOutOfStock ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
                     const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : '';
@@ -918,7 +916,7 @@
                         ${companyHtml}
                         <h6 class="product-title text-center">${p.name}</h6>
                         <p class="product-weight text-center">${quantityText}</p>
-                        <div class="mb-3 text-start ps-2">
+                        <div class="mb-3 text-start ps-2 mt-auto">
                             ${priceHtml}
                         </div>
                         <div class="d-flex gap-2 align-items-center">
