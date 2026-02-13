@@ -291,7 +291,7 @@
         }
     </style>
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
@@ -523,6 +523,15 @@
         </div>
     </div>
 
+
+
+
+    <!-- Notification Script -->
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1014,8 +1023,6 @@
             }
         }
     </script>
-
-    <!-- Notification Script -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const notifBadge = document.getElementById("notificationBadge");
@@ -1088,7 +1095,6 @@
             setInterval(loadNotifications, 30000);
         });
     </script>
-
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             const token = localStorage.getItem("adminToken");
@@ -1138,6 +1144,9 @@
             if (sidebarBtn) sidebarBtn.addEventListener("click", handleLogout);
         });
     </script>
+
+    
+
 </body>
 
 </html>
