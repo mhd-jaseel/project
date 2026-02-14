@@ -167,7 +167,11 @@ exports.getDashboardStats = async (req, res) => {
 // Get All Customers
 exports.getAllCustomers = async (req, res) => {
   try {
-    const users = await User.aggregate([
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    const pipeline = [
       { $match: { role: 'user' } },
       {
         $lookup: {
@@ -192,7 +196,6 @@ exports.getAllCustomers = async (req, res) => {
           isBlocked: 1,
           createdAt: 1,
           orderCount: { $size: "$orders" },
-          // Get phone from User profile first, then Address
           phoneNumber: {
             $ifNull: [
               "$phoneNumber",
@@ -202,8 +205,29 @@ exports.getAllCustomers = async (req, res) => {
         }
       },
       { $sort: { createdAt: -1 } }
-    ]);
-    res.json(users);
+    ];
+
+    // Get Total Count for Pagination
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await User.aggregate(countPipeline);
+    const totalCustomers = countResult.length > 0 ? countResult[0].total : 0;
+    const totalPages = Math.ceil(totalCustomers / limit);
+
+    // Apply Pagination
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+
+    const users = await User.aggregate(pipeline);
+
+    res.json({
+      customers: users,
+      currentPage: page,
+      totalPages,
+      totalCustomers,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    });
+
   } catch (error) {
     console.error("Error fetching customers:", error);
     res.status(500).json({ message: "Server Error" });
@@ -245,13 +269,29 @@ exports.toggleBlockStatus = async (req, res) => {
 };
 
 // Get All Transactions (derived from Orders)
+// Get All Transactions (derived from Orders)
 exports.getAllTransactions = async (req, res) => {
   try {
-    const transactions = await require('../models/Order').find()
-      .select('_id createdAt shippingAddress.firstName totalAmount paymentStatus paymentMethod')
-      .sort({ createdAt: -1 });
+    const Order = require('../models/Order');
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    res.json(transactions);
+    const totalTransactions = await Order.countDocuments();
+    const totalPages = Math.ceil(totalTransactions / limit);
+
+    const transactions = await Order.find()
+      .select('_id createdAt shippingAddress.firstName totalAmount paymentStatus paymentMethod')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      transactions,
+      currentPage: page,
+      totalPages,
+      totalTransactions
+    });
   } catch (error) {
     console.error("Error fetching transactions:", error);
     res.status(500).json({ message: "Server Error" });

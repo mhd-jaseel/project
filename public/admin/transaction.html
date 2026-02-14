@@ -232,8 +232,7 @@
             border: 4px solid #fff;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
-        </style>
+    </style>
 </head>
 
 <body>
@@ -323,6 +322,10 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" class="mt-4" id="paginationContainer">
+                    <!-- Dynamic Pagination -->
+                </nav>
             </div>
 
         </div>
@@ -353,19 +356,28 @@
             });
         }
 
-        async function fetchTransactions() {
+        let currentPage = 1;
+
+        async function fetchTransactions(page = 1) {
             try {
-                const res = await fetch('/api/admin/transactions', {
+                const res = await fetch(`/api/admin/transactions?page=${page}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 if (res.ok) {
-                    const transactions = await res.json();
+                    const data = await res.json();
+
+                    // Handle both new paginated response and potential old array response fallback
+                    const transactions = data.transactions || (Array.isArray(data) ? data : []);
+                    const totalPages = data.totalPages || 1;
+                    currentPage = data.currentPage || 1;
+
                     const tbody = document.querySelector('tbody');
                     tbody.innerHTML = '';
 
                     if (transactions.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="6" class="text-center">No transactions found.</td></tr>';
+                        renderPagination(0, 0); // Hide pagination
                         return;
                     }
 
@@ -393,24 +405,60 @@
                         tr.innerHTML = `
                             <td>#${trx._id.substring(0, 8).toUpperCase()}</td>
                             <td>${new Date(trx.createdAt).toLocaleDateString()}</td>
-                            <td>${trx.shippingAddress ? trx.shippingAddress.firstName : 'Guest'}</td>
+                            <td>${trx.shippingAddress ? (trx.shippingAddress.firstName || 'Guest') : 'Guest'}</td>
                             <td>₹${trx.totalAmount}</td>
                             <td><span class="badge ${statusBadge}">${trx.paymentStatus}</span></td>
                             <td>${methodIcon}${methodName}</td>
                         `;
                         tbody.appendChild(tr);
                     });
+
+                    renderPagination(totalPages, currentPage);
                 }
             } catch (error) {
                 console.error("Error fetching transactions:", error);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', fetchTransactions);
-    </script>
-    
+        function renderPagination(total, current) {
+            const container = document.getElementById("paginationContainer");
+            if (total <= 1) {
+                container.innerHTML = "";
+                return;
+            }
 
-    
+            let html = `<ul class="pagination justify-content-center mb-0">`;
+
+            // Previous
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchTransactions(${current - 1})">Previous</button>
+                     </li>`;
+
+            // Page Numbers
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                                <button class="page-link" onclick="fetchTransactions(${i})">${i}</button>
+                              </li>`;
+                } else if (i === current - 2 || i === current + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next
+            html += `<li class="page-item ${current === total ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchTransactions(${current + 1})">Next</button>
+                     </li>`;
+
+            html += `</ul>`;
+            container.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => fetchTransactions(1));
+    </script>
+
+
+
 
 </body>
 

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Product = require("../models/Product");
 
 // Helper: Parse weight string to grams/ml (base unit)
@@ -106,16 +107,82 @@ exports.addProduct = async (req, res) => {
 ============================ */
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate("category", "name") // ⭐ IMPORTANT FIX
-      .sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    res.json(products);
+    const sortOption = req.query.sort;
+    const search = req.query.search || "";
+    const category = req.query.category || "";
+
+    let sortStage = { createdAt: -1 };
+
+    if (sortOption === "lowToHigh") {
+      sortStage = { finalPrice: 1 };
+    }
+    else if (sortOption === "highToLow") {
+      sortStage = { finalPrice: -1 };
+    }
+
+    // 🔎 Filter Stage
+    let matchStage = {};
+
+    if (search) {
+      matchStage.name = { $regex: search, $options: "i" };
+    }
+
+    if (category) {
+      matchStage.category = new mongoose.Types.ObjectId(category);
+    }
+
+    if (req.query.isHotDeal === 'true') {
+      matchStage.isHotDeal = true;
+    }
+
+    if (req.query.status && req.query.status !== 'All') {
+      matchStage.status = req.query.status;
+    }
+
+    // 🔢 Get Total Count (for pagination)
+    const totalProducts = await Product.countDocuments(matchStage);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // 📦 Aggregation Pipeline
+    const products = await Product.aggregate([
+      { $match: matchStage },
+      {
+        $addFields: {
+          finalPrice: {
+            $cond: {
+              if: { $gt: ["$discount", 0] },
+              then: "$discount",
+              else: "$price"
+            }
+          }
+        }
+      },
+      { $sort: sortStage },
+      { $skip: skip },
+      { $limit: limit }
+    ]);
+
+    // Populate category
+    await Product.populate(products, { path: "category", select: "name" });
+
+    res.json({
+      products,
+      currentPage: page,
+      totalPages,
+      totalProducts
+    });
+
   } catch (err) {
     console.error("❌ Get products error:", err);
     res.status(500).json({ message: "Failed to load products" });
   }
 };
+
+
 
 /* ============================
    ADMIN: UPDATE PRODUCT

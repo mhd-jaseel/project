@@ -601,7 +601,7 @@
         </div>
     </section>
 
-    
+
 
     <!-- Categories Section -->
     <section class="container my-5">
@@ -703,7 +703,7 @@
             </div>
         </div>
 
-        
+
     </section>
 
     <!-- Features Info Section -->
@@ -790,11 +790,11 @@
     </footer>
 
     <!-- SweetAlert2 -->
-    
+
     <!-- Bootstrap JS -->
-    
+
     <!-- Custom JS -->
-    
+
 
 
     <script>
@@ -852,35 +852,35 @@
         });
     </script>
     <script>
-            document.addEventListener("DOMContentLoaded", async () => {
-                try {
-                    const res = await fetch('/api/brands');
-                    if (!res.ok) throw new Error("Failed to fetch brands");
-                    const brands = await res.json();
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const res = await fetch('/api/brands');
+                if (!res.ok) throw new Error("Failed to fetch brands");
+                const brands = await res.json();
 
-                    const track = document.getElementById('featuredBrandsTrack');
+                const track = document.getElementById('featuredBrandsTrack');
 
-                    if (brands.length > 0) {
-                        // Duplicate brands to create seamless infinite scroll
-                        // If minimal brands, repeat more times to fill width
-                        let displayBrands = [...brands, ...brands];
-                        if (brands.length < 5) displayBrands = [...displayBrands, ...brands, ...brands];
+                if (brands.length > 0) {
+                    // Duplicate brands to create seamless infinite scroll
+                    // If minimal brands, repeat more times to fill width
+                    let displayBrands = [...brands, ...brands];
+                    if (brands.length < 5) displayBrands = [...displayBrands, ...brands, ...brands];
 
-                        track.innerHTML = displayBrands.map(brand => `
+                    track.innerHTML = displayBrands.map(brand => `
                             <div class="brand-item">
                                 <img src="${brand.imageUrl}" alt="Brand">
                             </div>
                         `).join('');
-                    } else {
-                        track.innerHTML = '<div class="p-4 text-muted w-100 text-center">No brands available</div>';
-                        track.style.animation = 'none';
-                        track.style.display = 'block';
-                    }
-                } catch (e) {
-                    console.error("Brand Load Error", e);
+                } else {
+                    track.innerHTML = '<div class="p-4 text-muted w-100 text-center">No brands available</div>';
+                    track.style.animation = 'none';
+                    track.style.display = 'block';
                 }
-            });
-        </script>
+            } catch (e) {
+                console.error("Brand Load Error", e);
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1077,9 +1077,15 @@
             const container = document.getElementById("hot-deals-track");
             if (!container) return;
 
-            const res = await fetch("/api/products");
-            const products = await res.json();
-            const hotDeals = products.filter(p => p.isHotDeal);
+            let hotDeals = [];
+            try {
+                // FIXED: API returns { products: [...], ... }
+                const res = await fetch("/api/products?isHotDeal=true");
+                const data = await res.json();
+                hotDeals = data.products || [];
+            } catch (e) {
+                console.error("Failed hot deals", e);
+            }
 
             // Fetch Active Offers
             let activeOffers = [];
@@ -1311,8 +1317,8 @@
         });
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

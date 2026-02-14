@@ -356,19 +356,19 @@
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="mdo">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="admin"
+                            id="adminAvatar" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
                         <div class="ms-2 d-none d-sm-block text-start">
-                            <div class="fw-bold small">Admin User</div>
-                            <div class="text-muted small" style="font-size: 0.75rem;">Super Admin</div>
+                            <div class="fw-bold small" id="adminName">Loading...</div>
+                            <div class="text-muted small" style="font-size: 0.75rem;" id="adminRole">...</div>
                         </div>
                     </a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="admin-role.html">Settings</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="../user/login.html">Sign out</a></li>
+                        <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -718,35 +718,88 @@
                         }
 
                         if (notifList) {
-                            notifList.innerHTML = data.map(n => `
+                            notifList.innerHTML = data.map(n => {
+                                let icon = 'fa-info-circle';
+                                let colorClass = 'text-primary';
+                                let bgStyle = "background-color: rgba(13, 110, 253, 0.1);"; // primary
+                                if (n.type === 'success') { icon = 'fa-check-circle'; colorClass = 'text-success'; bgStyle = "background-color: rgba(25, 135, 84, 0.1);"; }
+                                if (n.type === 'warning') { icon = 'fa-exclamation-triangle'; colorClass = 'text-warning'; bgStyle = "background-color: rgba(255, 193, 7, 0.1);"; }
+                                if (n.type === 'danger' || n.type === 'error') { icon = 'fa-exclamation-circle'; colorClass = 'text-danger'; bgStyle = "background-color: rgba(220, 53, 69, 0.1);"; }
+
+                                const timeStr = new Date(n.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, month: 'short', day: 'numeric' });
+
+                                return `
                             <li>
-                                <a class="dropdown-item p-2 border-bottom" href="${n.link}?id=${n.id}&view=true">
-                                    <div class="d-flex align-items-start gap-2">
-                                        <div class="mt-1 text-${n.type || "primary"}"><i class="fas fa-circle" style="font-size: 0.5rem;"></i></div>
-                                        <div>
-                                            <div class="small fw-semibold text-wrap">${n.message}</div>
-                                            <div class="text-muted" style="font-size: 0.7rem;">${new Date(n.time).toLocaleString()}</div>
+                                <a class="dropdown-item p-3 border-bottom position-relative notification-item" href="${n.link}?id=${n.id}&view=true" style="transition: all 0.2s;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 ${colorClass}" style="width: 38px; height: 38px; ${bgStyle}">
+                                            <i class="fas ${icon} fa-lg"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="mb-0 fw-bold fs-7 text-dark" style="font-size: 0.9rem;">${n.title || 'Notification'}</h6>
+                                                <small class="text-muted" style="font-size: 0.65rem;">${timeStr}</small>
+                                            </div>
+                                            <p class="mb-0 text-secondary small lh-sm text-wrap" style="font-size: 0.8rem;">${n.message}</p>
                                         </div>
                                     </div>
                                 </a>
                             </li>
-                        `).join("");
+                            `;
+                            }).join("");
                         }
                     } else {
-                        if (notifBadge) notifBadge.style.display = "none";
-                        if (notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-3">No new notifications</li>';
+                        if (notifBadge) {
+                            notifBadge.style.display = "none";
+                            notifBadge.classList.remove("pulse-animation");
+                        }
+                        if (notifList) notifList.innerHTML = '<li class="dropdown-item text-center text-muted small p-4">No new notifications</li>';
                     }
                 } catch (err) {
                     console.error("Notif error", err);
                 }
             }
 
+            async function loadAdminProfile() {
+                try {
+                    const token = localStorage.getItem("adminToken");
+                    if (!token) return;
+
+                    const res = await fetch("/api/admin/me", {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+
+                    if (res.ok) {
+                        const admin = await res.json();
+
+                        document.getElementById("adminName").innerText = admin.name || "Admin";
+                        document.getElementById("adminRole").innerText = admin.role || "Admin";
+
+                        const initials = (admin.name || "Admin").split(" ").map(n => n[0]).join("").toUpperCase();
+                        document.getElementById("adminAvatar").src = `https://ui-avatars.com/api/?name=${initials}&background=0D8ABC&color=fff`;
+                    }
+                } catch (e) {
+                    console.error("Profile load error", e);
+                }
+            }
+
+            loadAdminProfile();
             loadNotifications();
             setInterval(loadNotifications, 30000);
+
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem("adminToken");
+                    localStorage.removeItem("role");
+                    window.location.href = "../user/login.html";
+                });
+            }
         });
     </script>
 
-    
+
 
 </body>
 

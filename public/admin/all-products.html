@@ -354,47 +354,7 @@
                 </div>
             </div>
 
-            <div class="user-profile">
-                <!-- Notification Bell -->
-                <div class="dropdown d-inline-block position-relative me-3">
-                    <button class="icon-btn border-0 bg-transparent" type="button" id="notificationDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="far fa-bell"></i>
-                        <span
-                            class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1"
-                            id="notificationBadge" style="display: none; font-size: 0.6rem;">0</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="notificationDropdown"
-                        style="width: 320px; max-height: 400px; overflow-y: auto;">
-                        <li class="dropdown-header bg-white border-bottom fw-bold py-2">Notifications</li>
-                        <div id="notificationList">
-                            <li class="dropdown-item text-center text-muted small p-3">No new notifications</li>
-                        </div>
-                        <li class="border-top text-center"><a class="dropdown-item small py-2 fw-bold text-primary"
-                                href="order-management.html">View All Orders</a></li>
-                    </ul>
-                </div>
-
-                <!-- User Profile Dropdown -->
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="admin"
-                            id="adminAvatar" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
-                        <div class="ms-2 d-none d-sm-block text-start">
-                            <div class="fw-bold small" id="adminName">Admin User</div>
-                            <div class="text-muted small" style="font-size: 0.75rem;" id="adminRole">Super Admin</div>
-                        </div>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="admin-role.html">Settings</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#" id="headerLogoutBtn">Sign out</a></li>
-                    </ul>
-                </div>
-            </div>
+            <!-- User Profile and Notifications removed -->
         </header>
 
         <!-- Content Area -->
@@ -402,6 +362,10 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold m-0">All Products</h4>
                 <div class="d-flex gap-2">
+                    <select id="categoryFilter" class="form-select form-select-sm"
+                        style="width: 150px; cursor: pointer;">
+                        <option value="All">All Categories</option>
+                    </select>
                     <select id="statusFilter" class="form-select form-select-sm" style="width: 150px; cursor: pointer;">
                         <option value="All">All Status</option>
                         <option value="In Stock">In Stock</option>
@@ -434,6 +398,11 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-4" id="paginationContainer">
+                <!-- Dynamic Pagination -->
+            </nav>
 
             <!-- Edit Product Modal -->
             <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
@@ -618,8 +587,37 @@
         });
 
 
-        let allProducts = [];
+        let currentPage = 1;
+        let totalPages = 1;
         let editProductModalObj;
+        let allProducts = []; // Defined globally
+
+        async function fetchProducts(page = 1) {
+            const searchTerm = document.getElementById('searchInput')?.value || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || 'All';
+            const categoryFilter = document.getElementById('categoryFilter')?.value || 'All';
+
+            let query = `?page=${page}`;
+            if (searchTerm) query += `&search=${encodeURIComponent(searchTerm)}`;
+            if (categoryFilter !== 'All') query += `&category=${categoryFilter}`;
+            if (statusFilter !== 'All') query += `&status=${statusFilter}`;
+
+            // Add isHotDeal support if needed, strictly based on existing query params support
+
+            try {
+                const res = await fetch(`/api/products${query}`);
+                const data = await res.json();
+
+                currentPage = data.currentPage || 1;
+                totalPages = data.totalPages || 1;
+                allProducts = data.products || []; // Update global variable
+
+                renderTable(allProducts);
+                renderPagination(totalPages, currentPage);
+            } catch (err) {
+                console.error("❌ Failed to load products", err);
+            }
+        }
 
         function getDisplayQty(p) {
             // Check for empty/missing weight
@@ -652,10 +650,19 @@
             try {
                 const res = await fetch("/api/categories");
                 const categories = await res.json();
+
+                // Populate Modal Select
                 const select = document.getElementById("editProductCategory");
                 select.innerHTML = '<option value="">Select Category</option>';
+
+                // Populate Filter Select
+                const filterSelect = document.getElementById("categoryFilter");
+                filterSelect.innerHTML = '<option value="All">All Categories</option>';
+
                 categories.forEach(cat => {
-                    select.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
+                    const opt = `<option value="${cat._id}">${cat.name}</option>`;
+                    select.innerHTML += opt;
+                    filterSelect.innerHTML += opt;
                 });
             } catch (err) {
                 console.error("Failed to load categories", err);
@@ -731,37 +738,50 @@
             });
         }
 
-        async function loadProducts() {
-            try {
-                const res = await fetch("/api/products");
-                allProducts = await res.json();
-                applyFilters(); // Initial render with filters (if any default)
-            } catch (err) {
-                console.error("❌ Failed to load products", err);
+        function renderPagination(total, current) {
+            const container = document.getElementById("paginationContainer");
+            if (total <= 1) {
+                container.innerHTML = "";
+                return;
             }
+
+            let html = `<ul class="pagination justify-content-center mb-0">`;
+
+            // Previous
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchProducts(${current - 1})">Previous</button>
+                     </li>`;
+
+            // Page Numbers
+            for (let i = 1; i <= total; i++) {
+                // Show current, first, last, and surrounding
+                if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                                <button class="page-link" onclick="fetchProducts(${i})">${i}</button>
+                              </li>`;
+                } else if (i === current - 2 || i === current + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next
+            html += `<li class="page-item ${current === total ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchProducts(${current + 1})">Next</button>
+                     </li>`;
+
+            html += `</ul>`;
+            container.innerHTML = html;
+        }
+
+
+
+        // Wrapper for backward compatibility
+        function loadProducts() {
+            fetchProducts(currentPage);
         }
 
         function applyFilters() {
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            const statusFilter = document.getElementById('statusFilter')?.value || 'All';
-
-            const filtered = allProducts.filter(p => {
-                // Search Filter
-                const matchesSearch = p.name.toLowerCase().includes(searchTerm) ||
-                    (p.category?.name || '').toLowerCase().includes(searchTerm);
-
-                // Status Filter
-                let matchesStatus = true;
-                if (statusFilter !== 'All') {
-                    // Start of Selection
-                    const currentStatus = getDisplayStatus(p); // Use the helper to get calculated status
-                    matchesStatus = currentStatus === statusFilter;
-                }
-
-                return matchesSearch && matchesStatus;
-            });
-
-            renderTable(filtered);
+            fetchProducts(1);
         }
 
         loadProducts();
@@ -770,60 +790,103 @@
         // Event Listeners
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', applyFilters);
+            searchInput.addEventListener('input', () => { // Debounce could be added
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => applyFilters(), 300);
+            });
         }
 
         const statusFilter = document.getElementById('statusFilter');
         if (statusFilter) {
             statusFilter.addEventListener('change', applyFilters);
         }
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', applyFilters);
+        }
 
         /* =========================
            EDIT PRODUCT LOGIC
         ========================= */
         function openEditModal(id) {
+            console.log("Attempting to open edit modal for ID:", id);
+
+            if (!allProducts || allProducts.length === 0) {
+                console.error("allProducts array is empty or undefined");
+                Swal.fire("Error", "Product data is not loaded. Please refresh the page.", "error");
+                return;
+            }
+
             const product = allProducts.find(p => p._id === id);
-            if (!product) return;
-
-            document.getElementById('editProductId').value = product._id;
-            document.getElementById('editProductName').value = product.name;
-            // Handle category population - ensure value matches option value
-            const categoryId = typeof product.category === 'object' ? product.category._id : product.category;
-            document.getElementById('editProductCategory').value = categoryId || "";
-
-            document.getElementById('editProductPrice').value = product.price;
-            document.getElementById('editProductDiscount').value = product.discount || "";
-            document.getElementById('editProductWeight').value = product.weight || "";
-            document.getElementById('editProductWeight').value = product.weight || "";
-            const descField = document.getElementById('editProductDescription');
-            if (descField) {
-                descField.value = product.description || "";
+            if (!product) {
+                console.error("Product not found with ID:", id);
+                Swal.fire("Error", "Product details not found.", "error");
+                return;
             }
 
-            // Total Stock Field
-            const stockInputVal = document.getElementById('editProductTotalStockValue');
-            const stockInputUnit = document.getElementById('editProductTotalStockUnit');
-            stockInputVal.value = ""; // Reset on open
-            stockInputUnit.value = "kg"; // Default reset
+            try {
+                const setVal = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = val;
+                };
 
-            const stockHelp = document.getElementById('editProductCurrentStockHelp');
-            if (product.totalStock !== undefined) {
-                stockHelp.textContent = `Current Stock Level: ${product.totalStock} (Base Units)`;
-            } else {
-                stockHelp.textContent = "";
+                setVal('editProductId', product._id);
+                setVal('editProductName', product.name);
+                setVal('editProductPrice', product.price);
+                setVal('editProductDiscount', product.discount || "");
+                setVal('editProductWeight', product.weight || "");
+                setVal('editProductDescription', product.description || "");
+
+                // Category handling
+                let categoryId = "";
+                if (product.category) {
+                    categoryId = typeof product.category === 'object' ? product.category._id : product.category;
+                }
+                setVal('editProductCategory', categoryId || "");
+
+                // Stock handling
+                setVal('editProductTotalStockValue', ""); // Reset
+                setVal('editProductTotalStockUnit', "kg"); // Default
+
+                const stockHelp = document.getElementById('editProductCurrentStockHelp');
+                if (stockHelp) {
+                    stockHelp.textContent = product.totalStock !== undefined
+                        ? `Current Stock Level: ${product.totalStock}`
+                        : "";
+                }
+
+                // Image handling
+                const imgPreview = document.getElementById('currentProductImage');
+                const imgContainer = document.getElementById('currentProductImageContainer');
+                if (imgPreview && imgContainer) {
+                    if (product.image) {
+                        imgPreview.src = product.image;
+                        imgContainer.style.display = 'block';
+                    } else {
+                        imgContainer.style.display = 'none';
+                    }
+                }
+
+                // Modal Show
+                const modalEl = document.getElementById('editProductModal');
+                if (modalEl) {
+                    // Use Bootstrap global if available, otherwise assume loaded via script
+                    const bs = window.bootstrap || bootstrap;
+                    if (bs) {
+                        editProductModalObj = bs.Modal.getOrCreateInstance(modalEl);
+                        editProductModalObj.show();
+                    } else {
+                        console.error("Bootstrap is not loaded");
+                        Swal.fire("Error", "System error: Bootstrap not loaded", "error");
+                    }
+                } else {
+                    console.error("Modal element 'editProductModal' not found");
+                }
+
+            } catch (err) {
+                console.error("Error in openEditModal:", err);
+                Swal.fire("Error", "An unexpected error occurred while opening the editor.", "error");
             }
-
-            const imgPreview = document.getElementById('currentProductImage');
-            if (product.image) {
-                imgPreview.src = product.image;
-                document.getElementById('currentProductImageContainer').style.display = 'block';
-            } else {
-                document.getElementById('currentProductImageContainer').style.display = 'none';
-            }
-
-            const modalEl = document.getElementById('editProductModal');
-            editProductModalObj = new bootstrap.Modal(modalEl);
-            editProductModalObj.show();
         }
 
         async function saveEditProduct() {
@@ -1145,7 +1208,7 @@
         });
     </script>
 
-    
+
 
 </body>
 

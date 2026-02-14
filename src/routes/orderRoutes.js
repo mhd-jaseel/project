@@ -16,6 +16,7 @@ router.put('/:orderId/items/:itemId/return', protect, orderController.requestIte
 
 // Admin Routes
 router.get('/all', protect, role('admin'), orderController.getAllOrders);
+router.get('/:id', protect, role('admin'), orderController.getOrderById);
 router.put('/:orderId/status', protect, role('admin'), orderController.updateOrderStatus);
 router.put('/:orderId/return-status', protect, role('admin'), orderController.updateReturnStatus);
 router.put('/:orderId/items/:itemId/return-status', protect, role('admin'), orderController.updateItemReturnStatus);

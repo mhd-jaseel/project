@@ -292,8 +292,7 @@
             background-color: #e4e6ef;
             color: #3f4254;
         }
-
-        </style>
+    </style>
     <!-- SweetAlert2 -->
 
 </head>
@@ -325,9 +324,6 @@
         </a>
         <a href="transaction.html" class="nav-link">
             <i class="fas fa-wallet"></i> Transaction
-        </a>
-        <a href="add-product.html" class="nav-link active">
-            <i class="fas fa-plus-circle"></i> Add Product
         </a>
         <a href="categories.html" class="nav-link">
             <i class="fas fa-th-list"></i> Categories
@@ -752,6 +748,10 @@
                     `${stockValue}${document.getElementById('productTotalStockUnit').value}`
                 );
 
+                // Add weight
+                const weight = document.getElementById("productWeight").value.trim();
+                if (weight) formData.append("weight", weight);
+
                 // ✅ MAIN IMAGE
                 formData.append("image", imageInput.files[0]);
 
@@ -798,9 +798,9 @@
         document.addEventListener("DOMContentLoaded", loadCategoriesForDropdown);
 
     </script>
-    
 
-    
+
+
 
 </body>
 

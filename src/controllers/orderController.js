@@ -305,10 +305,35 @@ exports.getMyOrders = async (req, res) => {
 // --- Admin Controllers ---
 
 // Get All Orders
+// Get All Orders
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 });
-        res.json(orders);
+        const page = parseInt(req.query.page) || 1;
+        const limit = 20;
+        const skip = (page - 1) * limit;
+
+        let query = {};
+        if (req.query.status && req.query.status !== 'All Status') {
+            query.orderStatus = req.query.status;
+        }
+
+        const totalOrders = await Order.countDocuments(query);
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        const orders = await Order.find(query)
+            .populate('user', 'name email')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            orders,
+            currentPage: page,
+            totalPages,
+            totalOrders,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        });
     } catch (error) {
         console.error("Error fetching all orders:", error);
         res.status(500).json({ message: "Server Error" });
@@ -734,6 +759,20 @@ exports.requestItemReturn = async (req, res) => {
 
     } catch (error) {
         console.error("Error requesting item return:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Get Order By ID (Admin)
+exports.getOrderById = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id).populate('user', 'name email');
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        res.json(order);
+    } catch (error) {
+        console.error("Error fetching order:", error);
         res.status(500).json({ message: "Server Error" });
     }
 };

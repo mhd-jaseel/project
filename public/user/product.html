@@ -569,12 +569,13 @@
                     </style>
                     <div class="d-flex align-items-center">
                         <span class="small me-2 text-muted">Sort by:</span>
-                        <select class="form-select form-select-sm w-auto border-0 bg-light fw-bold">
-                            <option>Relevance</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
+                        <select id="sortSelect" class="form-select form-select-sm w-auto border-0 bg-light fw-bold">
+                            <option value="relevance">Relevance</option>
+                            <option value="lowToHigh">Price: Low to High</option>
+                            <option value="highToLow">Price: High to Low</option>
                         </select>
                     </div>
+
                 </div>
 
                 <div class="row row-cols-2 row-cols-md-4 g-4" id="productGrid"> </div>
@@ -582,19 +583,9 @@
 
                 <!-- Pagination -->
                 <nav class="mt-5 d-flex justify-content-center">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link bg-primary-custom border-primary-custom"
-                                href="#">1</a></li>
-                        <li class="page-item"><a class="page-link text-success" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link text-success" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link text-success" href="#">Next</a>
-                        </li>
-                    </ul>
+                    <ul class="pagination" id="pagination"></ul>
                 </nav>
+
 
             </div>
         </div>
@@ -824,58 +815,63 @@
             return params.get("category");
         }
 
-        async function loadUserProducts() {
+
+        let currentPage = 1;
+        let currentSort = "";
+
+        async function loadUserProducts(page = 1, sortValue = "") {
             try {
+                currentPage = page;
+                if (sortValue !== "") currentSort = sortValue;
+
                 const params = new URLSearchParams(window.location.search);
                 const categoryId = params.get("category");
 
-                const url = categoryId
-                    ? `/api/products/category/${categoryId}`
-                    : `/api/products`;
+                let url = `/api/products?page=${page}`;
+
+                if (categoryId) {
+                    url += `&category=${categoryId}`;
+                }
+
+                if (currentSort) {
+                    url += `&sort=${currentSort}`;
+                }
 
                 const res = await fetch(url);
-                const products = await res.json();
+                const data = await res.json();
 
-                // Fetch active offers to find the selected one if any
+                const products = data.products || [];   // ✅ FIXED: SAFE WITH FALLBACK
+                const totalPages = data.totalPages;
+
                 const offersRes = await fetch('/api/offers/active');
                 const activeOffers = await offersRes.json();
-
-                // Identify if an offer is currently selected (naive check by matching link or via potential query param if we added one)
-                // Since we don't have ?offer=ID yet, we can try to match by category or 'all'.
-                // Ideally, we should pass ?offer=ID. But for now, let's look for an offer that matches the current category or all products link.
-
-                // Match offers per product inside loop
 
                 const grid = document.getElementById("productGrid");
                 grid.innerHTML = "";
 
                 if (!products.length) {
-                    grid.innerHTML = `
-        <p class="text-center text-muted">No products found</p>
-      `;
+                    grid.innerHTML = `<p class="text-center text-muted">No products found</p>`;
                     return;
                 }
 
+
+
                 products.forEach(p => {
-                    // Stock Status Logic
+
                     const isOutOfStock = p.status === 'Out of Stock';
 
-                    // Company Display
                     let companyHtml = '';
                     if (p.company) {
-                        companyHtml = `<div class="text-start small text-muted mb-1" style="font-size: 0.8rem;">${p.company}</div>`;
+                        companyHtml = `<div class="text-start small text-muted mb-1">${p.company}</div>`;
                     }
 
-                    // Quantity Display
                     const quantityText = p.weight ? p.weight : '';
 
-                    // Discount Badge Logic (Dynamic from Offer)
-                    // Check active offers for this specific product ONLY if no product-specific discount exists
                     let productOffer = null;
                     if (!p.discount || p.discount <= 0) {
                         productOffer = activeOffers.find(o =>
                             (o.category && p.category && (o.category === p.category._id || o.category === p.category)) ||
-                            (!o.category && o.link === '/product.html') // Global offer
+                            (!o.category && o.link === '/product.html')
                         );
                     }
 
@@ -886,66 +882,110 @@
 
                     if (p.discount && p.discount > 0) {
                         priceHtml = `
-                            <span class="product-price text-danger">₹${p.discount}</span>
-                            <span class="product-price-old">₹${p.price}</span>
-                        `;
-                    } else if (productOffer && productOffer.discountValue > 0) {
-                        // Calculate Offer Price
+                                <span class="product-price text-danger">₹${p.discount}</span>
+                                <span class="product-price-old">₹${p.price}</span>
+                            `;
+                    }
+                    else if (productOffer && productOffer.discountValue > 0) {
                         let discountAmount = (originalPrice * productOffer.discountValue) / 100;
                         finalPrice = Math.round(originalPrice - discountAmount);
 
-                        let badgeText = `-${productOffer.discountValue}%`;
-                        discountBadge = `<span class="badge bg-danger position-absolute top-0 start-0 m-2" style="font-size: 0.7rem; padding: 0.35em 0.65em;">${badgeText}</span>`;
+                        discountBadge = `
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+                                    -${productOffer.discountValue}%
+                                </span>
+                            `;
 
                         priceHtml = `
-                            <span class="product-price text-danger">₹${finalPrice}</span>
-                            <span class="product-price-old">₹${originalPrice}</span>
-                        `;
+                                <span class="product-price text-danger">₹${finalPrice}</span>
+                                <span class="product-price-old">₹${originalPrice}</span>
+                            `;
                     }
 
-                    const stockBadge = isOutOfStock ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>` : '';
-                    const btnDisabled = isOutOfStock ? 'disabled style="background-color: #ccc; border: none; cursor: not-allowed;"' : '';
+                    const stockBadge = isOutOfStock
+                        ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>`
+                        : '';
+
+                    const btnDisabled = isOutOfStock ? 'disabled' : '';
                     const btnText = isOutOfStock ? 'Out of Stock' : 'Add to cart';
 
-
                     grid.innerHTML += `
-        <div class="col">
-                <div class="card product-card h-100 position-relative">
-                    ${stockBadge}
-                    ${discountBadge}
-                    <a href="single-product.html?id=${p._id}">
-                        <img src="${p.image || 'https://placehold.co/300'}" class="card-img-top p-3" alt="${p.name}" style="opacity: ${isOutOfStock ? 0.6 : 1}">
-                    </a>
-                    <div class="card-body p-2">
-                        ${companyHtml}
-                        <h6 class="product-title text-center">${p.name}</h6>
-                        <p class="product-weight text-center">${quantityText}</p>
-                        <div class="mb-3 text-start ps-2 mt-auto">
-                            ${priceHtml}
-                        </div>
-                        <div class="d-flex gap-2 align-items-center">
-                            <button class="btn btn-wishlist" data-product-id="${p._id}"><i class="far fa-heart"></i></button>
-                            <button class="btn btn-add-cart" data-product-id="${p._id}" ${btnDisabled}>${btnText}</button>
-                        </div>
-                    </div>
-                </div>
-        </div>
-      `;
+                            <div class="col">
+                                <div class="card product-card h-100 position-relative">
+                                    ${stockBadge}
+                                    ${discountBadge}
+                                    <a href="single-product.html?id=${p._id}">
+                                        <img src="${p.image || 'https://placehold.co/300'}" 
+                                            class="card-img-top p-3" 
+                                            alt="${p.name}"
+                                            style="opacity:${isOutOfStock ? 0.6 : 1}">
+                                    </a>
+                                    <div class="card-body p-2">
+                                        ${companyHtml}
+                                        <h6 class="product-title text-center">${p.name}</h6>
+                                        <p class="product-weight text-center">${quantityText}</p>
+                                        <div class="mb-3 text-start ps-2 mt-auto">
+                                            ${priceHtml}
+                                        </div>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <button class="btn btn-wishlist" data-product-id="${p._id}">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                            <button class="btn btn-add-cart" data-product-id="${p._id}" ${btnDisabled}>
+                                                ${btnText}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                 });
 
-                // Wishlist load
                 markWishlistHearts();
+                createPagination(totalPages, currentPage);
 
             } catch (err) {
                 console.error("❌ Failed to load products", err);
             }
         }
+        //pagination script
+        function createPagination(totalPages, currentPage) {
+            const pagination = document.getElementById("pagination");
+            if (!pagination) return;
 
-        loadUserProducts();
+            pagination.innerHTML = "";
 
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            // Previous
+            pagination.innerHTML += `
+                    <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage - 1}); return false;">Previous</a>
+                    </li>
+                `;
+
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.innerHTML += `
+                        <li class="page-item ${i === currentPage ? "active" : ""}">
+                            <a class="page-link" href="#" onclick="loadUserProducts(${i}); return false;">${i}</a>
+                        </li>
+                    `;
+            }
+            // Next
+            pagination.innerHTML += `
+                    <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage + 1}); return false;">Next</a>
+                    </li>
+                `;
+        }
 
         // Generic Wishlist Buttons (Homepage/Product Page) - Added Here
-
 
         async function loadSidebarCategories() {
             try {
@@ -1004,10 +1044,6 @@
                 const containers = ['sidebar-offers', 'mobile-sidebar-offers'];
                 const urlParams = new URLSearchParams(window.location.search);
                 const activeCat = urlParams.get('category');
-                // Check if current category matches an offer's category or global offer
-                // In URL, ?category=ID. If offer is global, it links to /product.html (activeCat is null)
-                // We don't have a unique ID for "offer selection" in URL distinct from category yet.
-                // We will rely on category matching.
 
                 containers.forEach(id => {
                     const container = document.getElementById(id);
@@ -1021,26 +1057,26 @@
                     let html = '<h6 class="fw-bold mb-2">Offers</h6>';
 
                     offers.forEach(o => {
-                        // Determine if checked
+                        // Determine filter URL
+                        // If offer has a specific category, filter by it.
+                        // Otherwise, use the manually defined link.
+                        let filterUrl = o.link || 'product.html';
                         let isChecked = false;
+
                         if (o.category) {
+                            filterUrl = `product.html?category=${o.category}`;
+                            // Check if currently filtered by this category
                             if (activeCat === o.category) isChecked = true;
                         } else {
-                            // Global offer (All Products)
-                            // Checked if we are at root /product.html without category
-                            if (!activeCat && window.location.pathname.includes('product.html') && o.link === '/product.html') {
-                                // Potentially check this? Or maybe better to leave unchecked unless explicitly filtered?
-                                // Let's leave unchecked for "All Products" generally unless we add ?offer=ID logic.
-                                // But requested behavior is filtering.
+                            // If it's a generic link to product.html and we have no category param, it's effectively "checked"
+                            if (!activeCat && filterUrl.endsWith('product.html')) {
+                                // optional: mark as checked or not. 
                             }
                         }
 
-                        // We render radio or link behavior
-                        // User wants "The offer displayed there should be the one added by admin".
-                        // Clicking it should filter.
                         html += `
                         <div class="form-check">
-                            <input class="form-check-input offer-filter-radio" type="radio" name="offer_filter_${id}" id="off_${o._id}_${id}" value="${o._id}" data-link="${o.link}" ${isChecked ? 'checked' : ''}>
+                            <input class="form-check-input offer-filter-radio" type="radio" name="offer_filter_${id}" id="off_${o._id}_${id}" value="${o._id}" data-link="${filterUrl}" ${isChecked ? 'checked' : ''}>
                             <label class="form-check-label small" for="off_${o._id}_${id}" style="cursor: pointer;">${o.title}</label>
                         </div>`;
                     });
@@ -1136,6 +1172,21 @@
                 }
             }
         });
+
+
+        //SORT 
+        const sortSelect = document.getElementById("sortSelect");
+
+        if (sortSelect) {
+            sortSelect.addEventListener("change", function () {
+                const value = this.value;
+                loadUserProducts(1, value);
+            });
+        }
+
+
+        loadUserProducts(1);
+
 
     </script>
 

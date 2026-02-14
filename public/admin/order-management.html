@@ -311,8 +311,12 @@
                     <select class="form-select form-select-sm" style="width: 150px;">
                         <option>All Status</option>
                         <option>Pending</option>
-                        <option>Completed</option>
+                        <option>Confirmed</option>
+                        <option>Packed</option>
+                        <option>Out For Delivery</option>
+                        <option>Delivered</option>
                         <option>Cancelled</option>
+                        <option>Returned</option>
                     </select>
                     <button class="btn btn-primary-custom btn-sm"><i class="fas fa-file-export me-1"></i>
                         Export</button>
@@ -340,14 +344,8 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justification-content-end mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                    </ul>
+                <nav aria-label="Page navigation" class="mt-4" id="paginationContainer">
+                    <!-- Dynamic Pagination -->
                 </nav>
             </div>
         </div>
@@ -437,12 +435,19 @@
         }
 
         // --- Order Management Logic ---
-        let allOrders = [];
+        let allOrders = []; // Keeps loaded orders for modal usage
         let hasHandledAutoOpen = false;
+        let currentPage = 1;
 
-        async function fetchOrders() {
+        async function fetchOrders(page = 1) {
+            const statusFilter = document.querySelector('.form-select').value;
+            let query = `?page=${page}`;
+            if (statusFilter && statusFilter !== 'All Status') {
+                query += `&status=${statusFilter}`;
+            }
+
             try {
-                const res = await fetch('/api/orders/all', {
+                const res = await fetch(`/api/orders/all${query}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -459,51 +464,76 @@
                     return;
                 }
 
-                const orders = await res.json();
-                if (Array.isArray(orders)) {
-                    allOrders = orders;
-                    renderOrders(orders);
-                    updateNotificationCount();
+                const data = await res.json();
 
-                    // Auto Open Modal if requested - ONLY ONCE
-                    if (!hasHandledAutoOpen) {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('view') === 'true' && urlParams.get('id')) {
-                            const oid = urlParams.get('id');
-                            // Ensure order exists in list (should be there as we fetched all)
-                            setTimeout(() => openOrderModal(oid), 500); // Small delay to ensure render
-                        }
-                        hasHandledAutoOpen = true;
+                // Determine if it's the new paginated structure or old array
+                const orders = data.orders || (Array.isArray(data) ? data : []);
+                const totalPages = data.totalPages || 1;
+                const pageNum = data.currentPage || 1;
+
+                // Sync global/local state
+                allOrders = orders;
+                currentPage = pageNum;
+
+                renderOrders(orders);
+                renderPagination(totalPages, currentPage);
+                updateNotificationCount();
+
+                // Auto Open Modal if requested - ONLY ONCE
+                if (!hasHandledAutoOpen) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('view') === 'true' && urlParams.get('id')) {
+                        const oid = urlParams.get('id');
+                        setTimeout(() => openOrderModal(oid), 500);
                     }
-                } else {
-                    console.error('Expected array of orders, got:', orders);
+                    hasHandledAutoOpen = true;
                 }
             } catch (error) {
                 console.error("Error fetching orders:", error);
             }
         }
 
-        function filterUnviewedOrders() {
-            const unviewedOrders = allOrders.filter(o => !o.viewedByAdmin);
-
-            // If there are unviewed orders, show them
-            if (unviewedOrders.length > 0) {
-                renderOrders(unviewedOrders);
-                const header = document.querySelector('h4');
-                if (header) header.innerText = 'Order Management (New Orders)';
-            } else {
-                // If no unviewed orders, show alert and potentially reset view
-                Swal.fire({
-                    title: 'No New Orders',
-                    text: 'All orders have been viewed.',
-                    icon: 'info',
-                    confirmButtonColor: '#0f9d58'
-                });
-                renderOrders(allOrders);
-                const header = document.querySelector('h4');
-                if (header) header.innerText = 'Order Management';
+        function renderPagination(total, current) {
+            const container = document.getElementById("paginationContainer");
+            if (total <= 1) {
+                container.innerHTML = "";
+                return;
             }
+
+            let html = `<ul class="pagination justify-content-center mb-0">`;
+
+            // Previous
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchOrders(${current - 1})">Previous</button>
+                     </li>`;
+
+            // Page Numbers
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                                <button class="page-link" onclick="fetchOrders(${i})">${i}</button>
+                              </li>`;
+                } else if (i === current - 2 || i === current + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next
+            html += `<li class="page-item ${current === total ? 'disabled' : ''}">
+                        <button class="page-link" onclick="fetchOrders(${current + 1})">Next</button>
+                     </li>`;
+
+            html += `</ul>`;
+            container.innerHTML = html;
         }
+
+        // Listen for filter changes
+        document.querySelector('.form-select').addEventListener('change', () => {
+            fetchOrders(1);
+        });
+
+        // Initial Load
+        fetchOrders(1);
 
         function renderOrders(orders) {
             const tbody = document.querySelector('tbody');
@@ -581,7 +611,7 @@
 
                 if (res.ok) {
                     Swal.fire('Success', `Return request ${status}`, 'success');
-                    fetchOrders(); // Refresh list
+                    fetchOrders(currentPage); // Refresh list
                     const modalEl = document.getElementById('orderDetailsModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
@@ -595,8 +625,26 @@
             }
         }
 
-        window.openOrderModal = (orderId) => {
-            const order = allOrders.find(o => o._id === orderId);
+        window.openOrderModal = async (orderId) => {
+            let order = allOrders.find(o => o._id === orderId);
+
+            if (!order) {
+                // Fetch specific order if not in current page list (e.g. from notification link)
+                try {
+                    const res = await fetch(`/api/orders/${orderId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        order = await res.json();
+                    } else {
+                        console.error('Order not found via API');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error fetching single order', e);
+                    return;
+                }
+            }
             if (!order) return;
 
             // I will inject innerHTML for the "Order Information" column to be safe.
@@ -820,7 +868,7 @@
 
                 if (res.ok) {
                     Swal.fire('Updated!', 'Order status updated successfully.', 'success');
-                    fetchOrders(); // Refresh table
+                    fetchOrders(currentPage); // Refresh table
                 } else {
                     Swal.fire('Error', 'Failed to update status', 'error');
                 }
@@ -847,7 +895,7 @@
                     const modalEl = document.getElementById('orderDetailsModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
-                    fetchOrders();
+                    fetchOrders(currentPage);
                 } else {
                     const data = await res.json();
                     Swal.fire('Error', data.message || 'Failed to update item return', 'error');
