@@ -438,6 +438,7 @@
 
         // --- Order Management Logic ---
         let allOrders = [];
+        let hasHandledAutoOpen = false;
 
         async function fetchOrders() {
             try {
@@ -464,12 +465,15 @@
                     renderOrders(orders);
                     updateNotificationCount();
 
-                    // Auto Open Modal if requested
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('view') === 'true' && urlParams.get('id')) {
-                        const oid = urlParams.get('id');
-                        // Ensure order exists in list (should be there as we fetched all)
-                        setTimeout(() => openOrderModal(oid), 500); // Small delay to ensure render
+                    // Auto Open Modal if requested - ONLY ONCE
+                    if (!hasHandledAutoOpen) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('view') === 'true' && urlParams.get('id')) {
+                            const oid = urlParams.get('id');
+                            // Ensure order exists in list (should be there as we fetched all)
+                            setTimeout(() => openOrderModal(oid), 500); // Small delay to ensure render
+                        }
+                        hasHandledAutoOpen = true;
                     }
                 } else {
                     console.error('Expected array of orders, got:', orders);
@@ -770,7 +774,7 @@
 
             const modalEl = document.getElementById('orderDetailsModal');
             if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
+                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                 modal.show();
             }
         };
@@ -858,9 +862,9 @@
         fetchOrders();
 
     </script>
-    
 
-    
+
+
 
 </body>
 

@@ -653,8 +653,8 @@
                     </div>
                 `;
                 const logoutBtn = document.getElementById('headerLogoutBtn');
-                if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
+                if (logoutBtn) logoutBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
                     localStorage.removeItem('userToken');
                     localStorage.removeItem('role');
                     localStorage.removeItem('user');
@@ -756,7 +756,7 @@
                             </button>
                         </td>
                     </tr>
-                `).join('');
+                `).join('');//.map() returns an array  .join('') converts array into one single HTML string.
 
                 // Update Bill Details
                 itemsTotalEl.textContent = `₹${bill.subtotal}`;
