@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Product = require("../models/Product");
 
 // Helper: Parse weight string to grams/ml (base unit)
-// Helper: Parse weight string to grams/ml (base unit)
+
 const parseWeight = (str) => {
   if (!str) return 0;
 
@@ -28,6 +28,13 @@ const parseWeight = (str) => {
 
   // Units/Pieces (return raw value)
   return val;
+};
+
+const calculateStockQty = (stockVal, weightVal) => {
+  if (stockVal <= 0) return 0;
+  if (weightVal > 0) return Math.floor(stockVal / weightVal);
+  if (stockVal >= 1000) return Math.floor(stockVal / 1000);
+  return stockVal;
 };
 
 /* ============================
@@ -67,12 +74,7 @@ exports.addProduct = async (req, res) => {
 
     // Calculate stockQty
     const weightVal = parseWeight(weight);
-    let calculatedStockQty = 0;
-    if (stockVal > 0) {
-      if (weightVal > 0) calculatedStockQty = Math.floor(stockVal / weightVal);
-      else if (stockVal >= 1000) calculatedStockQty = Math.floor(stockVal / 1000);
-      else calculatedStockQty = stockVal;
-    }
+    const calculatedStockQty = calculateStockQty(stockVal, weightVal);
 
     // 2. Success 
     const product = new Product({
@@ -192,12 +194,19 @@ exports.updateProduct = async (req, res) => {
     const { id } = req.params;
     const { name, company, weight, price, discount, description, category, isHotDeal, totalStock } = req.body;
 
+    // Parse discount safely
+    let discountValue = 0;
+    if (discount !== undefined && discount !== null && discount !== "") {
+      discountValue = parseFloat(discount);
+      if (isNaN(discountValue)) discountValue = 0;
+    }
+
     let updateData = {
       name,
       company,
       weight,
       price,
-      discount, // ✅ Added discount field
+      discount: discountValue, // ✅ Cleaned discount
       description,
       category,
       isHotDeal: isHotDeal === 'true'
@@ -216,13 +225,7 @@ exports.updateProduct = async (req, res) => {
 
       // Also update stockQty
       const weightVal = parseWeight(weight);
-      if (weightVal > 0) {
-        updateData.stockQty = Math.floor(stockVal / weightVal);
-      } else {
-        // Fallback or missing weight: use 1000-rule
-        if (stockVal >= 1000) updateData.stockQty = Math.floor(stockVal / 1000);
-        else updateData.stockQty = stockVal;
-      }
+      updateData.stockQty = calculateStockQty(stockVal, weightVal);
       // Auto-update status based on new stock level
       if (updateData.stockQty === 0) {
         updateData.status = 'Out of Stock';

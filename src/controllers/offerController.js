@@ -117,8 +117,6 @@ exports.updateOffer = async (req, res) => {
         offer.link = link || offer.link;
         offer.themeColor = themeColor || offer.themeColor;
         offer.textColor = textColor || offer.textColor;
-        offer.themeColor = themeColor || offer.themeColor;
-        offer.textColor = textColor || offer.textColor;
 
         if (category !== undefined) {
             offer.category = category || null;

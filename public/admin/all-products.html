@@ -914,7 +914,7 @@
             formData.append("name", name);
             formData.append("category", category);
             formData.append("price", price);
-            if (discount) formData.append("discount", discount);
+            formData.append("discount", discount || 0);
             formData.append("weight", weight);
             if (totalStock) formData.append("totalStock", totalStock);
             // Status is auto-calculated by backend now
