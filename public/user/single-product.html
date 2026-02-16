@@ -779,8 +779,28 @@
                 // Add to Cart Logic
                 // Add to Cart Logic (API Based)
                 if (addToCartBtn) {
+                    // Check Cart Status
+                    try {
+                        const token = getToken();
+                        if (token) {
+                            const cartRes = await fetch('/api/cart', { headers: { Authorization: 'Bearer ' + token } });
+                            if (cartRes.ok) {
+                                const cart = await cartRes.json();
+                                const isInCart = (cart.items || []).some(item =>
+                                    (item._id && item._id === product._id) ||
+                                    (item.product && (item.product._id || item.product) === product._id)
+                                );
+                                if (isInCart) {
+                                    addToCartBtn.textContent = 'Added';
+                                }
+                            }
+                        }
+                    } catch (e) { console.error(e); }
+
                     addToCartBtn.addEventListener('click', async (e) => {
                         e.preventDefault();
+                        if (addToCartBtn.innerText === "Added") return;
+
                         if (!checkLogin(e)) return;
 
                         // Get Qty
@@ -810,6 +830,8 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+
+                            addToCartBtn.textContent = 'Added';
 
                         } catch (err) {
                             console.error(err);

@@ -232,8 +232,7 @@
             border: 4px solid #fff;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
-        </style>
+    </style>
 </head>
 
 <body>
@@ -428,10 +427,44 @@
                 nameInput.classList.add("is-invalid");
             }
         });
-    </script>
-    
 
-    
+        // Load Existing Categories
+        async function loadExistingCategories() {
+            try {
+                const res = await fetch("/api/categories");
+                const categories = await res.json();
+                const list = document.getElementById("categoryList");
+                list.innerHTML = "";
+
+                if (categories.length === 0) {
+                    list.innerHTML = '<li class="list-group-item text-muted text-center">No categories found</li>';
+                    return;
+                }
+
+                categories.forEach(cat => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <img src="${cat.image || 'https://placehold.co/40'}" alt="${cat.name}" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0 fw-bold">${cat.name}</h6>
+                                <small class="text-muted">${cat.description || 'No description'}</small>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error("Failed to load categories", err);
+            }
+        }
+
+        loadExistingCategories();
+    </script>
+
+
+
 
 </body>
 

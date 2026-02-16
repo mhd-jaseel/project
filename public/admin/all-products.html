@@ -421,17 +421,24 @@
                                         <input type="text" class="form-control" id="editProductName" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
+                                        <label class="form-label">Company Name</label>
+                                        <input type="text" class="form-control" id="editProductCompany"
+                                            placeholder="Company Name">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">Category</label>
                                         <select class="form-select" id="editProductCategory" required>
                                             <option value="">Select Category</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Price</label>
                                         <input type="number" class="form-control" id="editProductPrice" required>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Discount</label>
                                         <input type="number" class="form-control" id="editProductDiscount"
@@ -439,8 +446,22 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Weight/Unit</label>
-                                        <input type="text" class="form-control" id="editProductWeight">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="editProductWeightValue"
+                                                placeholder="Weight" required>
+                                            <select class="form-select" id="editProductWeightUnit"
+                                                style="max-width: 100px;">
+                                                <option value="kg">kg</option>
+                                                <option value="g">g</option>
+                                                <option value="l">l</option>
+                                                <option value="ml">ml</option>
+                                                <option value="pcs">pcs</option>
+                                                <option value="pkt">pkt</option>
+                                            </select>
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Update Total Stock</label>
                                         <div class="input-group">
@@ -503,6 +524,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Auth Check
+        const token = localStorage.getItem("adminToken");
+        if (!token) {
+            window.location.href = "/user/login.html";
+        }
+
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.querySelector('.sidebar');
         if (sidebarToggle) {
@@ -805,6 +832,36 @@
             categoryFilter.addEventListener('change', applyFilters);
         }
 
+        // Helper to get unit type (Global Scope)
+        const getUnitType = (u) => {
+            if (!u) return 'unknown';
+            u = u.toLowerCase();
+            if (['kg', 'g', 'gm', 'gms', 'mg'].includes(u)) return 'mass';
+            if (['l', 'ltr', 'ml'].includes(u)) return 'volume';
+            if (['pc', 'pcs', 'pkt', 'pack', 'packet'].includes(u)) return 'count';
+            return 'unknown';
+        };
+
+        // Helper to populate select based on type (Global Scope)
+        const populateUnitSelect = (selectId, type) => {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            select.innerHTML = ''; // Clear existing
+
+            let options = [];
+            if (type === 'mass') options = ['kg', 'g'];
+            else if (type === 'volume') options = ['l', 'ml'];
+            else if (type === 'count') options = ['pcs', 'pkt'];
+            else options = ['kg', 'g', 'l', 'ml', 'pcs', 'pkt']; // Fallback all
+
+            options.forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt;
+                el.textContent = opt;
+                select.appendChild(el);
+            });
+        };
+
         /* =========================
            EDIT PRODUCT LOGIC
         ========================= */
@@ -832,9 +889,109 @@
 
                 setVal('editProductId', product._id);
                 setVal('editProductName', product.name);
+                setVal('editProductCompany', product.company || "");
                 setVal('editProductPrice', product.price);
                 setVal('editProductDiscount', product.discount || "");
-                setVal('editProductWeight', product.weight || "");
+
+                // Weight split & Type Determination
+                const weightStr = product.weight ? String(product.weight) : "";
+                let currentUnit = "kg"; // Default fallback
+                let currentVal = "";
+
+                // Try to extract from Weight first
+                const wMatch = weightStr.match(/^(\d+(\.\d+)?)\s*([a-zA-Z]+)?$/);
+                if (wMatch && wMatch[3]) {
+                    currentVal = wMatch[1];
+                    let rawUnit = wMatch[3].toLowerCase();
+
+                    // Normalize rawUnit to standard dropdown values
+                    if (['kg', 'kilogram', 'kgs'].includes(rawUnit)) currentUnit = 'kg';
+                    else if (['g', 'gm', 'gms', 'gram', 'grams'].includes(rawUnit)) currentUnit = 'g';
+                    else if (['l', 'ltr', 'liter', 'liters'].includes(rawUnit)) currentUnit = 'l';
+                    else if (['ml', 'milli', 'milliliter'].includes(rawUnit)) currentUnit = 'ml';
+                    else if (['pc', 'pcs', 'piece', 'pieces', 'unit', 'units', 'item', 'items'].includes(rawUnit)) currentUnit = 'pcs';
+                    else if (['pkt', 'pkts', 'pack', 'packs', 'packet', 'packets'].includes(rawUnit)) currentUnit = 'pkt';
+                    else currentUnit = rawUnit; // Fallback to raw if no match
+                }
+
+                const initialType = getUnitType(currentUnit);
+
+                // 1. Populate Dropdowns
+                // Product Unit remains STRICT to prevent easy mistakes
+                populateUnitSelect('editProductWeightUnit', initialType);
+
+                // Stock Unit: Allow ALL units (User requested full flexibility here)
+                populateUnitSelect('editProductTotalStockUnit', 'all');
+
+                // 2. Set Values
+                setVal('editProductWeightValue', currentVal);
+
+                // Ensure the current unit is actually selected
+                const wSelect = document.getElementById('editProductWeightUnit');
+                if (wSelect) {
+                    // Start with matching unit
+                    if (wSelect.querySelector(`option[value="${currentUnit}"]`)) {
+                        wSelect.value = currentUnit;
+                    } else if (wSelect.options.length > 0) {
+                        wSelect.value = wSelect.options[0].value;
+                    }
+                }
+
+                // 3. Dynamic Unit Compatibility Logic
+                // When Stock Unit changes -> Update Product Weight Unit options
+                const stockSelect = document.getElementById('editProductTotalStockUnit');
+                if (stockSelect) {
+                    // Remove old listeners to avoid stacking (cloning is a quick hack)
+                    const newStockSelect = stockSelect.cloneNode(true);
+                    stockSelect.parentNode.replaceChild(newStockSelect, stockSelect);
+
+                    newStockSelect.addEventListener('change', function () {
+                        const newStockUnit = this.value;
+                        const newType = getUnitType(newStockUnit);
+
+                        // Preserve current weight selection if possible
+                        const oldWeightUnit = wSelect.value;
+
+                        // Update Product Unit dropdown
+                        populateUnitSelect('editProductWeightUnit', newType);
+
+                        // Try to restore old unit if valid in new list
+                        if (wSelect.querySelector(`option[value="${oldWeightUnit}"]`)) {
+                            wSelect.value = oldWeightUnit;
+                        } else {
+                            // Default to first option (e.g. kg -> l)
+                            if (wSelect.options.length > 0) wSelect.value = wSelect.options[0].value;
+                        }
+                    });
+
+                    // Set default stock unit based on product type
+                    // e.g. if Product is "Volume", default stock input to "l"
+                    // if Product is "Mass", default to "kg"
+                    const defaultStockUnit = initialType === 'volume' ? 'l' : (initialType === 'count' ? 'pcs' : 'kg');
+
+                    // We must set this on the element currently in the DOM
+                    newStockSelect.value = defaultStockUnit;
+
+                    // Also trigger the change event so the dependent dropdown (Product Unit) updates its restrictions if specific logic is needed
+                    // But we already set Product Unit correctly above.
+                    // Just ensure strict compatibility isn't broken by a default "all" list.
+                    // Actually, Product Unit is set to `initialType` (strict).
+                    // Stock Unit is set to `all`.
+                    // We just need Stock Unit to typically SHOW the correct compatible unit type.
+
+                    // If the specific product unit (e.g. 'ml') exists in 'all', should we prefer that?
+                    // User said: "first option should be the unit that is currently being used".
+                    // If product is 500ml, currentUnit is 'ml'.
+                    // Should Stock Unit be 'ml'? Or 'l'?
+                    // "Unit currently being used" implies 'ml'.
+                    // Let's try to set it to `currentUnit` first.
+                    const stockOpts = Array.from(newStockSelect.options).map(o => o.value);
+                    if (stockOpts.includes(currentUnit)) {
+                        newStockSelect.value = currentUnit;
+                    } else {
+                        newStockSelect.value = defaultStockUnit;
+                    }
+                }
                 setVal('editProductDescription', product.description || "");
 
                 // Category handling
@@ -846,8 +1003,6 @@
 
                 // Stock handling
                 setVal('editProductTotalStockValue', ""); // Reset
-                setVal('editProductTotalStockUnit', "kg"); // Default
-
                 const stockHelp = document.getElementById('editProductCurrentStockHelp');
                 if (stockHelp) {
                     stockHelp.textContent = product.totalStock !== undefined
@@ -892,10 +1047,13 @@
         async function saveEditProduct() {
             const id = document.getElementById('editProductId').value;
             const name = document.getElementById('editProductName').value.trim();
+            const company = document.getElementById('editProductCompany').value.trim();
             const category = document.getElementById('editProductCategory').value;
             const price = document.getElementById('editProductPrice').value;
             const discount = document.getElementById('editProductDiscount').value;
-            const weight = document.getElementById('editProductWeight').value;
+            const weightVal = document.getElementById('editProductWeightValue').value.trim();
+            const weightUnit = document.getElementById('editProductWeightUnit').value;
+            const weight = weightVal ? `${weightVal}${weightUnit}` : "";
             const totalStockVal = document.getElementById('editProductTotalStockValue').value.trim();
             const totalStockUnit = document.getElementById('editProductTotalStockUnit').value;
             const totalStock = totalStockVal ? `${totalStockVal}${totalStockUnit}` : '';
@@ -910,8 +1068,25 @@
                 return;
             }
 
+            if (!weightVal || parseFloat(weightVal) <= 0) {
+                Swal.fire("Error", "Please enter a valid weight", "warning");
+                return;
+            }
+
+            // Frontend Unit Compatibility Check
+            if (totalStockVal) {
+                const weightType = getUnitType(weightUnit);
+                const stockType = getUnitType(totalStockUnit);
+
+                if (weightType !== 'unknown' && stockType !== 'unknown' && weightType !== stockType) {
+                    Swal.fire("Error", `Incompatible Units! Total Stock unit (${stockType}) must match Product unit type (${weightType}).`, "error");
+                    return;
+                }
+            }
+
             const formData = new FormData();
             formData.append("name", name);
+            formData.append("company", company);
             formData.append("category", category);
             formData.append("price", price);
             formData.append("discount", discount || 0);

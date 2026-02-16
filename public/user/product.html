@@ -943,6 +943,7 @@
 
                 markWishlistHearts();
                 createPagination(totalPages, currentPage);
+                updateCartButtons();
 
             } catch (err) {
                 console.error("❌ Failed to load products", err);
@@ -1098,10 +1099,35 @@
         }
         loadSidebarOffers();
 
-        // Add to Cart Logic (Event Delegation)
+        async function updateCartButtons() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) return;
+                const cart = await res.json();
+                const cartItemIds = (cart.items || []).map(item => item._id || (item.product ? (item.product._id || item.product) : null));
+
+                document.querySelectorAll('.btn-add-cart').forEach(btn => {
+                    const id = btn.getAttribute('data-product-id');
+                    if (cartItemIds.includes(id)) {
+                        btn.innerText = "Added";
+                    }
+                });
+            } catch (e) {
+                console.error("Cart check failed", e);
+            }
+        }
         document.addEventListener('click', async (e) => {
             if (e.target.matches('.btn-add-cart') || e.target.closest('.btn-add-cart')) {
                 const btn = e.target.matches('.btn-add-cart') ? e.target : e.target.closest('.btn-add-cart');
+
+                // Prevent if already added
+                if (btn.innerText === "Added") return;
+
                 const productId = btn.getAttribute('data-product-id');
 
                 if (!productId) return;
@@ -1146,6 +1172,8 @@
                             toast: true,
                             position: 'top-end'
                         });
+
+                        btn.innerText = "Added";
                     } else {
                         // Check if it's the "already in cart" message
                         if (data.message === "Product already in cart") {

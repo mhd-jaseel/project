@@ -391,8 +391,18 @@
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label x-small fw-bold mb-1">Weight/Unit</label>
-                                    <input type="text" id="productWeight" class="form-control form-control-sm"
-                                        placeholder="e.g. 1kg">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" id="productWeightValue" class="form-control"
+                                            placeholder="Weight" required>
+                                        <select class="form-select" id="productWeightUnit" style="max-width: 100px;">
+                                            <option value="kg">kg</option>
+                                            <option value="g">g</option>
+                                            <option value="l">l</option>
+                                            <option value="ml">ml</option>
+                                            <option value="pcs">pcs</option>
+                                            <option value="pkt">pkt</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -749,8 +759,13 @@
                 );
 
                 // Add weight
-                const weight = document.getElementById("productWeight").value.trim();
-                if (weight) formData.append("weight", weight);
+                const weightVal = document.getElementById("productWeightValue").value.trim();
+                const weightUnit = document.getElementById("productWeightUnit").value;
+                if (!weightVal || parseFloat(weightVal) <= 0) {
+                    return Swal.fire("Error", "Please enter a valid weight", "warning");
+                }
+                const weight = `${weightVal}${weightUnit}`;
+                formData.append("weight", weight);
 
                 // ✅ MAIN IMAGE
                 formData.append("image", imageInput.files[0]);

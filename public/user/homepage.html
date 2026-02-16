@@ -1011,6 +1011,30 @@
             }
         }
 
+        async function updateCartButtons() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) return;
+                const cart = await res.json();
+                const cartItemIds = (cart.items || []).map(item => item._id || (item.product ? (item.product._id || item.product) : null));
+
+                document.querySelectorAll('.btn-add-cart').forEach(btn => {
+                    const id = btn.getAttribute('data-product-id');
+                    if (cartItemIds.includes(id)) {
+                        btn.innerText = "Added";
+                        // Prevent click handled by event listener check
+                    }
+                });
+            } catch (e) {
+                console.error("Cart check failed", e);
+            }
+        }
+
         function wishlistToast(msg, icon) {
             Swal.fire({
                 toast: true,
@@ -1030,6 +1054,9 @@
         document.body.addEventListener("click", async (e) => {
             if (e.target.matches('.btn-add-cart') || e.target.closest('.btn-add-cart')) {
                 const btn = e.target.closest(".btn-add-cart");
+                // Prevent adding again if already added
+                if (btn.innerText === "Added") return;
+
                 const productId = btn.getAttribute('data-product-id');
                 if (!productId) return;
 
@@ -1059,7 +1086,7 @@
                         });
 
                         btn.innerText = "Added";
-                        setTimeout(() => btn.innerText = "Add to cart", 1500);
+                        // setTimeout(() => btn.innerText = "Add to cart", 1500); // Removed timeout to keep "Added" state
                     } else {
                         throw new Error(data.message || 'Failed to add');
                     }
@@ -1175,6 +1202,7 @@
             });
 
             markWishlistHearts();
+            updateCartButtons();
         }
 
         /* =========================

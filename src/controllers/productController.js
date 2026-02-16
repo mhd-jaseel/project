@@ -30,6 +30,36 @@ const parseWeight = (str) => {
   return val;
 };
 
+const getUnitType = (str) => {
+  if (!str) return 'unknown';
+  const s = str.toString().toLowerCase().trim();
+
+  // Count/Pieces
+  if (['piece', 'pc', 'pcs', 'unit', 'each', 'item', 'packet', 'pkt', 'pack', 'packs'].some(u => s.includes(u))) return 'count';
+
+  const match = s.match(/([a-zA-Z]+)$/); // Match implementation specific to suffix extraction if basic includes fail
+
+  // Clean check based on suffixes usually found in parseWeight
+  // Mass
+  if (s.endsWith('kg') || s.endsWith('g') || s.endsWith('gms') || s.endsWith('gm') || s.endsWith('mg')) return 'mass';
+
+  // Volume
+  if (s.endsWith('l') || s.endsWith('ltr') || s.endsWith('ml')) return 'volume';
+
+  // Fallback for strict strict ending, or just Regex for unit
+  const unitMatch = s.match(/[a-z]+$/i);
+  if (unitMatch) {
+    const u = unitMatch[0];
+    if (['kg', 'g', 'gm', 'gms', 'mg'].includes(u)) return 'mass';
+    if (['l', 'ltr', 'ml'].includes(u)) return 'volume';
+    if (['pc', 'pcs', 'pkt'].includes(u)) return 'count';
+  }
+
+  return 'count'; // Default to count if strictly numeric or unknown? Or 'unknown'?
+  // existing parseWeight treats standalone numbers as count (implicit 1 unit)
+  // So 'count' is a safe default for "100"
+};
+
 const calculateStockQty = (stockVal, weightVal) => {
   if (stockVal <= 0) return 0;
   if (weightVal > 0) return Math.floor(stockVal / weightVal);
@@ -65,7 +95,12 @@ exports.addProduct = async (req, res) => {
     const stockVal = parseWeight(totalStock); // Assumes your helper function exists
     if (stockVal < 0) errors.push("Stock cannot be negative.");
 
-
+    // UNIT COMPATIBILITY CHECK
+    const weightType = getUnitType(weight);
+    const stockType = getUnitType(totalStock);
+    if (weightType !== stockType) {
+      errors.push(`Incompatible units: Cannot mix ${weightType} (product unit) with ${stockType} (stock unit).`);
+    }
 
     // Return all errors at once if any exist
     if (errors.length > 0) {
@@ -201,6 +236,12 @@ exports.updateProduct = async (req, res) => {
       if (isNaN(discountValue)) discountValue = 0;
     }
 
+    // Verify product exists first to clearer error handling and access old data
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     let updateData = {
       name,
       company,
@@ -214,22 +255,56 @@ exports.updateProduct = async (req, res) => {
 
     // If totalStock is being updated, update it and potentially reset initialStock?
     // User didn't specify behavior for updates, but usually if you change stock string, you mean it.
-    if (totalStock) {
-      const stockVal = parseWeight(totalStock);
-      updateData.totalStock = stockVal;
-      // If we are restocking, we might want to update initialStock or keep it.
-      // Simple logic: if new stock is provided, treat it as current stock. 
-      // We might need to update initialStock to this new value if it's a re-stocking action.
-      // Let's assume manual update sets both for now to reset the "low stock" counter base.
-      updateData.initialStock = stockVal;
+    // 4. Update Stock Logic
+    let newStockQty;
+    let newTotalStock;
 
-      // Also update stockQty
-      const weightVal = parseWeight(weight);
-      updateData.stockQty = calculateStockQty(stockVal, weightVal);
-      // Auto-update status based on new stock level
-      if (updateData.stockQty === 0) {
+    if (totalStock) {
+      // Case A: User is updating Total Stock (e.g. restocking)
+
+      // Validation: Check Unit Compatibility
+      const stockType = getUnitType(totalStock);
+      const effectiveWeight = weight || product.weight;
+      const weightType = getUnitType(effectiveWeight);
+
+      if (stockType !== weightType) {
+        return res.status(400).json({
+          message: `Incompatible units: Total Stock (${stockType}) cannot be mixed with Product Unit (${weightType}).`
+        });
+      }
+
+      newTotalStock = parseWeight(totalStock);
+      updateData.totalStock = newTotalStock;
+      updateData.initialStock = newTotalStock; // Reset initial stock on manual update
+
+      // Recalculate Qty based on NEW total stock and (NEW or OLD) weight
+      const weightForCalc = weight ? parseWeight(weight) : parseWeight(product.weight);
+      newStockQty = calculateStockQty(newTotalStock, weightForCalc);
+
+    } else if (weight) {
+      // Case B: User updated ONLY Weight (e.g. 1kg -> 2kg), but Total Stock (e.g. 10kg) remains same
+      // We must recalculate Qty based on EXISTING total stock and NEW weight
+      newTotalStock = product.totalStock; // Use existing bulk stock
+      const weightForCalc = parseWeight(weight);
+
+      // Validation: If remaining stock is less than the new unit weight, we can't form even 1 unit
+      if (newTotalStock < weightForCalc) {
+        return res.status(400).json({
+          success: false,
+          message: "Insufficient stock for this unit size. Please update total stock."
+        });
+      }
+
+      newStockQty = calculateStockQty(newTotalStock, weightForCalc);
+    }
+
+    // Apply changes if calculated
+    if (newStockQty !== undefined) {
+      updateData.stockQty = newStockQty;
+      // Auto-update status
+      if (newStockQty === 0) {
         updateData.status = 'Out of Stock';
-      } else {
+      } else if (updateData.status === 'Out of Stock' && newStockQty > 0) {
         updateData.status = 'In Stock';
       }
     }
@@ -244,15 +319,15 @@ exports.updateProduct = async (req, res) => {
       updateData.images = req.files['extraImages'].map(f => `/uploads/products/${f.filename}`);
     }
 
-    const product = await Product.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
 
-    if (!product) {
+    if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
     res.json({
       success: true,
-      product
+      product: updatedProduct
     });
 
   } catch (err) {
