@@ -5,16 +5,15 @@ const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
 
 // Helper: Parse weight string to grams/ml (base unit)
-// Helper: Parse weight string to grams/ml (base unit)
 const parseWeight = (str) => {
     if (!str) return 0;
 
-    const s = str.toString().toLowerCase().trim();
+    const s = str.toString().toLowerCase().trim();//Cleaned & standardized version of str
 
     // Implicit 1 unit for standalone words
     if (['piece', 'pc', 'pcs', 'unit', 'each', 'item', 'packet', 'pkt', 'pack', 'packs'].includes(s)) return 1;
 
-    const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/);
+    const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/);  //used to extract number and unit from a string
     if (!match) return 0;
 
     const val = parseFloat(match[1]);
@@ -58,7 +57,7 @@ exports.placeOrder = async (req, res) => {
             const price = (item.product.discount && item.product.discount > 0) ? item.product.discount : item.product.price;
             subtotal += price * item.quantity;
 
-            // ✅ STOCK CHECK
+            //  STOCK CHECK
             const unitWeight = parseWeight(item.product.weight);
             if (unitWeight > 0) {
                 const requiredStock = unitWeight * item.quantity;
@@ -249,14 +248,7 @@ exports.placeOrder = async (req, res) => {
         user.cart = [];
         await user.save();
 
-        // 7. Save Address if requested (Optional logic, usually handled by separate API call or here)
-        // Since we have a checkbox "Save this information for faster check-out next time"
-        // we can trigger address save. Ideally, we separate concerns, but doing it here ensures atomicity if needed.
-        // However, we will assume the frontend calls the address save API if needed or we do it here.
-        // Let's rely on the frontend calling the address API if checked, or we can add it here implicitly.
-        // Given complexity, let's keep it simple: Controller focuses on Order. Frontend calls Save Address if checked.
-        // BUT, for "Fast Checkout" next time, we need to save it. 
-        // Let's support implicit save if 'saveAddressInfo' is true and we can use the Address model.
+        
         if (saveAddressInfo) {
             const Address = require('../models/Address');
 

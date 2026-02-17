@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    googleId: {
+       type: String,
+    },
+
     name: {
       type: String,
       required: true
@@ -18,10 +22,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: ""
     },
-    password: {
+   password: {
       type: String,
-      required: true
+      required: function () {
+      return !this.googleId; 
+     }
     },
+
     role: {
       type: String,
       enum: ["user", "admin"],

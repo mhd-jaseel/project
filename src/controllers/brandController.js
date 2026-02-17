@@ -1,6 +1,6 @@
 const Brand = require('../models/Brand');
 const fs = require('fs');
-const path = require('path');
+const path = require('path'); //To correctly build the image file path
 
 // Add Brand
 exports.addBrand = async (req, res) => {
@@ -47,8 +47,8 @@ exports.deleteBrand = async (req, res) => {
         try {
             // Adjust path based on your folder structure if needed
             const imagePath = path.join(__dirname, '../../', brand.imageUrl);
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
+            if (fs.existsSync(imagePath)) {   //checks if image file exists
+                fs.unlinkSync(imagePath);   //deletes the file
             }
         } catch (err) {
             console.error("Error deleting brand image file:", err);

@@ -20,6 +20,39 @@ const transporter = nodemailer.createTransport({
 const generateOTP = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
+// ===============================
+// GOOGLE LOGIN SUCCESS (JWT)
+// ===============================
+exports.googleLoginSuccess = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(400).json({ message: "Google authentication failed" });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // Redirect to homepage with token
+    res.send(`
+    <script>
+        localStorage.setItem("userToken", "${token}");
+        window.location.href = "/";
+    </script>
+   `);
+
+
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    res.status(500).json({ message: "Google login failed" });
+  }
+};
+
 /* ======================
    REGISTER (SIGNUP)
 ====================== */
@@ -106,7 +139,7 @@ exports.login = async (req, res) => {
   }
 };
 
-/* ======================   //Controller function to verify OTPCalled from frontend after user enters OTP                             Called from frontend after user enters OTP
+/* ======================   //Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
    VERIFY OTP
 ====================== */
 exports.verifyOTP = async (req, res) => {

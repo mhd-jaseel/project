@@ -11,7 +11,7 @@ const parseWeight = (str) => {
   // Implicit 1 unit for standalone words
   if (['piece', 'pc', 'pcs', 'unit', 'each', 'item', 'packet', 'pkt', 'pack', 'packs'].includes(s)) return 1;
 
-  const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/);
+  const match = s.match(/(\d+(\.\d+)?)\s*([a-zA-Z]+)?/); //used to extract number and unit from a string
   if (!match) return 0;
 
   const val = parseFloat(match[1]);
@@ -140,7 +140,7 @@ exports.addProduct = async (req, res) => {
 
 /* ============================
    ADMIN + USER: GET ALL PRODUCTS
-   ✅ FIXED: POPULATE CATEGORY NAME
+   POPULATE CATEGORY NAME
 ============================ */
 exports.getAllProducts = async (req, res) => {
   try {
@@ -161,7 +161,7 @@ exports.getAllProducts = async (req, res) => {
       sortStage = { finalPrice: -1 };
     }
 
-    // 🔎 Filter Stage
+    //  Filter Stage
     let matchStage = {};
 
     if (search) {
@@ -247,13 +247,13 @@ exports.updateProduct = async (req, res) => {
       company,
       weight,
       price,
-      discount: discountValue, // ✅ Cleaned discount
+      discount: discountValue, 
       description,
       category,
       isHotDeal: isHotDeal === 'true'
     };
 
-    // If totalStock is being updated, update it and potentially reset initialStock?
+    
     // User didn't specify behavior for updates, but usually if you change stock string, you mean it.
     // 4. Update Stock Logic
     let newStockQty;

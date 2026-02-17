@@ -1,35 +1,77 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
+const passport = require("passport");
 const rateLimit = require("express-rate-limit");
-const { register, login, verifyOTP, forgotPassword, resetPassword, getWalletBalance, getProfile, updateProfile } = require("../controllers/authController");
-const upload = require("../middleware/upload"); // Import upload middleware
 
-// Rate limit for OTP generation (Register & Forgot Password)
+const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/upload");
+
+const {
+  register,
+  login,
+  verifyOTP,
+  forgotPassword,
+  resetPassword,
+  getWalletBalance,
+  getProfile,
+  updateProfile,
+  changeEmail,
+  changePassword,
+  googleLoginSuccess // 👈 we will create this
+} = require("../controllers/authController");
+
+
+// ==============================
+// RATE LIMITERS
+// ==============================
+
 const otpLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
-    message: { message: "Too many OTP requests, please try again later." }
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: "Too many OTP requests, please try again later." }
 });
 
-// Rate limit for Verification attempts
 const verifyLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10, // Limit each IP to 10 verification attempts per windowMs
-    message: { message: "Too many verification attempts, please try again later." }
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: "Too many verification attempts, please try again later." }
 });
+
+
+// ==============================
+// NORMAL AUTH ROUTES
+// ==============================
 
 router.post("/register", otpLimiter, register);
 router.post("/login", login);
 router.post("/verify-otp", verifyLimiter, verifyOTP);
 router.post("/forgot-password", otpLimiter, forgotPassword);
 router.post("/reset-password", resetPassword);
+
 router.get("/wallet", authMiddleware, getWalletBalance);
 
 // Profile Routes
 router.get("/me", authMiddleware, getProfile);
 router.put("/update-profile", authMiddleware, upload.single("profilePicture"), updateProfile);
-router.put("/change-email", authMiddleware, require("../controllers/authController").changeEmail);
-router.put("/change-password", authMiddleware, require("../controllers/authController").changePassword);
+router.put("/change-email", authMiddleware, changeEmail);
+router.put("/change-password", authMiddleware, changePassword);
+
+
+// ==============================
+// GOOGLE AUTH ROUTES (JWT BASED)
+// ==============================
+
+// Step 1: Redirect to Google
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Step 2: Google Callback
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  googleLoginSuccess //  Controller will generate JWT
+);
 
 module.exports = router;

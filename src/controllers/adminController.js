@@ -270,7 +270,6 @@ exports.toggleBlockStatus = async (req, res) => {
 };
 
 // Get All Transactions (derived from Orders)
-// Get All Transactions (derived from Orders)
 exports.getAllTransactions = async (req, res) => {
   try {
     const Order = require('../models/Order');
