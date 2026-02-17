@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 // ADMIN LOGIN
 exports.adminLogin = async (req, res) => {
@@ -18,7 +19,7 @@ exports.adminLogin = async (req, res) => {
     }
 
     // 3. Check password (bcrypt)
-    const bcrypt = require("bcryptjs");
+    
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
