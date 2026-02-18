@@ -168,6 +168,14 @@
         }
 
         /* Single Product Page Styles */
+        .main-product-img {
+            height: 300px;
+            width: 300px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
         .thumbnail-img {
             cursor: pointer;
             transition: all 0.2s;
@@ -736,12 +744,24 @@
 
                 // Setup Thumbnails
                 const allImages = [];
-                if (product.image) allImages.push(product.image);
+                const seen = new Set();
+
+                const addImage = (img) => {
+                    if (img && typeof img === 'string' && !seen.has(img)) {
+                        seen.add(img);
+                        allImages.push(img);
+                    }
+                };
+
+                // 1. Add Main Image
+                if (product.image) addImage(product.image);
+
+                // 2. Add Extra Images
                 if (product.images && Array.isArray(product.images)) {
-                    allImages.push(...product.images);
+                    product.images.forEach(img => addImage(img));
                 }
 
-                // Use placeholder if empty
+                // Fallback
                 if (allImages.length === 0) allImages.push('https://via.placeholder.com/300');
 
                 if (thumbContainer) {

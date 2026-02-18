@@ -42,7 +42,8 @@ router.post(
   adminOnly("admin"),
   upload.fields([
     { name: "image", maxCount: 1 },
-    { name: "extraImages", maxCount: 3 }
+    { name: "extraImage1", maxCount: 1 },
+    { name: "extraImage2", maxCount: 1 }
   ]),
   addProduct
 );
@@ -54,7 +55,8 @@ router.put(
   adminOnly("admin"),
   upload.fields([
     { name: "image", maxCount: 1 },
-    { name: "extraImages", maxCount: 4 }
+    { name: "extraImage1", maxCount: 1 },
+    { name: "extraImage2", maxCount: 1 }
   ]),
   updateProduct
 );

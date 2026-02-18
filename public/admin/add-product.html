@@ -390,7 +390,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label x-small fw-bold mb-1">Weight/Unit</label>
+                                    <label class="form-label x-small fw-bold mb-1">Unit</label>
                                     <div class="input-group input-group-sm">
                                         <input type="number" id="productWeightValue" class="form-control"
                                             placeholder="Weight" required>
@@ -706,7 +706,7 @@
             const btn = document.getElementById("btnPublishProduct");
 
             if (!btn) {
-                console.error("❌ Publish button not found");
+                console.error(" Publish button not found");
                 return;
             }
 
@@ -721,29 +721,72 @@
                 const stockValue = document.getElementById('productTotalStockValue').value.trim();
                 const imageInput = document.getElementById("productImageInput");
 
+                // Reset Errors
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                let isValid = true;
+
+                const showError = (elementId, message) => {
+                    const input = document.getElementById(elementId);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback';
+                        errorDiv.innerText = message;
+                        input.parentNode.appendChild(errorDiv);
+                    }
+                    isValid = false;
+                };
+
                 // --- Strict Frontend Validation ---
-                if (!name || name.length < 2) {
-                    return Swal.fire("Error", "Please enter a valid product name", "warning");
+                if (!name) {
+                    showError('productName', "Product Name is required.");
+                } else if (name.length < 3) {
+                    showError('productName', "Product Name must be at least 3 characters long.");
+                } else if (name.length > 100) {
+                    showError('productName', "Product Name cannot exceed 100 characters.");
+                } else {
+                    // Check for special characters (Specific Regex Requested)
+                    const nameRegex = /^[A-Za-z0-9]+( [A-Za-z0-9]+)*$/;
+                    if (!nameRegex.test(name)) {
+                        showError('productName', "Product Name must contain only letters and numbers, with single spaces between words.");
+                    }
                 }
 
                 if (isNaN(price) || price <= 0) {
-                    return Swal.fire("Error", "Price must be a positive number (cannot be negative or zero)", "warning");
+                    showError('productPrice', "Price must be a positive number.");
                 }
 
                 if (discount < 0 || discount >= price) {
-                    return Swal.fire("Error", "Discount must be less than the actual price", "warning");
+                    showError('productDiscount', "Discount must be less than the actual price.");
                 }
 
                 if (category === "" || category === "Select Category") {
-                    return Swal.fire("Error", "Please select a product category", "warning");
+                    showError('categorySelect', "Please select a product category.");
                 }
 
                 if (!stockValue || parseFloat(stockValue) < 0) {
-                    return Swal.fire("Error", "Stock cannot be negative", "warning");
+                    showError('productTotalStockValue', "Stock cannot be negative.");
                 }
+
                 // --- Image Validation ---
                 if (!imageInput.files || imageInput.files.length === 0) {
-                    return Swal.fire("Error", "Main product image is required", "warning");
+                    // For file inputs, the parent might differ structurally, handle specifically or use general toaster if tricky
+                    // But user asked for inline. Let's try to append to parent of browse button or container.
+                    const container = document.getElementById('btnBrowseImage').closest('.border'); // The main image container
+                    if (container) {
+                        // Add red border to container
+                        container.style.border = "1px solid #dc3545";
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'text-danger small mt-1 invalid-feedback d-block';
+                        errorDiv.innerText = "Main product image is required.";
+                        container.parentNode.appendChild(errorDiv);
+                        isValid = false;
+                    }
+                } else {
+                    const container = document.getElementById('btnBrowseImage').closest('.border');
+                    if (container) container.style.border = ""; // Reset
                 }
 
 
@@ -762,13 +805,30 @@
                 const weightVal = document.getElementById("productWeightValue").value.trim();
                 const weightUnit = document.getElementById("productWeightUnit").value;
                 if (!weightVal || parseFloat(weightVal) <= 0) {
-                    return Swal.fire("Error", "Please enter a valid weight", "warning");
+                    showError('productWeightValue', "Please enter a valid weight.");
+                    // Check if isValid was flipped by showError (it handles it via side-effect)
+                    // But we already checked isValid at the end of the previous block, so this block runs dangerously "after" the check.
+                    // We must move isValid check to the VERY END.
+                } else {
+                    const weight = `${weightVal}${weightUnit}`;
+                    formData.append("weight", weight);
                 }
-                const weight = `${weightVal}${weightUnit}`;
-                formData.append("weight", weight);
+
+                if (!isValid) return; // Final check after all validations
 
                 // ✅ MAIN IMAGE
                 formData.append("image", imageInput.files[0]);
+
+                // ✅ EXTRA IMAGES
+                const extra1 = document.getElementById("extraImageInput1");
+                const extra2 = document.getElementById("extraImageInput2");
+
+                if (extra1 && extra1.files && extra1.files[0]) {
+                    formData.append("extraImage1", extra1.files[0]);
+                }
+                if (extra2 && extra2.files && extra2.files[0]) {
+                    formData.append("extraImage2", extra2.files[0]);
+                }
 
                 // ... add other fields as you did before ...
 

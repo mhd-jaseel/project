@@ -491,12 +491,41 @@
                                     <textarea class="form-control" id="editProductDescription" rows="3"></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Product Image</label>
-                                    <input type="file" class="form-control" id="editProductImage" accept="image/*">
-                                    <div class="mt-2 text-center" id="currentProductImageContainer">
-                                        <p class="text-muted small mb-1">Current Image:</p>
-                                        <img id="currentProductImage" src="" alt="Current Image"
-                                            style="max-height: 100px; max-width: 100%; border-radius: 5px;">
+                                    <label class="form-label fw-bold">Product Images</label>
+                                    <div class="row g-3">
+                                        <!-- Main Image -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-2 text-center bg-light">
+                                                <small class="d-block mb-2 fw-bold text-muted">Main Image</small>
+                                                <img id="currentProductImage" src="https://via.placeholder.com/100"
+                                                    class="img-fluid mb-2 rounded"
+                                                    style="height: 80px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm"
+                                                    id="editProductImage" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <!-- Extra Image 1 -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-2 text-center bg-light">
+                                                <small class="d-block mb-2 fw-bold text-muted">Extra Image 1</small>
+                                                <img id="currentExtraImage1" src="https://via.placeholder.com/100"
+                                                    class="img-fluid mb-2 rounded"
+                                                    style="height: 80px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm"
+                                                    id="editProductExtraImage1" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <!-- Extra Image 2 -->
+                                        <div class="col-md-4">
+                                            <div class="border rounded p-2 text-center bg-light">
+                                                <small class="d-block mb-2 fw-bold text-muted">Extra Image 2</small>
+                                                <img id="currentExtraImage2" src="https://via.placeholder.com/100"
+                                                    class="img-fluid mb-2 rounded"
+                                                    style="height: 80px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm"
+                                                    id="editProductExtraImage2" accept="image/*">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -1011,16 +1040,18 @@
                 }
 
                 // Image handling
-                const imgPreview = document.getElementById('currentProductImage');
-                const imgContainer = document.getElementById('currentProductImageContainer');
-                if (imgPreview && imgContainer) {
-                    if (product.image) {
-                        imgPreview.src = product.image;
-                        imgContainer.style.display = 'block';
-                    } else {
-                        imgContainer.style.display = 'none';
-                    }
-                }
+                const setImgSrc = (id, src) => {
+                    const img = document.getElementById(id);
+                    if (img) img.src = src || "https://via.placeholder.com/100?text=No+Image";
+                };
+
+                setImgSrc('currentProductImage', product.image);
+
+                // Handle Extra Images (assuming product.images is an array of strings)
+                const extras = product.images || [];
+                setImgSrc('currentExtraImage1', extras[0]);
+                setImgSrc('currentExtraImage2', extras[1]);
+
 
                 // Modal Show
                 const modalEl = document.getElementById('editProductModal');
@@ -1059,30 +1090,77 @@
             const totalStock = totalStockVal ? `${totalStockVal}${totalStockUnit}` : '';
 
             const description = document.getElementById('editProductDescription').value.trim();
+
             const imageInput = document.getElementById('editProductImage');
+            const extraInput1 = document.getElementById('editProductExtraImage1');
+            const extraInput2 = document.getElementById('editProductExtraImage2');
+
 
             const token = localStorage.getItem("adminToken");
 
-            if (!name || !price || !category) {
-                Swal.fire("Error", "Name, Price, and Category are required", "warning");
-                return;
+            // Reset Errors
+            document.querySelectorAll('#editProductModal .invalid-feedback').forEach(el => el.remove());
+            document.querySelectorAll('#editProductModal .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            let isValid = true;
+
+            const showError = (elementId, message) => {
+                const input = document.getElementById(elementId);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback';
+                    errorDiv.innerText = message;
+                    input.parentNode.appendChild(errorDiv);
+                }
+                isValid = false;
+            };
+
+            // --- Validation ---
+            if (!name) {
+                showError('editProductName', "Product Name is required.");
+            } else if (name.length < 3) {
+                showError('editProductName', "Product Name must be at least 3 characters long.");
+            } else if (name.length > 100) {
+                showError('editProductName', "Product Name cannot exceed 100 characters.");
+            } else {
+                const nameRegex = /^[A-Za-z0-9]+( [A-Za-z0-9]+)*$/;
+                if (!nameRegex.test(name)) {
+                    showError('editProductName', "Product Name must contain only letters and numbers, with single spaces between words.");
+                }
+            }
+
+            if (!category) {
+                showError('editProductCategory', "Please select a category.");
+            }
+
+            if (!price || parseFloat(price) <= 0) {
+                showError('editProductPrice', "Price must be a positive number.");
+            }
+
+            if (discount && (parseFloat(discount) < 0 || parseFloat(discount) >= parseFloat(price))) {
+                showError('editProductDiscount', "Discount must be less than the actual price.");
             }
 
             if (!weightVal || parseFloat(weightVal) <= 0) {
-                Swal.fire("Error", "Please enter a valid weight", "warning");
-                return;
+                showError('editProductWeightValue', "Please enter a valid weight.");
             }
 
-            // Frontend Unit Compatibility Check
+            // Frontend Unit Compatibility Check & Stock Validation
             if (totalStockVal) {
+                if (parseFloat(totalStockVal) < 0) {
+                    showError('editProductTotalStockValue', "Stock cannot be negative.");
+                }
+
                 const weightType = getUnitType(weightUnit);
                 const stockType = getUnitType(totalStockUnit);
 
                 if (weightType !== 'unknown' && stockType !== 'unknown' && weightType !== stockType) {
-                    Swal.fire("Error", `Incompatible Units! Total Stock unit (${stockType}) must match Product unit type (${weightType}).`, "error");
-                    return;
+                    showError('editProductTotalStockValue', `Incompatible Units! Total Stock unit (${stockType}) must match Product unit type (${weightType}).`);
                 }
             }
+
+            if (!isValid) return;
 
             const formData = new FormData();
             formData.append("name", name);
@@ -1097,6 +1175,14 @@
 
             if (imageInput.files.length > 0) {
                 formData.append("image", imageInput.files[0]);
+            }
+
+            // Append extra images
+            if (extraInput1 && extraInput1.files.length > 0) {
+                formData.append("extraImage1", extraInput1.files[0]);
+            }
+            if (extraInput2 && extraInput2.files.length > 0) {
+                formData.append("extraImage2", extraInput2.files[0]);
             }
 
             try {

@@ -112,6 +112,14 @@ exports.addProduct = async (req, res) => {
     const calculatedStockQty = calculateStockQty(stockVal, weightVal);
 
     // 2. Success 
+    const images = [];
+    if (req.files['extraImage1'] && req.files['extraImage1'][0]) {
+      images.push(`/uploads/products/${req.files['extraImage1'][0].filename}`);
+    }
+    if (req.files['extraImage2'] && req.files['extraImage2'][0]) {
+      images.push(`/uploads/products/${req.files['extraImage2'][0].filename}`);
+    }
+
     const product = new Product({
       name,
       company,
@@ -125,8 +133,8 @@ exports.addProduct = async (req, res) => {
       initialStock: stockVal,
       stockQty: calculatedStockQty,
       status: calculatedStockQty > 0 ? 'In Stock' : 'Out of Stock',
-      image: `/uploads/products/${req.files['image'][0].filename}`,
-      images: req.files['extraImages'] ? req.files['extraImages'].map(f => `/uploads/products/${f.filename}`) : []
+      image: req.files['image'] && req.files['image'][0] ? `/uploads/products/${req.files['image'][0].filename}` : null,
+      images: images
     });
 
     await product.save();
@@ -141,7 +149,7 @@ exports.addProduct = async (req, res) => {
 /* ============================
    ADMIN + USER: GET ALL PRODUCTS
    POPULATE CATEGORY NAME
-============================ */
+   ============================ */
 exports.getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -219,11 +227,9 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-
-
 /* ============================
    ADMIN: UPDATE PRODUCT
-============================ */
+   ============================ */
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -247,13 +253,13 @@ exports.updateProduct = async (req, res) => {
       company,
       weight,
       price,
-      discount: discountValue, 
+      discount: discountValue,
       description,
       category,
       isHotDeal: isHotDeal === 'true'
     };
 
-    
+
     // User didn't specify behavior for updates, but usually if you change stock string, you mean it.
     // 4. Update Stock Logic
     let newStockQty;
@@ -261,7 +267,7 @@ exports.updateProduct = async (req, res) => {
 
     if (totalStock) {
       // Case A: User is updating Total Stock (e.g. restocking)
-
+      // ... (stock update logic remains) ...
       // Validation: Check Unit Compatibility
       const stockType = getUnitType(totalStock);
       const effectiveWeight = weight || product.weight;
@@ -310,14 +316,29 @@ exports.updateProduct = async (req, res) => {
     }
 
     // Update main image if provided
-    if (req.files && req.files['image']) {
+    if (req.files && req.files['image'] && req.files['image'][0]) {
       updateData.image = `/uploads/products/${req.files['image'][0].filename}`;
     }
 
-    // Update extra images if provided
-    if (req.files && req.files['extraImages']) {
-      updateData.images = req.files['extraImages'].map(f => `/uploads/products/${f.filename}`);
+    // Update extra images (Specific Slots)
+    let currentImages = product.images || [];
+
+    // Ensure array has enough slots if it was empty/short
+    if (currentImages.length < 2) {
+      while (currentImages.length < 2) currentImages.push(""); // Padding
     }
+
+    if (req.files && req.files['extraImage1'] && req.files['extraImage1'][0]) {
+      currentImages[0] = `/uploads/products/${req.files['extraImage1'][0].filename}`;
+    }
+
+    if (req.files && req.files['extraImage2'] && req.files['extraImage2'][0]) {
+      currentImages[1] = `/uploads/products/${req.files['extraImage2'][0].filename}`;
+    }
+
+    // Filter out padding empty strings if strict, but allow replacing specifically
+    // We filter at the end
+    updateData.images = currentImages.filter(img => img && img !== "");
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
 
