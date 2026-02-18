@@ -56,6 +56,8 @@ app.use("/api/wallet", require("./routes/walletRoutes"));
 app.use("/api/banners", require("./routes/bannerRoutes"));
 app.use("/api/brands", require("./routes/brandRoutes"));
 app.use("/api/offers", require("./routes/offerRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
+
 
 
 // ===============================

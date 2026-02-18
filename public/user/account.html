@@ -391,9 +391,39 @@
         .account-sidebar a:hover {
             color: var(--primary-green) !important;
         }
+
+        /* Profile Hover Actions */
+        .profile-actions {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-container:hover .profile-actions,
+        .profile-container.active .profile-actions {
+            opacity: 1;
+        }
+
+        .profile-placeholder {
+            width: 120px;
+            height: 120px;
+            background-color: var(--primary-green);
+            color: white;
+            font-size: 3.5rem;
+            /* Increased font size */
+            font-weight: 600;
+            /* Slightly lighter weight */
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Softer shadow */
+            display: flex;
+            /* Ensure centering */
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
     </style>
     <!-- SweetAlert2 -->
-    
+
 </head>
 
 <body>
@@ -511,24 +541,44 @@
                 <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
                     <h3 class="fw-bold mb-5">Profile</h3>
 
-                    <!-- Profile Picture -->
+                    <!-- Profile Picture Section -->
                     <div class="d-flex justify-content-center mb-5 position-relative">
-                        <div class="position-relative">
-                            <img id="profilePreview" src="https://via.placeholder.com/150" alt="Profile"
-                                class="rounded-circle object-fit-cover shadow-sm" width="120" height="120"
-                                style="border: 4px solid white;">
-                            <label for="profileUpload"
-                                class="position-absolute bottom-0 end-0 bg-dark text-white rounded-circle d-flex justify-content-center align-items-center shadow"
-                                style="width: 35px; height: 35px; cursor: pointer; border: 2px solid white;">
-                                <i class="fas fa-pen fa-xs"></i>
-                            </label>
+                        <div class="position-relative profile-container" id="profileContainer" style="cursor: pointer;">
+
+                            <!-- Image or Placeholder -->
+                            <div id="profileDisplay"
+                                class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light shadow-sm"
+                                style="width: 120px; height: 120px; border: 4px solid white;">
+                                <img id="profilePreview" src="" alt="Profile"
+                                    class="w-100 h-100 object-fit-cover d-none">
+                                <span id="profileLetter" class="fw-bold fs-1 text-secondary d-none"></span>
+                            </div>
+
+                            <!-- Actions Overlay -->
+                            <div class="profile-actions position-absolute top-0 start-0 w-100 h-100 rounded-circle d-flex align-items-center justify-content-center gap-2"
+                                style="background: rgba(0,0,0,0.4);">
+
+                                <!-- Delete Button -->
+                                <button id="deleteProfilePicBtn"
+                                    class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 35px; height: 35px;" title="Remove Photo">
+                                    <i class="fas fa-trash fa-xs"></i>
+                                </button>
+
+                                <!-- Upload Button -->
+                                <label for="profileUpload"
+                                    class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center mb-0"
+                                    style="width: 35px; height: 35px; cursor: pointer;" title="Upload Photo">
+                                    <i class="fas fa-camera fa-xs"></i>
+                                </label>
+                            </div>
+
                             <input type="file" id="profileUpload" class="d-none" accept="image/*">
                         </div>
                     </div>
 
                     <!-- Details List -->
                     <div class="profile-details px-md-4">
-
                         <!-- Name Row -->
                         <div class="row mb-4 align-items-center border-bottom pb-3">
                             <div class="col-md-3">
@@ -644,12 +694,9 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    
-    <!-- Custom JS -->
-    
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // --- Page Access Protection ---
         (function () {
@@ -743,6 +790,23 @@
         /* --- Profile Logic --- */
         const token = localStorage.getItem("userToken");
 
+        // Profile Container Toggle
+        document.getElementById('profileContainer').addEventListener('click', function (e) {
+            // Check if click was on buttons to prevent re-toggling
+            if (!e.target.closest('button') && !e.target.closest('label') && !e.target.closest('input')) {
+                this.classList.toggle('active');
+            }
+        });
+
+        // Hide on outside click
+        document.addEventListener('click', function (e) {
+            const container = document.getElementById('profileContainer');
+            if (container && !container.contains(e.target)) {
+                container.classList.remove('active');
+            }
+        });
+
+
         async function fetchProfile() {
             if (!token) return;
             try {
@@ -764,18 +828,36 @@
                 document.getElementById("displayPhone").textContent = user.phoneNumber || "N/A";
                 document.getElementById("inputPhone").value = user.phoneNumber || "";
 
-                // Image
-                if (user.profilePicture) {
-                    let img = user.profilePicture;
+                // Image Logic
+                const imgEl = document.getElementById("profilePreview");
+                const letterEl = document.getElementById("profileLetter");
+                const displayDiv = document.getElementById("profileDisplay");
 
-                    // If Google image → increase quality
+                if (user.profilePicture && user.profilePicture !== "") {
+                    let img = user.profilePicture;
                     if (img.includes("googleusercontent")) {
                         img = img.replace("=s96-c", "=s400-c");
                     }
+                    imgEl.src = img;
+                    imgEl.classList.remove("d-none");
+                    letterEl.classList.add("d-none");
 
-                    document.getElementById("profilePreview").src = img;
+                    // Reset placeholder styling
+                    displayDiv.classList.remove("profile-placeholder");
+                    displayDiv.classList.add("bg-light");
+                } else {
+                    // Show Placeholder
+                    imgEl.src = ""; // Clear src
+                    imgEl.classList.add("d-none");
+                    letterEl.classList.remove("d-none");
+
+                    const firstLetter = (user.name || "U").charAt(0).toUpperCase();
+                    letterEl.textContent = firstLetter;
+
+                    // Style as colored placeholder
+                    displayDiv.classList.add("profile-placeholder");
+                    displayDiv.classList.remove("bg-light");
                 }
-
 
             } catch (err) {
                 console.error(err);
@@ -838,6 +920,9 @@
                 document.getElementById(`display${field}`).textContent = newValue || "N/A";
                 cancelEdit(field);
 
+                // If Name changed, update placeholder if needed
+                if (field === "Name") fetchProfile();
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Updated',
@@ -861,10 +946,10 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
-                // Preview
+                // Preview immediately for UX (optional, but real source update waits for server)
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById("profilePreview").src = e.target.result;
+                    // document.getElementById("profilePreview").src = e.target.result;
                 }
                 reader.readAsDataURL(file);
 
@@ -884,6 +969,9 @@
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.message || "Upload failed");
 
+                    // Refresh Profile to show new image
+                    fetchProfile();
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Updated',
@@ -901,12 +989,60 @@
             });
         }
 
+        // Delete Profile Picture
+        const deleteProfilePicBtn = document.getElementById("deleteProfilePicBtn");
+        if (deleteProfilePicBtn) {
+            deleteProfilePicBtn.addEventListener("click", async () => {
+                const result = await Swal.fire({
+                    title: 'Remove Profile Picture?',
+                    text: "Are you sure you want to remove your profile photo?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const res = await fetch("/api/auth/profile-picture", {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        });
+
+                        if (!res.ok) {
+                            const data = await res.json();
+                            throw new Error(data.message || "Failed to delete picture");
+                        }
+
+                        // Refresh will switch to placeholder
+                        fetchProfile();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Removed!',
+                            text: 'Profile picture has been removed.',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire("Error", err.message, "error");
+                    }
+                }
+            });
+        }
+
         // Load on start
         fetchProfile();
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

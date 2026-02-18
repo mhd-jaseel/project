@@ -401,3 +401,20 @@ exports.changePassword = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+/* ======================
+    DELETE PROFILE PICTURE
+====================== */
+exports.deleteProfilePicture = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.profilePicture = "";
+    await user.save();
+
+    res.json({ message: "Profile picture removed successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
