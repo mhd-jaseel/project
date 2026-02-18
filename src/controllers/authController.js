@@ -272,6 +272,7 @@ exports.getWalletBalance = async (req, res) => {
   }
 };
 
+
 /* ======================
    GET PROFILE
 ====================== */
@@ -290,31 +291,43 @@ exports.getProfile = async (req, res) => {
 ====================== */
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, email, phoneNumber, password } = req.body;
-    const updates = {}; //  // Object to store fields that need to be updated
+    const user = await User.findById(req.user.id);
 
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const { name, email, phoneNumber, password } = req.body;
+    const updates = {};
 
     if (name) updates.name = name;
     if (email) updates.email = email;
     if (phoneNumber) updates.phoneNumber = phoneNumber;
-    // If password is provided, hash it before saving
-    if (password) {
+
+    // Only allow password update if NOT Google user
+    if (password && !user.googleId) {
       updates.password = await bcrypt.hash(password, 10);
     }
 
     // Handle Profile Picture
     if (req.file) {
-
-      updates.profilePicture = `/uploads/products/${req.file.filename}`;// Save profile picture path in database
+      updates.profilePicture = `/uploads/profile/${req.file.filename}`;
     }
 
-    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");// Update user profile using logged-in user's ID
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true }
+    ).select("-password");
 
-    res.json({ message: "Profile updated successfully", user });
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser
+    });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 /* ======================
    CHANGE EMAIL

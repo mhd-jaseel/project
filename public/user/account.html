@@ -766,8 +766,16 @@
 
                 // Image
                 if (user.profilePicture) {
-                    document.getElementById("profilePreview").src = user.profilePicture;
+                    let img = user.profilePicture;
+
+                    // If Google image → increase quality
+                    if (img.includes("googleusercontent")) {
+                        img = img.replace("=s96-c", "=s400-c");
+                    }
+
+                    document.getElementById("profilePreview").src = img;
                 }
+
 
             } catch (err) {
                 console.error(err);

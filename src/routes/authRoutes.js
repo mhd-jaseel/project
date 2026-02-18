@@ -64,7 +64,10 @@ router.put("/change-password", authMiddleware, changePassword);
 // Step 1: Redirect to Google
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account"
+  })
 );
 
 // Step 2: Google Callback
