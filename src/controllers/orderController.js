@@ -248,7 +248,7 @@ exports.placeOrder = async (req, res) => {
         user.cart = [];
         await user.save();
 
-        
+
         if (saveAddressInfo) {
             const Address = require('../models/Address');
 
@@ -256,9 +256,10 @@ exports.placeOrder = async (req, res) => {
             // We match strictly on key fields
             const existingAddress = await Address.findOne({
                 user: userId,
-                streetAddress: shippingAddress.streetAddress,
-                city: shippingAddress.city,
-                firstName: shippingAddress.firstName
+                houseName: shippingAddress.houseName,
+                street: shippingAddress.street,
+                pincode: shippingAddress.pincode,
+                fullName: shippingAddress.fullName
             });
 
             if (!existingAddress) {

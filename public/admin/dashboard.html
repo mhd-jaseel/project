@@ -667,7 +667,7 @@
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td>#${order._id.substring(0, 8).toUpperCase()}</td>
-                                <td>${order.shippingAddress ? order.shippingAddress.firstName : 'Guest'}</td>
+                                <td>${order.shippingAddress ? (order.shippingAddress.fullName || order.shippingAddress.firstName) : 'Guest'}</td>
                                 <td>${order.items.length} Items</td>
                                 <td>${new Date(order.createdAt).toLocaleDateString()}</td>
                                 <td>₹${order.totalAmount}</td>

@@ -23,4 +23,7 @@ router.delete('/:id', auth, role('admin'), couponController.deleteCoupon);
 // Note: This route doesn't need admin role, just user auth
 router.post('/apply', auth, couponController.applyCoupon);
 
+// Get available coupons
+router.get('/available', auth, couponController.getAvailableCoupons);
+
 module.exports = router;

@@ -413,27 +413,29 @@
                 <p class="text-muted small">Login to your account to continue</p>
             </div>
 
-            <form id="loginForm">
+            <form id="loginForm" novalidate>
                 <div class="mb-3">
                     <label for="email" class="form-label small text-muted">Email Address</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-envelope text-muted"></i></span>
                         <input type="email" class="form-control border-start-0 ps-0 shadow-none" id="email"
-                            placeholder="name@example.com" required>
+                            placeholder="name@example.com">
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label small text-muted">Password</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-lock text-muted"></i></span>
                         <input type="password" class="form-control border-start-0 border-end-0 ps-0 shadow-none"
-                            id="password" placeholder="********" required>
+                            id="password" placeholder="********">
                         <span class="input-group-text bg-white border-start-0" style="cursor: pointer;"
                             id="togglePasswordBtn">
                             <i class="fas fa-eye text-muted" id="togglePasswordIcon"></i>
                         </span>
+                        <div class="invalid-feedback">Password is required.</div>
                     </div>
                 </div>
 
@@ -451,11 +453,10 @@
                 <div class="text-center small text-muted mb-3">Or login with</div>
 
                 <div class="mb-4">
-                    <a href="/api/auth/google"
-                        class="btn btn-outline-secondary w-100">
+                    <a href="/api/auth/google" class="btn btn-outline-secondary w-100">
                         <i class="fab fa-google text-danger me-2"></i>
                         Continue with Google
-                        </a>
+                    </a>
 
                 </div>
 
@@ -472,11 +473,13 @@
         &copy; 2024 KM Store. All rights reserved.
     </footer>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap JS -->
-    
+
 
     <!--loginlogic js-->
-    
+
 
 
 
@@ -503,46 +506,109 @@
             togglePasswordVisibility("password", "togglePasswordIcon");
         });
 
+        // Validation logic
+        function validateEmail(input) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (re.test(input.value)) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                return true;
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                return false;
+            }
+        }
+
+        function validatePassword(input) {
+            if (input.value.trim().length > 0) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                return true;
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                return false;
+            }
+        }
+
+        const emailInput = document.getElementById('email');
+        const passInput = document.getElementById('password');
+
+        emailInput.addEventListener('input', () => validateEmail(emailInput));
+        emailInput.addEventListener('blur', () => validateEmail(emailInput));
+        passInput.addEventListener('input', () => validatePassword(passInput));
+        passInput.addEventListener('blur', () => validatePassword(passInput));
+
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            const v1 = validateEmail(emailInput);
+            const v2 = validatePassword(passInput);
+
+            if (!v1 || !v2) return;
+
+            const email = emailInput.value;
+            const password = passInput.value;
 
             // 🔥 clear old tokens
             localStorage.removeItem("adminToken");
             localStorage.removeItem("userToken");
 
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+            try {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ...';
 
-            const data = await res.json();
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
 
-            if (!res.ok) {
-                alert(data.message);
-                return;
-            }
+                const data = await res.json();
 
-            // Save role globally
-            localStorage.setItem("role", data.role);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
 
-            // ✅ SAVE BASED ON ROLE
-            if (data.role === "admin") {
-                localStorage.setItem("adminToken", data.token);
-                window.location.href = "/admin/dashboard.html";
-            } else {
-                localStorage.setItem("userToken", data.token);
-                window.location.href = "/user/homepage.html";
+                if (!res.ok) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: data.message || 'Invalid credentials'
+                    });
+                    return;
+                }
+
+                // Save role globally
+                localStorage.setItem("role", data.role);
+
+                // ✅ SAVE BASED ON ROLE
+                if (data.role === "admin") {
+                    localStorage.setItem("adminToken", data.token);
+                    window.location.href = "/admin/dashboard.html";
+                } else {
+                    localStorage.setItem("userToken", data.token);
+                    window.location.href = "/user/homepage.html";
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "Network error"
+                });
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Login';
             }
         });
 
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

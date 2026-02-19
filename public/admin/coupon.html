@@ -10,33 +10,39 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- Custom CSS -->
     <style>
-        /* Admin Dashboard Styles */
         :root {
+            /* Standard Sidebar Vars */
             --primary-color: #0f9d58;
-            /* Reuse green from main site */
             --sidebar-bg: #1e1e2d;
             --sidebar-text: #9899ac;
             --sidebar-active: #ffffff;
             --sidebar-active-bg: #0f9d58;
-            --body-bg: #f5f8fa;
+
+            /* New Design Vars */
+            --primary-light: rgba(15, 157, 88, 0.1);
+            --secondary-color: #3b82f6;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-light: #f1f5f9;
             --card-bg: #ffffff;
-            --text-dark: #3f4254;
-            --text-muted: #b5b5c3;
+            --border-color: #e2e8f0;
+            --sidebar-width: 260px;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--body-bg);
+            font-family: 'Inter', 'Poppins', sans-serif;
+            background-color: var(--bg-light);
             color: var(--text-dark);
             margin: 0;
             overflow-x: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar Styles (Standard) */
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
@@ -57,6 +63,7 @@
             font-weight: 700;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             margin-bottom: 20px;
+            display: block;
         }
 
         .sidebar .menu-label {
@@ -87,7 +94,6 @@
         .sidebar .nav-link.active {
             color: var(--sidebar-active);
             background-color: rgba(15, 157, 88, 0.1);
-            /* Light green tint */
             border-left-color: var(--primary-color);
         }
 
@@ -99,110 +105,208 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 260px;
-            padding: 0;
+            margin-left: var(--sidebar-width);
             min-height: 100vh;
-            transition: all 0.3s;
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.3s;
         }
 
-        /* Header */
+        /* Top Header */
         .top-header {
-            background-color: #fff;
-            height: 70px;
+            background: #fff;
+            height: 64px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 99;
         }
 
-        .search-bar input {
-            background-color: #f5f8fa;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            width: 300px;
-            color: var(--text-dark);
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            background-color: #ebf0f5;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-profile .icon-btn {
-            background: none;
-            border: none;
-            color: #b5b5c3;
-            font-size: 1.2rem;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .user-profile .icon-btn .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 0.6rem;
-        }
-
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        /* Content Area */
         .content-wrapper {
-            padding: 30px;
-            flex-grow: 1;
+            padding: 24px;
+            flex: 1;
         }
 
-        /* Cards */
+        /* Enhanced Cards */
         .card-custom {
-            background-color: var(--card-bg);
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
-            padding: 25px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             height: 100%;
-            margin-bottom: 25px;
         }
 
-        .stat-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .card-header-styled {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .stat-card p {
-            color: var(--text-muted);
+        .card-header-styled h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body-custom {
+            padding: 24px;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
             font-size: 0.9rem;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(15, 157, 88, 0.1);
+        }
+
+        .input-group .btn {
+            z-index: 0;
+        }
+
+        /* Modern Buttons */
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-success {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-success:hover {
+            background-color: #0b7d46;
+            border-color: #0b7d46;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-primary {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Tables */
+        .table-responsive {
+            border: none;
+        }
+
+        .table {
             margin-bottom: 0;
         }
 
-        .stat-card .icon-box {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(15, 157, 88, 0.1);
-            color: var(--primary-color);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+        .table thead th {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
         }
 
-        /* Responsive */
+        .table tbody td {
+            padding: 16px 24px;
+            vertical-align: middle;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+
+        /* Custom Status Badges (overriding Bootstrap classes via specificity or !important logic handled in CSS modules, here just straight styles) */
+        .badge.bg-success {
+            background-color: rgba(15, 157, 88, 0.1) !important;
+            color: #0f9d58;
+            border: 1px solid rgba(15, 157, 88, 0.2);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .badge.bg-danger {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .badge.bg-info {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        /* Modal Polish */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            background: #f8fafc;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
         @media (max-width: 992px) {
             .sidebar {
                 left: -260px;
@@ -216,24 +320,7 @@
                 margin-left: 0;
             }
         }
-
-        /* Customer Details Profile Header */
-        .profile-header-card {
-            background: linear-gradient(135deg, #0f9d58 0%, #0ba360 100%);
-            color: white;
-            border-radius: 12px 12px 0 0;
-            padding: 30px;
-            margin-bottom: -40px;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border: 4px solid #fff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        </style>
+    </style>
     <!-- SweetAlert2 -->
 
 </head>
@@ -300,70 +387,91 @@
 
         <!-- Content Area -->
         <div class="content-wrapper">
-            <div class="row">
+            <div class="row g-4">
                 <!-- Add Coupon Form -->
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-12">
                     <div class="card-custom">
-                        <h5 class="fw-bold mb-4">Add New Coupon</h5>
-                        <form id="couponForm">
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Coupon Code</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="code" placeholder="e.g. SUMMER2024"
-                                        required>
-                                    <button class="btn btn-outline-secondary" type="button" id="generateBtn"
-                                        title="Auto Generate"><i class="fas fa-magic"></i></button>
+                        <div class="card-header-styled">
+                            <h5 class="mb-0"><i class="fas fa-plus-circle text-primary me-2"></i> Create Coupon</h5>
+                        </div>
+                        <div class="card-body-custom">
+                            <form id="couponForm">
+                                <div class="mb-4">
+                                    <label class="form-label">Coupon Code</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control fw-bold text-uppercase" id="code"
+                                            placeholder="e.g. SAVE20" required>
+                                        <button class="btn btn-outline-secondary" type="button" id="generateBtn"
+                                            title="Auto Generate">
+                                            <i class="fas fa-random"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text small">Unique code for customers to redeem.</div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <label class="form-label small text-muted">Type</label>
-                                    <select class="form-select" id="discountType">
-                                        <option value="percentage">Percentage (%)</option>
-                                        <option value="fixed">Fixed Amount (₹)</option>
-                                    </select>
+
+                                <div class="row g-3">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label">Type</label>
+                                        <select class="form-select" id="discountType">
+                                            <option value="percentage">Percentage (%)</option>
+                                            <option value="fixed">Fixed (₹)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label">Value</label>
+                                        <input type="number" class="form-control" id="discountValue" placeholder="0"
+                                            required>
+                                    </div>
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label small text-muted">Value</label>
-                                    <input type="number" class="form-control" id="discountValue" placeholder="10"
-                                        required>
+
+                                <div class="row g-3">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label">Min Order</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0 text-muted">₹</span>
+                                            <input type="number" class="form-control border-start-0 ps-0"
+                                                id="minOrderAmount" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label">Usage Limit</label>
+                                        <input type="number" class="form-control" id="usageLimit" placeholder="Total">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <label class="form-label small text-muted">Min Order</label>
-                                    <input type="number" class="form-control" id="minOrderAmount" value="0">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" required>
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label small text-muted">Usage Limit</label>
-                                    <input type="number" class="form-control" id="usageLimit" placeholder="Total">
+                                <div class="mb-4">
+                                    <label class="form-label">Expiry Date</label>
+                                    <input type="date" class="form-control" id="expiryDate" required>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Start Date</label>
-                                <input type="date" class="form-control" id="startDate" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Expiry Date</label>
-                                <input type="date" class="form-control" id="expiryDate" required>
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-success">Create Coupon</button>
-                            </div>
-                        </form>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success py-2 shadow-sm">
+                                        <i class="fas fa-check-circle me-2"></i> Create Coupon
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Coupon List -->
-                <div class="col-md-8">
-                    <div class="card-custom">
-                        <h5 class="fw-bold mb-4">Active Coupons</h5>
+                <div class="col-lg-8 col-md-12">
+                    <div class="card-custom h-100">
+                        <div class="card-header-styled">
+                            <h5 class="mb-0"><i class="fas fa-ticket-alt text-primary me-2"></i> Active Coupons</h5>
+                            <!-- Optional Input for search could go here -->
+                        </div>
                         <div class="table-responsive">
                             <table class="table align-middle">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th>Code</th>
                                         <th>Discount</th>
+                                        <th>Min Order</th>
                                         <th>Usage / Limit</th>
                                         <th>Status</th>
                                         <th>Dates</th>
@@ -383,54 +491,54 @@
 
     <!-- Edit Coupon Modal -->
     <div class="modal fade" id="editCouponModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Coupon</h5>
+                    <h5 class="modal-title fw-bold"><i class="fas fa-edit text-primary me-2"></i> Edit Coupon</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editCouponForm">
                         <input type="hidden" id="editCouponId">
                         <div class="mb-3">
-                            <label class="form-label small text-muted">Coupon Code</label>
-                            <input type="text" class="form-control" id="editCode" required>
+                            <label class="form-label">Coupon Code</label>
+                            <input type="text" class="form-control fw-bold bg-light" id="editCode" readonly>
                         </div>
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Type</label>
+                                <label class="form-label">Type</label>
                                 <select class="form-select" id="editDiscountType">
                                     <option value="percentage">Percentage (%)</option>
-                                    <option value="fixed">Fixed Amount (₹)</option>
+                                    <option value="fixed">Fixed (₹)</option>
                                 </select>
                             </div>
                             <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Value</label>
+                                <label class="form-label">Value</label>
                                 <input type="number" class="form-control" id="editDiscountValue" required>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Min Order</label>
+                                <label class="form-label">Min Order</label>
                                 <input type="number" class="form-control" id="editMinOrderAmount">
                             </div>
                             <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Usage Limit</label>
+                                <label class="form-label">Usage Limit</label>
                                 <input type="number" class="form-control" id="editUsageLimit">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Start Date</label>
+                        <div class="row g-3">
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Start Date</label>
                                 <input type="date" class="form-control" id="editStartDate" required>
                             </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label small text-muted">Expiry Date</label>
+                            <div class="col-6 mb-4">
+                                <label class="form-label">Expiry Date</label>
                                 <input type="date" class="form-control" id="editExpiryDate" required>
                             </div>
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Update Coupon</button>
+                            <button type="submit" class="btn btn-success shadow-sm">Update Coupon</button>
                         </div>
                     </form>
                 </div>
@@ -512,6 +620,7 @@
                     tr.innerHTML = `
                         <td class="fw-bold text-uppercase">${c.code}</td>
                         <td>${c.discountType === 'percentage' ? c.discountValue + '%' : '₹' + c.discountValue}</td>
+                        <td>₹${c.minOrderAmount}</td>
                         <td>
                             <span class="fw-bold">${c.usedCount}</span> / 
                             <span class="text-muted">${c.usageLimit ? c.usageLimit : '∞'}</span>
@@ -519,8 +628,23 @@
                         <td>${statusBadge}</td>
                         <td><small>${startStr} - ${endStr}</small></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary edit-btn me-1" data-id="${c._id}"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm text-danger delete-btn" data-id="${c._id}"><i class="fas fa-trash"></i></button>
+                            <div class="dropdown">
+                                <button class="btn btn-sm text-secondary" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                    <li>
+                                        <a class="dropdown-item edit-btn small" href="#" data-id="${c._id}">
+                                            <i class="fas fa-edit text-primary me-2"></i> Edit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item delete-btn text-danger small" href="#" data-id="${c._id}">
+                                            <i class="fas fa-trash me-2"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -700,9 +824,9 @@
 
 
     </script>
-    
 
-    
+
+
 
 </body>
 

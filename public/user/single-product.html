@@ -673,6 +673,7 @@
                 updatePriceDisplay(1);
 
                 // Quantity Selector Logic
+                // Quantity Selector Logic
                 const qtySelector = document.querySelector('.quantity-selector');
                 if (qtySelector) {
                     const qtyInput = qtySelector.querySelector('input');
@@ -682,17 +683,29 @@
                             const btn = e.target;
                             let val = parseInt(qtyInput.value) || 1;
 
-                            if (btn.innerText.trim() === '+') val++;
-                            else if (btn.innerText.trim() === '-' && val > 1) val--;
+                            if (btn.innerText.trim() === '+') {
+                                if (product.stockQty !== undefined && val >= product.stockQty) {
+                                    Swal.fire('Stock Limit', `Only ${product.stockQty} items available.`, 'warning');
+                                    return;
+                                }
+                                val++;
+                            } else if (btn.innerText.trim() === '-' && val > 1) {
+                                val--;
+                            }
 
                             qtyInput.value = val;
                             updatePriceDisplay(val);
                         }
                     });
+
                     // Also update price if input is changed directly
                     qtyInput.addEventListener('change', () => {
                         let val = parseInt(qtyInput.value) || 1;
-                        if (val < 1) val = 1; // Ensure quantity is at least 1
+                        if (val < 1) val = 1;
+                        if (product.stockQty !== undefined && val > product.stockQty) {
+                            val = product.stockQty;
+                            Swal.fire('Stock Limit', `Only ${product.stockQty} items available.`, 'warning');
+                        }
                         qtyInput.value = val;
                         updatePriceDisplay(val);
                     });
@@ -713,12 +726,14 @@
 
                 // Initial Disabled State Check
                 const addToCartBtn = document.querySelector('.btn-add-cart-lg');
-                if (addToCartBtn && product.status === 'Out of Stock') {
+                const isOutOfStock = product.status === 'Out of Stock' || (product.stockQty !== undefined && product.stockQty <= 0);
+
+                if (addToCartBtn && isOutOfStock) {
                     addToCartBtn.disabled = true;
                     addToCartBtn.textContent = 'Out of Stock';
                     addToCartBtn.style.backgroundColor = '#ccc';
                     addToCartBtn.style.cursor = 'not-allowed';
-                    addToCartBtn.classList.remove('btn-primary-custom'); // remove hover effects if class based
+                    addToCartBtn.classList.remove('btn-primary-custom');
                 }
 
                 // Description
@@ -819,6 +834,7 @@
 
                     addToCartBtn.addEventListener('click', async (e) => {
                         e.preventDefault();
+                        if (addToCartBtn.disabled || addToCartBtn.textContent === "Out of Stock") return;
                         if (addToCartBtn.innerText === "Added") return;
 
                         if (!checkLogin(e)) return;
@@ -826,6 +842,12 @@
                         // Get Qty
                         const qtyInput = document.querySelector('.quantity-selector input');
                         const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+
+                        // Check stock one last time
+                        if (product.stockQty !== undefined && qty > product.stockQty) {
+                            Swal.fire('Stock Limit', `Only ${product.stockQty} items available.`, 'warning');
+                            return;
+                        }
 
                         try {
                             const res = await fetch('/api/cart', {

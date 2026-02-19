@@ -10,7 +10,8 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- Custom CSS -->
     <style>
@@ -29,7 +30,7 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', 'Poppins', sans-serif;
             background-color: var(--body-bg);
             color: var(--text-dark);
             margin: 0;
@@ -840,8 +841,23 @@
             fetchProducts(1);
         }
 
-        loadProducts();
-        loadCategoriesForModal();
+        (async () => {
+            await loadCategoriesForModal();
+
+            // Set Category Filter from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('category');
+            const categorySelect = document.getElementById('categoryFilter');
+
+            if (categoryId && categorySelect) {
+                // Ensure the category exists in the options
+                if ([...categorySelect.options].some(opt => opt.value === categoryId)) {
+                    categorySelect.value = categoryId;
+                }
+            }
+
+            loadProducts();
+        })();
 
         // Event Listeners
         const searchInput = document.getElementById('searchInput');

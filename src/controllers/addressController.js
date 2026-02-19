@@ -2,7 +2,7 @@ const Address = require('../models/Address');
 
 exports.saveAddress = async (req, res) => {
     try {
-        const { firstName, companyName, streetAddress, apartment, city, phoneNumber, email } = req.body;
+        const { fullName, mobileNumber, houseName, street, landmark, city, pincode } = req.body;
         const userId = req.user.id;  //take the logged user id  
 
         // Check if this is the first address
@@ -11,13 +11,13 @@ exports.saveAddress = async (req, res) => {
 
         const newAddress = new Address({
             user: userId,
-            firstName,
-            companyName,
-            streetAddress,
-            apartment,
+            fullName,
+            mobileNumber,
+            houseName,
+            street,
+            landmark,
             city,
-            phoneNumber,
-            email,
+            pincode,
             isDefault
         });
 
@@ -77,7 +77,7 @@ exports.updateAddress = async (req, res) => {
         const { addressId } = req.params;
         const userId = req.user.id;
         const updates = req.body;  //retrieving data to update
-                
+
         //finds and update address 
         const updatedAddress = await Address.findOneAndUpdate(
             { _id: addressId, user: userId },
@@ -95,7 +95,7 @@ exports.updateAddress = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
-    
+
 exports.deleteAddress = async (req, res) => {
     try {
         const { addressId } = req.params;

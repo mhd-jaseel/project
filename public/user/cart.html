@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- SweetAlert2 -->
-    
+
     <!-- Custom CSS -->
     <style>
         :root {
@@ -599,8 +599,8 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    
-    
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -720,12 +720,12 @@
                     <tr class="border-bottom cart-item-row" data-id="${item._id}">
                         <td class="ps-4 py-4">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="cart-img-wrapper rounded p-2 border">
-                                    <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" alt="${item.name}" class="img-fluid" onerror="this.src='https://via.placeholder.com/60'">
-                                </div>
-                                <a href="single-product.html?id=${item._id}" class="text-decoration-none text-dark">
-                                    <span class="fw-semibold">${item.name}</span>
-                                </a>
+                                    <a href="single-product.html?id=${item._id}" class="cart-img-wrapper rounded p-2 border d-flex align-items-center justify-content-center text-decoration-none" style="width: 60px; height: 60px;">
+                                        <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" alt="${item.name}" class="img-fluid" onerror="this.src='https://via.placeholder.com/60'" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                    </a>
+                                    <a href="single-product.html?id=${item._id}" class="text-decoration-none text-dark">
+                                        <span class="fw-semibold">${item.name}</span>
+                                    </a>
                             </div>
                         </td>
                         <td class="fw-semibold">
@@ -878,8 +878,8 @@
         });
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

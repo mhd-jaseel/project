@@ -147,3 +147,50 @@ exports.applyCoupon = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+// 6. Get Available Coupons for User
+exports.getAvailableCoupons = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const now = new Date();
+
+        // 1. Fetch potentially valid coupons (Active + Not Expired)
+        // We include future startDate for "upcoming"
+        const coupons = await Coupon.find({
+            isActive: true,
+            expiryDate: { $gt: now }
+        }).sort({ createdAt: -1 });
+
+        const available = coupons.map(coupon => {
+            const isUpcoming = new Date(coupon.startDate) > now;
+
+            // Global Usage Limit Check
+            if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+                return null;
+            }
+
+            // Per User Limit Check
+            const userUsage = coupon.usedUsers.filter(uid => uid.toString() === userId).length;
+            if (userUsage >= coupon.perUserLimit) {
+                return null;
+            }
+
+            return {
+                code: coupon.code,
+                discountType: coupon.discountType,
+                discountValue: coupon.discountValue,
+                minOrderAmount: coupon.minOrderAmount,
+                maxDiscountAmount: coupon.maxDiscountAmount,
+                expiryDate: coupon.expiryDate,
+                startDate: coupon.startDate,
+                status: isUpcoming ? 'upcoming' : 'active',
+                description: `${coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '₹' + coupon.discountValue} OFF`
+            };
+        }).filter(c => c !== null);
+
+        res.json(available);
+
+    } catch (error) {
+        console.error("Get available coupons error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};

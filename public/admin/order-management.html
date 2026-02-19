@@ -10,7 +10,8 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- Custom CSS -->
     <style>
@@ -26,6 +27,8 @@
             --sidebar-width: 260px;
             --sidebar-bg: #1e1e2d;
             --sidebar-text: #9899ac;
+            --sidebar-active: #ffffff;
+            --sidebar-active-bg: #0f9d58;
 
             --body-bg: #f3f4f6;
             --card-bg: #ffffff;
@@ -42,9 +45,9 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar (Standard) */
         .sidebar {
-            width: var(--sidebar-width);
+            width: 260px;
             background-color: var(--sidebar-bg);
             height: 100vh;
             position: fixed;
@@ -52,48 +55,55 @@
             left: 0;
             padding-top: 20px;
             z-index: 1000;
-            transition: transform 0.3s ease;
+            overflow-y: auto;
+            transition: all 0.3s;
         }
 
         .sidebar .brand {
-            padding: 0 24px 24px;
+            padding: 0 25px 20px 25px;
             color: #fff;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
+            display: block;
+        }
+
+        .sidebar .menu-label {
+            padding: 10px 25px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            letter-spacing: 0.05rem;
         }
 
         .sidebar .nav-link {
             display: flex;
             align-items: center;
-            padding: 12px 24px;
+            padding: 12px 25px;
             color: var(--sidebar-text);
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
             transition: all 0.2s;
+            font-size: 0.9rem;
             border-left: 3px solid transparent;
         }
 
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            color: #fff;
+        .sidebar .nav-link:hover {
+            color: var(--sidebar-active);
             background-color: rgba(255, 255, 255, 0.05);
         }
 
         .sidebar .nav-link.active {
-            border-left-color: var(--primary-color);
+            color: var(--sidebar-active);
             background-color: rgba(15, 157, 88, 0.1);
+            border-left-color: var(--primary-color);
         }
 
         .sidebar .nav-link i {
-            width: 24px;
-            margin-right: 12px;
+            width: 25px;
             font-size: 1.1rem;
-            text-align: center;
+            margin-right: 10px;
         }
 
         /* Main Content */
@@ -828,18 +838,20 @@
             }
 
             const addressParts = [
-                order.shippingAddress.companyName,
-                order.shippingAddress.apartment,
-                order.shippingAddress.streetAddress,
-                order.shippingAddress.city
+                order.shippingAddress.houseName,
+                order.shippingAddress.street,
+                order.shippingAddress.landmark,
+                order.shippingAddress.city,
+                order.shippingAddress.state,
+                order.shippingAddress.pincode
             ].filter(part => part && part.trim() !== '').join(', ');
 
             const customerCol = document.querySelector('#orderDetailsModal .col-md-6:last-child');
             customerCol.innerHTML = `
                 <h6 class="text-muted small">Customer Details</h6>
-                <p class="mb-1"><strong>Name:</strong> ${order.shippingAddress.firstName}</p>
-                <p class="mb-1"><strong>Email:</strong> ${order.shippingAddress.email}</p>
-                <p class="mb-1"><strong>Phone:</strong> ${order.shippingAddress.phoneNumber}</p>
+                <p class="mb-1"><strong>Name:</strong> ${order.shippingAddress.fullName || order.shippingAddress.firstName}</p>
+                <p class="mb-1"><strong>Email:</strong> ${order.shippingAddress.email || (order.user && order.user.email) || 'N/A'}</p>
+                <p class="mb-1"><strong>Phone:</strong> ${order.shippingAddress.mobileNumber || order.shippingAddress.phoneNumber || (order.user && order.user.phoneNumber) || 'N/A'}</p>
                 <div class="mt-2">
                     <p class="mb-0 fw-bold small">Shipping Address:</p>
                     <p class="mb-0 small text-muted">${addressParts}</p>

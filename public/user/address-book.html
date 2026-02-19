@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- SweetAlert2 -->
-    
+
     <!-- Custom CSS -->
     <style>
         :root {
@@ -513,28 +513,27 @@
                         <h5 class="fw-bold text-primary-custom m-0">Address Book</h5>
                         <button class="btn btn-primary-custom btn-sm">+ Add New Address</button>
                     </div>
-
                     <div class="table-responsive">
                         <table class="table align-middle">
-                            <thead class="table-light">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>Full Name</th>
+                                    <th>Name</th>
                                     <th>Address</th>
-                                    <th>City</th>
-                                    <th>Phone Number</th>
+                                    <th>Phone</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="address-list-body">
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">Loading addresses...</td>
+                                    <td colspan="5" class="text-center py-4">Loading addresses...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 
@@ -576,33 +575,40 @@
                         <input type="hidden" id="addrId">
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="addrName" required>
+                            <input type="text" class="form-control" id="addrName">
+                            <small class="text-danger error-msg" id="error-addrName"></small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Company Name (Optional)</label>
-                            <input type="text" class="form-control" id="addrCompany">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="tel" class="form-control" id="addrPhone" maxlength="10">
+                            <small class="text-danger error-msg" id="error-addrPhone"></small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Street Address</label>
-                            <input type="text" class="form-control" id="addrStreet" required>
+                            <label class="form-label">House / Flat / Building Name</label>
+                            <input type="text" class="form-control" id="addrHouse">
+                            <small class="text-danger error-msg" id="error-addrHouse"></small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Apartment (Optional)</label>
-                            <input type="text" class="form-control" id="addrApartment">
+                            <label class="form-label">Street / Area / Locality</label>
+                            <input type="text" class="form-control" id="addrStreet">
+                            <small class="text-danger error-msg" id="error-addrStreet"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Landmark (Optional)</label>
+                            <input type="text" class="form-control" id="addrLandmark">
+                            <small class="text-danger error-msg" id="error-addrLandmark"></small>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">City</label>
-                                <input type="text" class="form-control" id="addrCity" required>
+                                <label class="form-label">City / Town</label>
+                                <input type="text" class="form-control" id="addrCity">
+                                <small class="text-danger error-msg" id="error-addrCity"></small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="addrPhone" required>
+                                <label class="form-label">PIN Code</label>
+                                <input type="text" class="form-control" id="addrPincode" maxlength="6">
+                                <small class="text-danger error-msg" id="error-addrPincode"></small>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="addrEmail" required>
                         </div>
                     </form>
                 </div>
@@ -615,9 +621,9 @@
     </div>
 
     <!-- Bootstrap JS -->
-    
+
     <!-- Custom JS -->
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -707,17 +713,19 @@
                     tbody.innerHTML = '';
 
                     if (allAddresses.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No addresses found. Add one!</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No addresses found. Add one!</td></tr>';
                         return;
                     }
 
                     allAddresses.forEach(addr => {
                         const row = document.createElement('tr');
+                        // Format address string
+                        const fullAddr = `${addr.houseName}, ${addr.street}, ${addr.landmark ? addr.landmark + ', ' : ''}${addr.city} - ${addr.pincode}`;
+
                         row.innerHTML = `
-                            <td>${addr.firstName}</td>
-                            <td>${addr.streetAddress}, ${addr.apartment || ''}</td>
-                            <td>${addr.city}</td>
-                            <td>${addr.phoneNumber}</td>
+                            <td>${addr.fullName}</td>
+                            <td><small>${fullAddr}</small></td>
+                            <td>${addr.mobileNumber}</td>
                             <td>${addr.isDefault ? '<span class="badge bg-success">Default</span>' : ''}</td>
                             <td>
                                 <div class="dropdown">
@@ -735,7 +743,7 @@
                         tbody.appendChild(row);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load addresses</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load addresses</td></tr>';
                 }
             } catch (error) {
                 console.error(error);
@@ -751,6 +759,11 @@
             document.getElementById('addressModalTitle').innerText = 'Add New Address';
             document.getElementById('addressForm').reset();
             document.getElementById('addrId').value = '';
+
+            // Clear Validation
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+            document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+
             addressModal.show();
         });
 
@@ -758,33 +771,115 @@
             const addr = allAddresses.find(a => a._id === id);
             if (!addr) return;
 
+            // Clear Validation
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+            document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+
             document.getElementById('addressModalTitle').innerText = 'Edit Address';
             document.getElementById('addrId').value = addr._id;
-            document.getElementById('addrName').value = addr.firstName;
-            document.getElementById('addrCompany').value = addr.companyName || '';
-            document.getElementById('addrStreet').value = addr.streetAddress;
-            document.getElementById('addrApartment').value = addr.apartment || '';
+            document.getElementById('addrName').value = addr.fullName;
+            document.getElementById('addrPhone').value = addr.mobileNumber;
+            document.getElementById('addrHouse').value = addr.houseName;
+            document.getElementById('addrStreet').value = addr.street;
+            document.getElementById('addrLandmark').value = addr.landmark || '';
             document.getElementById('addrCity').value = addr.city;
-            document.getElementById('addrPhone').value = addr.phoneNumber;
-            document.getElementById('addrEmail').value = addr.email;
+            document.getElementById('addrPincode').value = addr.pincode;
 
             addressModal.show();
+        }
+
+        // Validation Logic
+        function validateAddressForm(data) {
+            let isValid = true;
+
+            // Helper to set error
+            const setError = (id, msg) => {
+                document.getElementById('error-' + id).innerText = msg;
+                document.getElementById(id).classList.add('is-invalid');
+                isValid = false;
+            };
+
+            // Reset errors
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = '');
+            document.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+
+            // 1. Full Name: Required, Min 3 chars, Alphabets & spaces
+            if (!data.fullName) {
+                setError('addrName', 'Please enter a valid full name');
+            } else if (data.fullName.trim().length < 3 || !/^[A-Za-z\s]+$/.test(data.fullName)) {
+                setError('addrName', 'Please enter a valid full name');
+            }
+
+            // 2. Mobile: Required, 10 digits, start with 6-9
+            if (!data.mobileNumber) {
+                setError('addrPhone', 'Please enter a valid 10-digit mobile number');
+            } else if (!/^[6-9]\d{9}$/.test(data.mobileNumber)) {
+                setError('addrPhone', 'Please enter a valid 10-digit mobile number');
+            }
+
+            // 3. House: Required, Min 3 chars, Allow letters, numbers, /, -
+            if (!data.houseName) {
+                setError('addrHouse', 'House / Flat / Building name is required');
+            } else if (data.houseName.trim().length < 3) {
+                setError('addrHouse', 'Enter a valid house or building name (minimum 3 characters)');
+            } else if (!/^[a-zA-Z0-9\s\/\-]+$/.test(data.houseName) || !/[a-zA-Z0-9]/.test(data.houseName)) {
+                setError('addrHouse', 'Only letters and numbers are allowed');
+            }
+
+            // 4. Street: Required, Min 3 chars, Must contain letters
+            if (!data.street) {
+                setError('addrStreet', 'Street / Area / Locality is required');
+            } else if (data.street.trim().length < 3) {
+                setError('addrStreet', 'Enter a valid street or area name');
+            } else if (!/[a-zA-Z]/.test(data.street)) {
+                setError('addrStreet', 'Please enter a valid locality name');
+            }
+
+            // 5. Landmark: Optional, Min 3 chars, Letters & numbers only
+            if (data.landmark && data.landmark.trim().length > 0) {
+                if (data.landmark.trim().length < 3) {
+                    setError('addrLandmark', 'Landmark must be at least 3 characters');
+                } else if (!/^[a-zA-Z0-9\s]+$/.test(data.landmark)) {
+                    setError('addrLandmark', 'Please enter a valid landmark');
+                }
+            }
+
+            // 6. City: Required, Min 2 chars, Only letters and spaces
+            if (!data.city) {
+                setError('addrCity', 'City is required');
+            } else if (data.city.trim().length < 2) {
+                setError('addrCity', 'Enter a valid city name');
+            } else if (!/^[A-Za-z\s]+$/.test(data.city)) {
+                if (/\d/.test(data.city)) {
+                    setError('addrCity', 'City name should contain only letters');
+                } else {
+                    setError('addrCity', 'Enter a valid city name');
+                }
+            }
+
+            // 7. PIN Code: Required, 6 digits, not start with 0
+            if (!data.pincode) {
+                setError('addrPincode', 'Please enter a valid 6-digit PIN code');
+            } else if (!/^[1-9][0-9]{5}$/.test(data.pincode)) {
+                setError('addrPincode', 'Please enter a valid 6-digit PIN code');
+            }
+
+            return isValid;
         }
 
         async function saveAddress() {
             const id = document.getElementById('addrId').value;
             const data = {
-                firstName: document.getElementById('addrName').value,
-                companyName: document.getElementById('addrCompany').value,
-                streetAddress: document.getElementById('addrStreet').value,
-                apartment: document.getElementById('addrApartment').value,
-                city: document.getElementById('addrCity').value,
-                phoneNumber: document.getElementById('addrPhone').value,
-                email: document.getElementById('addrEmail').value
+                fullName: document.getElementById('addrName').value.trim(),
+                mobileNumber: document.getElementById('addrPhone').value.trim(),
+                houseName: document.getElementById('addrHouse').value.trim(),
+                street: document.getElementById('addrStreet').value.trim(),
+                landmark: document.getElementById('addrLandmark').value.trim(),
+                city: document.getElementById('addrCity').value.trim(),
+                pincode: document.getElementById('addrPincode').value.trim()
             };
 
-            if (!data.firstName || !data.streetAddress || !data.city || !data.phoneNumber || !data.email) {
-                Swal.fire('Error', 'Please fill all required fields', 'error');
+            if (!validateAddressForm(data)) {
                 return;
             }
 
@@ -816,6 +911,7 @@
                     Swal.fire('Error', err.message || 'Failed to save address', 'error');
                 }
             } catch (e) {
+                console.error(e);
                 Swal.fire('Error', 'Server Connection Error', 'error');
             }
         }
@@ -882,8 +978,8 @@
         });
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

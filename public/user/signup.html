@@ -411,65 +411,73 @@
                 <p class="text-muted small">Join us today!</p>
             </div>
 
-            <form id="signupForm">
+            <form id="signupForm" novalidate>
                 <div class="mb-3">
                     <label for="fullName" class="form-label small text-muted">Full Name</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-user text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="fullName" required>
+                        <input type="text" class="form-control border-start-0 ps-0 shadow-none" id="fullName"
+                            placeholder="John Doe">
+                        <div class="invalid-feedback">Name must be at least 3 characters.</div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label small text-muted">Email Address</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-envelope text-muted"></i></span>
                         <input type="email" class="form-control border-start-0 ps-0 shadow-none" id="email"
-                            placeholder="name@example.com" required>
+                            placeholder="name@example.com">
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label small text-muted">Phone Number</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-phone text-muted"></i></span>
-                        <input type="tel" class="form-control border-start-0 ps-0 shadow-none" id="phone" required>
+                        <input type="tel" class="form-control border-start-0 ps-0 shadow-none" id="phone"
+                            placeholder="9876543210">
+                        <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label small text-muted">Password</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-lock text-muted"></i></span>
                         <input type="password" class="form-control border-start-0 border-end-0 ps-0 shadow-none"
-                            id="password" placeholder="********" required>
+                            id="password" placeholder="********">
                         <span class="input-group-text bg-white border-start-0" style="cursor: pointer;"
                             id="togglePasswordBtn">
                             <i class="fas fa-eye text-muted" id="togglePasswordIcon"></i>
                         </span>
+                        <div class="invalid-feedback">Password must be at least 8 characters.</div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="confirmPassword" class="form-label small text-muted">Confirm Password</label>
-                    <div class="input-group">
+                    <div class="input-group has-validation">
                         <span class="input-group-text bg-white border-end-0"><i
                                 class="fas fa-lock text-muted"></i></span>
                         <input type="password" class="form-control border-start-0 border-end-0 ps-0 shadow-none"
-                            id="confirmPassword" placeholder="********" required>
+                            id="confirmPassword" placeholder="********">
                         <span class="input-group-text bg-white border-start-0" style="cursor: pointer;"
                             id="toggleConfirmPasswordBtn">
                             <i class="fas fa-eye text-muted" id="toggleConfirmPasswordIcon"></i>
                         </span>
+                        <div class="invalid-feedback">Passwords do not match.</div>
                     </div>
                 </div>
 
                 <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <input class="form-check-input" type="checkbox" id="terms">
                     <label class="form-check-label small text-muted" for="terms">
                         I agree to the <a href="#" class="text-primary-custom text-decoration-none">Terms &
                             Conditions</a>
                     </label>
+                    <div class="invalid-feedback">You must agree before submitting.</div>
                 </div>
 
                 <button type="submit" class="btn btn-primary-custom w-100 py-2 rounded-3 fw-bold mb-3">Sign Up</button>
@@ -477,11 +485,10 @@
                 <div class="text-center small text-muted mb-3">Or sign up with</div>
 
                 <div class="mb-4">
-                    <a href="/api/auth/google"
-                        class="btn btn-outline-secondary w-100">
+                    <a href="/api/auth/google" class="btn btn-outline-secondary w-100">
                         <i class="fab fa-google text-danger me-2"></i>
                         Continue with Google
-                   </a>
+                    </a>
 
                 </div>
 
@@ -497,15 +504,26 @@
         &copy; 2024 KM Store. All rights reserved.
     </footer>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap JS -->
-    
+
     <!-- custom JS (login/signup logic) -->
-    
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const form = document.getElementById("signupForm");
+        const inputs = ['fullName', 'email', 'phone', 'password', 'confirmPassword'];
+
+        // Validation Patterns
+        const patterns = {
+            fullName: /^[a-zA-Z\s]{3,}$/,
+            email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            phone: /^[6-9]\d{9}$/,
+            password: /^.{8,}$/
+        };
 
         function togglePasswordVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
@@ -529,22 +547,90 @@
             togglePasswordVisibility("confirmPassword", "toggleConfirmPasswordIcon");
         });
 
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            input.addEventListener('input', () => {
+                validateField(input);
+                if (id === 'password' || id === 'confirmPassword') validateMatch();
+            });
+            input.addEventListener('blur', () => {
+                validateField(input);
+                if (id === 'password' || id === 'confirmPassword') validateMatch();
+            });
+        });
+
+        function validateField(input) {
+            const id = input.id;
+            let isValid = false;
+
+            if (input.value.trim() === '') {
+                isValid = false;
+            } else if (patterns[id]) {
+                isValid = patterns[id].test(input.value);
+            } else {
+                isValid = true;
+            }
+
+            if (isValid) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+            }
+            return isValid;
+        }
+
+        function validateMatch() {
+            const p1 = document.getElementById('password');
+            const p2 = document.getElementById('confirmPassword');
+            if (p2.value && p1.value !== p2.value) {
+                p2.classList.add('is-invalid');
+                p2.classList.remove('is-valid');
+                return false;
+            } else if (p2.value) {
+                p2.classList.remove('is-invalid');
+                p2.classList.add('is-valid');
+                return true;
+            }
+            return false;
+        }
+
 
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
+            let allValid = true;
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (!validateField(input)) allValid = false;
+            });
+
+            if (!validateMatch()) allValid = false;
+
+            const terms = document.getElementById('terms');
+            if (!terms.checked) {
+                terms.classList.add('is-invalid');
+                allValid = false;
+            } else {
+                terms.classList.remove('is-invalid');
+            }
+
+            if (!allValid) return;
+
             const name = document.getElementById("fullName").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
             const phone = document.getElementById("phone").value;
 
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return;
-            }
-
             try {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+
                 const res = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: {
@@ -555,23 +641,36 @@
 
                 const data = await res.json();
 
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+
                 if (!res.ok) {
-                    alert(data.message || "Signup failed");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: data.message || "Signup failed"
+                    });
                     return;
                 }
 
-                // alert("Signup successful. Please verify your email.");
                 window.location.href = `/user/verification.html?email=${encodeURIComponent(email)}&purpose=signup`;
 
             } catch (err) {
                 console.error(err);
-                alert("Something went wrong");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "Something went wrong"
+                });
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Sign Up';
             }
         });
     </script>
 
-    
-    
+
+
 </body>
 
 </html>
