@@ -397,67 +397,20 @@
 <body>
 
     <!-- Header Section -->
-    <header class="bg-primary-custom text-white">
-        <div class="container py-2">
-            <div class="row align-items-center">
-                <!-- Logo -->
-                <div class="col-md-3">
-                    <a href="homepage.html" class="navbar-brand fw-bold fs-3 text-white">
-                        <i class="fas fa-leaf me-2"></i>KM Store
-                    </a>
-                </div>
-                <!-- Search Bar -->
-                <div class="col-md-5">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-0" placeholder="Search for products...">
-                        <button class="btn btn-light text-primary-custom" type="button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                <!-- User Actions -->
-                <div class="col-md-4 text-end">
-                    <a href="wishlist.html" class="text-white text-decoration-none me-3"><i
-                            class="fas fa-heart me-1"></i>
-                        Wishlist</a>
-                    <a href="cart.html" class="text-white text-decoration-none me-3"><i
-                            class="fas fa-shopping-cart me-1"></i>
-                        Cart</a>
-                    <a href="login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                            class="fas fa-sign-in-alt me-1"></i>
-                        Login</a>
-                    <a href="account.html" class="text-white text-decoration-none"><i class="fas fa-user me-1"></i>
-                        Account</a>
-                </div>
-            </div>
-            <!-- Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-dark p-0 mt-2">
-                <div class="container-fluid p-0">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="homepage.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-                            <li class="nav-item"><a class="nav-link" href="product.html">Products</a></li>
-
-
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-        <!-- Curve SVG at the bottom -->
-        <div class="header-curve">
-            <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#ffffff"
-                    d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
-                </path>
-            </svg>
-        </div>
-    </header>
+    <div id="navbar-placeholder"></div>
+    <script>
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-placeholder').innerHTML = html;
+                const scripts = document.getElementById('navbar-placeholder').querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    newScript.textContent = script.textContent;
+                    document.body.appendChild(newScript);
+                });
+            });
+    </script>
 
     <!-- Breadcrumb -->
     <div class="container my-3">
@@ -514,8 +467,11 @@
                             <p class="mb-1 opacity-75">KM Wallet Balance</p>
                             <h2 class="fw-bold mb-0" id="wallet-balance">Loading...</h2>
                         </div>
-                        <button class="btn btn-light text-primary-custom fw-bold"><i
-                                class="fas fa-plus-circle me-2"></i>Add Money</button>
+                        <button onclick="openWalletTopup()" class="btn btn-light text-primary-custom fw-bold">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Add Money
+
+                        </button>
                     </div>
                 </div>
 
@@ -528,14 +484,13 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Reason</th>
-                                    <th>Type</th>
                                     <th>Amount</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="transaction-list">
                                 <tr>
-                                    <td colspan="5" class="text-center">Loading...</td>
+                                    <td colspan="4" class="text-center">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -604,7 +559,6 @@
                             <i class="fas fa-wallet fa-3x text-primary-custom"></i>
                         </div>
                         <h3 class="fw-bold mb-1" id="tx-amount">Loading...</h3>
-                        <span class="badge bg-secondary" id="tx-type">LOADING</span>
                     </div>
 
                     <ul class="list-group list-group-flush rounded-3">
@@ -613,23 +567,16 @@
                             <span class="fw-bold" id="tx-id">...</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Date</span>
+                            <span class="text-muted">Date & Time</span>
                             <span class="fw-bold" id="tx-date">...</span>
                         </li>
+
                         <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
                             <span class="text-muted">Reason</span>
                             <span class="fw-bold text-end" id="tx-reason">...</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center" id="tx-order-row"
-                            style="display:none;">
-                            <span class="text-muted">Order ID</span>
-                            <span class="fw-bold" id="tx-order-id">...</span>
-                        </li>
-                        <!-- Extra details for refunds -->
-                        <li class="list-group-item" id="tx-extra-info" style="display:none;">
-                            <small class="text-muted d-block mb-1">Additional Info</small>
-                            <p class="mb-0 small fw-bold" id="tx-desc">...</p>
-                        </li>
+
+
                     </ul>
                 </div>
                 <div class="modal-footer border-top-0 justify-content-center">
@@ -640,218 +587,95 @@
     </div>
 
     <!-- Bootstrap JS -->
-    
+
     <!-- Custom JS -->
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <script>
+        const token = localStorage.getItem("userToken");
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
         // Check Login for Actions
-        function checkLogin(e) {
-            const token = localStorage.getItem("userToken");
-            if (!token) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Login Required',
-                    text: 'Please login to access this feature',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#2ecc71',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Login'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'login.html';
-                    }
-                });
-                return false;
-            }
-            return true;
-        }
-
-        function updateHeaderAuth() {
-            const token = localStorage.getItem("userToken");
-            const loginBtn = document.getElementById('headerLoginBtn');
-            const accountLink = document.querySelector('a[href="account.html"]');
-
-            if (token) {
-                if (loginBtn) loginBtn.style.display = 'none';
-                if (accountLink) {
-                    if (!document.getElementById('accountDropdown')) {
-                        const dropdownHTML = `
-            <div class="dropdown d-inline-block">
-                <a href="#" class="text-white text-decoration-none dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-user me-1"></i> Account
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                    <li><a class="dropdown-item" href="account.html">My Account</a></li>
-                    <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
-                </ul>
-            </div>
-            `;
-                        accountLink.outerHTML = dropdownHTML;
-
-                        setTimeout(() => {
-                            const logoutBtn = document.getElementById('headerLogoutBtn');
-                            if (logoutBtn) logoutBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                localStorage.removeItem('userToken');
-                                localStorage.removeItem('role');
-                                localStorage.removeItem('user');
-                                window.location.href = 'login.html';
-                            });
-                        }, 0);
-                    }
-                }
-            } else {
-                if (loginBtn) loginBtn.style.display = 'inline';
-                if (accountLink && !document.getElementById('accountDropdown')) {
-                    accountLink.style.display = 'none';
-                }
-            }
-        }
-
-        async function fetchWalletData() {
-            const token = localStorage.getItem("userToken");
-            if (!token) return;
-
-            try {
-                const res = await fetch('/api/wallet/my-wallet', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    document.getElementById('wallet-balance').innerText = `₹${data.balance ? data.balance.toFixed(2) : '0.00'}`;
-
-                    const list = document.getElementById('transaction-list');
-                    list.innerHTML = '';
-
-                    if (!data.transactions || data.transactions.length === 0) {
-                        list.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No transactions yet</td></tr>';
-                    } else {
-                        data.transactions.forEach(tx => {
-                            const date = new Date(tx.createdAt).toLocaleDateString();
-                            const color = tx.type === 'CREDIT' ? 'text-success' : 'text-danger';
-                            const sign = tx.type === 'CREDIT' ? '+' : '-';
-                            list.innerHTML += `
-                                 <tr>
-                                     <td>${date}</td>
-                                     <td>${tx.reason}</td>
-                                     <td><span class="badge ${tx.type === 'CREDIT' ? 'bg-success' : 'bg-danger'}">${tx.type}</span></td>
-                                     <td class="${color} fw-bold">${sign} ₹${tx.amount}</td>
-                                     <td>
-                                        <button class="btn btn-sm btn-light text-primary" onclick="viewTransaction('${tx._id}')" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                     </td>
-                                 </tr>
-                             `;
-                        });
-                    }
-                }
-            } catch (e) { console.error("Wallet Fetch Error:", e); }
-        }
-
-        async function viewTransaction(txId) {
-            const token = localStorage.getItem("userToken");
-            if (!token) return;
-
-            try {
-                // Show skeleton/loading state
-                const modal = new bootstrap.Modal(document.getElementById('transactionModal'));
-                document.getElementById('tx-amount').innerText = 'Loading...';
-                modal.show();
-
-                const res = await fetch(`/api/wallet/transaction/${txId}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (res.ok) {
-                    const tx = await res.json();
-
-                    // Populate Modal
-                    document.getElementById('tx-amount').innerText = `₹${tx.amount}`;
-                    document.getElementById('tx-id').innerText = tx._id.substring(0, 10).toUpperCase();
-                    document.getElementById('tx-date').innerText = new Date(tx.createdAt).toLocaleString();
-                    document.getElementById('tx-reason').innerText = tx.reason;
-
-                    const typeBadge = document.getElementById('tx-type');
-                    typeBadge.innerText = tx.type;
-                    typeBadge.className = `badge ${tx.type === 'CREDIT' ? 'bg-success' : 'bg-danger'}`;
-
-                    const iconContainer = document.getElementById('tx-icon-container');
-                    iconContainer.innerHTML = tx.type === 'CREDIT'
-                        ? '<div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block"><i class="fas fa-arrow-down fa-2x text-success"></i></div>'
-                        : '<div class="rounded-circle bg-danger bg-opacity-10 p-3 d-inline-block"><i class="fas fa-arrow-up fa-2x text-danger"></i></div>';
-
-                    // Order Info
-                    const orderRow = document.getElementById('tx-order-row');
-                    const extraRow = document.getElementById('tx-extra-info');
-
-                    if (tx.orderId) {
-                        orderRow.style.display = 'flex';
-                        // Handle populated order object or just ID
-                        const orderId = typeof tx.orderId === 'object' ? tx.orderId._id : tx.orderId;
-                        document.getElementById('tx-order-id').innerText = `#${orderId.toString().substring(0, 8).toUpperCase()}`;
-
-                        // Check for specific reasons
-                        let extraText = '';
-                        if (tx.orderId.cancellationReason && tx.reason === 'Cancel Refund') {
-                            extraText = `Cancellation Reason: ${tx.orderId.cancellationReason}`;
-                        } else if (tx.orderId.returnReason && tx.reason === 'Return Refund') {
-                            extraText = `Return Reason: ${tx.orderId.returnReason}`;
-                        } else if (tx.description) {
-                            extraText = tx.description;
-                        }
-
-                        if (extraText && tx.type === 'CREDIT') {
-                            extraRow.style.display = 'block';
-                            document.getElementById('tx-desc').innerText = extraText;
-                        } else {
-                            extraRow.style.display = 'none';
-                        }
-
-                    } else {
-                        orderRow.style.display = 'none';
-                        if (tx.description && tx.type === 'CREDIT') {
-                            extraRow.style.display = 'block';
-                            document.getElementById('tx-desc').innerText = tx.description;
-                        } else {
-                            extraRow.style.display = 'none';
-                        }
-                    }
-
-                } else {
-                    Swal.fire('Error', 'Failed to fetch transaction details', 'error');
-                }
-            } catch (e) {
-                console.error(e);
-                Swal.fire('Error', 'Server Error', 'error');
-            }
-        }
-
-        updateHeaderAuth();
-
-        const wishlistBtn = document.querySelector('a[href="wishlist.html"]');
-        if (wishlistBtn) wishlistBtn.addEventListener('click', checkLogin);
-        const cartBtn = document.querySelector('a[href="cart.html"]');
-        if (cartBtn) cartBtn.addEventListener('click', checkLogin);
 
         document.addEventListener('DOMContentLoaded', function () {
-            updateHeaderAuth();
+
             fetchWalletData();
 
             // Payment Options Logic
             // Payment Options Logic
             // (Saved cards logic moved/removed)
         });
+
+
+
+        async function openWalletTopup() {
+
+            const { value: amount } = await Swal.fire({
+                title: "Add Money to Wallet",
+                input: "number",
+                inputLabel: "Enter Amount (₹)",
+                inputPlaceholder: "Minimum ₹1",
+                showCancelButton: true,
+                confirmButtonText: "Proceed to Pay",
+                inputValidator: (value) => {
+                    if (!value || value <= 0) {
+                        return "Please enter valid amount!";
+                    }
+                }
+            });
+
+            if (!amount) return;
+
+            const res = await fetch("/api/wallet/create-wallet-topup-order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("userToken")}`
+                },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await res.json();
+
+            const options = {
+                key: "rzp_test_S7FltY4zobyZOs",
+                amount: data.order.amount,
+                currency: "INR",
+                name: "KM Store",
+                description: "Wallet Topup",
+                order_id: data.order.id,
+
+                handler: async function (response) {
+
+                    await fetch("/api/wallet/verify-wallet-topup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem("userToken")}`
+                        },
+                        body: JSON.stringify(response)
+                    });
+
+                    Swal.fire("Success", "Wallet credited successfully!", "success")
+                        .then(() => {
+                            fetchWalletData(); // refresh without reload
+                        });
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
     </script>
 
-    
-    
+
+
 </body>
 
 </html>

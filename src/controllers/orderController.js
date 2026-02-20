@@ -236,11 +236,9 @@ exports.placeOrder = async (req, res) => {
             await Transaction.create({
                 wallet: wallet._id,
                 user: userId,
-                type: 'DEBIT',
                 amount: totalAmount,
                 reason: 'Order Payment',
-                orderId: savedOrder._id,
-                description: `Payment for Order #${savedOrder._id}`
+                orderId: savedOrder._id
             });
         }
 
@@ -479,11 +477,9 @@ exports.cancelOrder = async (req, res) => {
                 await Transaction.create({
                     wallet: wallet._id,
                     user: userId,
-                    type: 'CREDIT',
                     amount: order.totalAmount,
                     reason: 'Cancel Refund',
-                    orderId: order._id,
-                    description: `Refund for Cancelled Order #${order._id}`
+                    orderId: order._id
                 });
                 order.paymentStatus = 'Refunded';
             }
@@ -686,11 +682,10 @@ exports.cancelOrderItem = async (req, res) => {
                     await Transaction.create({
                         wallet: wallet._id,
                         user: userId,
-                        type: 'CREDIT',
                         amount: refundAmount,
                         reason: 'Item Cancellation Refund',
                         orderId: order._id,
-                        description: `Refund for cancelled item: ${item.name}`
+                        orderId: order._id
                     });
                 }
             }

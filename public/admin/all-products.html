@@ -290,6 +290,69 @@
         .user-profile .icon-btn .badge.pulse-animation {
             animation: pulse 2s infinite;
         }
+
+        /* Custom Stock Badges - Low Opacity with Dot */
+        .badge-stock-in,
+        .badge-stock-out,
+        .badge-stock-low {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 16px !important;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 120px;
+            border: 0 !important;
+        }
+
+        /* In Stock: Soft Green */
+        .badge-stock-in {
+            background-color: #d1fae5 !important;
+            color: #065f46 !important;
+        }
+
+        .badge-stock-in::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #059669;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Out of Stock: Soft Red */
+        .badge-stock-out {
+            background-color: #fee2e2 !important;
+            color: #991b1b !important;
+        }
+
+        .badge-stock-out::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #b91c1c;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Low Stock: Soft Orange */
+        .badge-stock-low {
+            background-color: #fef3c7 !important;
+            color: #92400e !important;
+        }
+
+        .badge-stock-low::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #d97706;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
     </style>
     <!-- SweetAlert2 -->
 
@@ -698,9 +761,9 @@
         }
 
         function getStatusBadgeClass(status) {
-            if (status === 'Out of Stock') return 'bg-danger';
-            if (status === 'Low Stock') return 'bg-warning text-dark';
-            return 'bg-success';
+            if (status === 'Out of Stock') return 'badge-stock-out';
+            if (status === 'Low Stock') return 'badge-stock-low';
+            return 'badge-stock-in';
         }
 
         async function loadCategoriesForModal() {
@@ -759,7 +822,7 @@
           </td>
 
           <td>
-            <span class="badge ${getStatusBadgeClass(getDisplayStatus(p))} bg-opacity-75 px-3 py-2 rounded-pill">
+            <span class="badge ${getStatusBadgeClass(getDisplayStatus(p))}">
                 ${getDisplayStatus(p)}
             </span>
           </td>

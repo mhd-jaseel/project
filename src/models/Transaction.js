@@ -11,11 +11,6 @@ const transactionSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    type: {
-        type: String,
-        enum: ['CREDIT', 'DEBIT'],
-        required: true
-    },
     amount: {
         type: Number,
         required: true
@@ -28,7 +23,7 @@ const transactionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'
     },
-    description: {
+    paymentId: {
         type: String
     }
 }, { timestamps: true });

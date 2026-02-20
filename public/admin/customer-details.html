@@ -465,9 +465,8 @@
                                     <table class="table table-hover align-middle mb-0">
                                         <thead class="table-light sticky-top">
                                             <tr>
-                                                <th>Type</th>
-                                                <th>Reason</th>
-                                                <th>Date</th>
+                                                <th style="width: 30px;"></th>
+                                                <th>Transaction Details</th>
                                                 <th class="text-end">Amount</th>
                                             </tr>
                                         </thead>
@@ -649,10 +648,10 @@
                     const txBody = document.getElementById('transaction-history-body');
                     txBody.innerHTML = '';
                     if (!data.transactions || data.transactions.length === 0) {
-                        txBody.innerHTML = '<tr><td class="text-center text-muted">No transactions found</td></tr>';
+                        txBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No transactions found</td></tr>';
                     } else {
                         data.transactions.forEach(tx => {
-                            const isCredit = tx.type === 'CREDIT';
+                            const isCredit = ['Wallet Topup', 'Cancel Refund', 'Item Cancellation Refund'].includes(tx.reason) || tx.reason.includes('Refund');
                             const icon = isCredit ? '<i class="fas fa-arrow-down text-success"></i>' : '<i class="fas fa-arrow-up text-danger"></i>';
                             const color = isCredit ? 'text-success' : 'text-danger';
                             const sign = isCredit ? '+' : '-';

@@ -146,15 +146,24 @@ exports.addProduct = async (req, res) => {
   }
 };
 
+
+
 /* ============================
    ADMIN + USER: GET ALL PRODUCTS
-   POPULATE CATEGORY NAME
+   WITH SEARCH + LIMIT + PAGINATION
    ============================ */
 exports.getAllProducts = async (req, res) => {
   try {
+
     const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const skip = (page - 1) * limit;
+
+    // 🔥 Dynamic limit support
+    const isSuggestion = req.query.limit ? true : false;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit)            // For live search suggestions
+      : 20;                                  // Default for product page
+
+    const skip = isSuggestion ? 0 : (page - 1) * limit;
 
     const sortOption = req.query.sort;
     const search = req.query.search || "";
@@ -169,32 +178,52 @@ exports.getAllProducts = async (req, res) => {
       sortStage = { finalPrice: -1 };
     }
 
-    //  Filter Stage
+    /* ============================
+       FILTER STAGE
+    ============================ */
     let matchStage = {};
 
+    // 🔍 Search in name + description
     if (search) {
-      matchStage.name = { $regex: search, $options: "i" };
+      matchStage.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
     }
 
-    if (category) {
+    // 📂 Category filter
+    if (category && mongoose.Types.ObjectId.isValid(category)) {
       matchStage.category = new mongoose.Types.ObjectId(category);
     }
 
-    if (req.query.isHotDeal === 'true') {
+    // 🔥 Hot deal filter
+    if (req.query.isHotDeal === "true") {
       matchStage.isHotDeal = true;
     }
 
-    if (req.query.status && req.query.status !== 'All') {
+    // 📦 Status filter
+    if (req.query.status && req.query.status !== "All") {
       matchStage.status = req.query.status;
     }
 
-    // 🔢 Get Total Count (for pagination)
-    const totalProducts = await Product.countDocuments(matchStage);
-    const totalPages = Math.ceil(totalProducts / limit);
+    /* ============================
+       TOTAL COUNT (only for pagination)
+    ============================ */
+    let totalProducts = 0;
+    let totalPages = 1;
 
-    // 📦 Aggregation Pipeline
+    if (!isSuggestion) {
+      totalProducts = await Product.countDocuments(matchStage);
+      totalPages = Math.ceil(totalProducts / limit);
+    }
+
+    /* ============================
+       AGGREGATION PIPELINE
+    ============================ */
     const products = await Product.aggregate([
       { $match: matchStage },
+
+      // Calculate finalPrice
       {
         $addFields: {
           finalPrice: {
@@ -206,19 +235,28 @@ exports.getAllProducts = async (req, res) => {
           }
         }
       },
+
       { $sort: sortStage },
+
       { $skip: skip },
+
       { $limit: limit }
     ]);
 
-    // Populate category
-    await Product.populate(products, { path: "category", select: "name" });
+    // Populate category name
+    await Product.populate(products, {
+      path: "category",
+      select: "name"
+    });
 
+    /* ============================
+       RESPONSE
+    ============================ */
     res.json({
       products,
-      currentPage: page,
-      totalPages,
-      totalProducts
+      currentPage: isSuggestion ? 1 : page,
+      totalPages: isSuggestion ? 1 : totalPages,
+      totalProducts: isSuggestion ? products.length : totalProducts
     });
 
   } catch (err) {

@@ -1,33 +1,26 @@
 const express = require("express");
 const router = express.Router();
-
-const {
-  addProduct,
-  getAllProducts,
-  deleteProduct,
-  getProductsByCategory,
-  getProductById,
-  updateProduct,
-  toggleHotDeal,
-  updateStockStatus
-} = require("../controllers/productController");
-
 const auth = require("../middleware/authMiddleware");
 const adminOnly = require("../middleware/roleMiddleware");
 const upload = require("../middleware/upload");
+
+const {addProduct, getAllProducts,deleteProduct,getProductsByCategory,getProductById,updateProduct,toggleHotDeal,updateStockStatus
+} = require("../controllers/productController");
+
+
 
 
 // ======================
 // 🔹 PUBLIC ROUTES
 // ======================
 
-// ✅ GET ALL PRODUCTS (WITH SORT SUPPORT)
+// GET ALL PRODUCTS (WITH SORT SUPPORT)
 router.get("/", getAllProducts);
 
-// ✅ GET PRODUCTS BY CATEGORY
+//  GET PRODUCTS BY CATEGORY
 router.get("/category/:categoryId", getProductsByCategory);
 
-// ✅ GET SINGLE PRODUCT
+//  GET SINGLE PRODUCT
 router.get("/:id", getProductById);
 
 
@@ -35,7 +28,7 @@ router.get("/:id", getProductById);
 // 🔹 ADMIN ROUTES
 // ======================
 
-// ✅ ADD PRODUCT
+//  ADD PRODUCT
 router.post(
   "/",
   auth,
