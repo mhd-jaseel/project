@@ -3,7 +3,8 @@ const User = require('../models/User');
 const Product = require('../models/Product');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
-
+const PDFDocument = require("pdfkit")
+const mongoose = require("mongoose")
 // Helper: Parse weight string to grams/ml (base unit)
 const parseWeight = (str) => {
     if (!str) return 0;
@@ -308,14 +309,63 @@ exports.getAllOrders = async (req, res) => {
             query.orderStatus = req.query.status;
         }
 
-        const totalOrders = await Order.countDocuments(query);
+        let pipeline = [
+            { $match: query },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+            {
+                $addFields: {
+                    orderIdStr: { $toString: "$_id" },
+                    dateStr: { $dateToString: { format: "%d %b, %Y", date: "$createdAt" } }
+                }
+            }
+        ];
+
+        if (req.query.search) {
+            const search = req.query.search;
+            const searchRegex = new RegExp(search, 'i');
+            const searchNumber = parseFloat(search);
+
+            let searchMatch = {
+                $or: [
+                    { 'shippingAddress.fullName': searchRegex },
+                    { 'shippingAddress.city': searchRegex },
+                    { 'shippingAddress.mobileNumber': searchRegex },
+                    { 'user.name': searchRegex },
+                    { 'user.email': searchRegex },
+                    { 'items.name': searchRegex },
+                    { 'orderStatus': searchRegex },
+                    { 'orderIdStr': searchRegex },
+                    { 'dateStr': searchRegex }
+                ]
+            };
+
+            if (!isNaN(searchNumber)) {
+                searchMatch.$or.push({ totalAmount: searchNumber });
+            }
+
+            pipeline.push({ $match: searchMatch });
+        }
+
+        // Count total matching documents
+        const countPipeline = [...pipeline, { $count: "total" }];
+        const countResult = await Order.aggregate(countPipeline);
+        const totalOrders = countResult.length > 0 ? countResult[0].total : 0;
         const totalPages = Math.ceil(totalOrders / limit);
 
-        const orders = await Order.find(query)
-            .populate('user', 'name email')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+        // Sorting and Pagination
+        pipeline.push({ $sort: { createdAt: -1 } });
+        pipeline.push({ $skip: skip });
+        pipeline.push({ $limit: limit });
+
+        let orders = await Order.aggregate(pipeline);
 
         res.json({
             orders,
@@ -973,5 +1023,204 @@ exports.getMyReturns = async (req, res) => {
     } catch (error) {
         console.error("Error fetching my returns:", error);
         res.status(500).json({ message: "Server Error" });
+    }
+};
+//downloadInvoice
+
+
+exports.downloadInvoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({ message: "Invalid Order ID" });
+        }
+
+        const order = await Order.findById(orderId).populate("user");
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // ✅ CREATE PDF DOCUMENT
+        const doc = new PDFDocument({ margin: 50, size: "A4" });
+
+        // ✅ SET HEADERS
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=invoice-${order._id}.pdf`
+        );
+
+        doc.pipe(res);
+
+        // Color Palette
+        const primaryColor = "#2c3e50";
+        const secondaryColor = "#34495e";
+        const accentColor = "#27ae60";
+        const tableHeaderColor = "#f8f9fa";
+        const borderColor = "#dee2e6";
+
+        /* -------- HEADER -------- */
+        // Logo / Brand Name
+        doc
+            .fillColor(accentColor)
+            .fontSize(28)
+            .font("Helvetica-Bold")
+            .text("KM Store", 50, 50);
+        doc
+            .fillColor(secondaryColor)
+            .fontSize(10)
+            .font("Helvetica")
+            .text("Fresh Groceries & Premium Essentials", 50, 85);
+
+        // Invoice Title & Info
+        doc
+            .fillColor(primaryColor)
+            .fontSize(20)
+            .font("Helvetica-Bold")
+            .text("INVOICE", 400, 55, { align: "right" });
+        doc.fontSize(10).fillColor(secondaryColor).font("Helvetica");
+        doc.text(`Invoice No: INV-${order._id.toString().slice(-6).toUpperCase()}`, 400, 80, {
+            align: "right",
+        });
+        doc.text(`Date: ${new Date(order.createdAt).toDateString()}`, 400, 95, {
+            align: "right",
+        });
+
+        doc.moveDown(3);
+        const topOffset = 140;
+
+        /* -------- ADDRESSES -------- */
+        // Bill To
+        doc.fontSize(11).font("Helvetica-Bold").fillColor(primaryColor).text("BILL TO:", 50, topOffset);
+        doc.font("Helvetica").fontSize(10).fillColor(secondaryColor);
+        doc.text(order.shippingAddress.fullName || "Customer", 50, topOffset + 18);
+        doc.text(
+            `${order.shippingAddress.houseName}, ${order.shippingAddress.street}`,
+            50,
+            topOffset + 31
+        );
+        doc.text(
+            `${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}`,
+            50,
+            topOffset + 44
+        );
+        doc.text(`Phone: ${order.shippingAddress.mobileNumber}`, 50, topOffset + 57);
+
+        // From
+        doc.fontSize(11).font("Helvetica-Bold").fillColor(primaryColor).text("SHIP FROM:", 350, topOffset);
+        doc.font("Helvetica").fontSize(10).fillColor(secondaryColor);
+        doc.text("KM Store Headquarters", 350, topOffset + 18);
+        doc.text("Palakkad, Kerala", 350, topOffset + 31);
+        doc.text("India - 678001", 350, topOffset + 44);
+        doc.text("Email: support@kmstore.com", 350, topOffset + 57);
+
+        /* -------- ORDER SUMMARY BOX -------- */
+        const orderInfoY = topOffset + 90;
+        doc.rect(50, orderInfoY, 500, 45).fill(tableHeaderColor);
+        doc.fillColor(primaryColor).font("Helvetica-Bold").fontSize(9);
+
+        doc.text("ORDER ID", 60, orderInfoY + 12);
+        doc.text("PAYMENT METHOD", 200, orderInfoY + 12);
+        doc.text("PAYMENT STATUS", 340, orderInfoY + 12);
+        doc.text("AMOUNT DUE", 460, orderInfoY + 12);
+
+        doc.font("Helvetica").fontSize(9).fillColor(secondaryColor);
+        doc.text(order._id.toString(), 60, orderInfoY + 27);
+        doc.text(order.paymentMethod, 200, orderInfoY + 27);
+        doc.text(order.paymentStatus, 340, orderInfoY + 27);
+        doc.fillColor(accentColor).font("Helvetica-Bold").text(`₹${order.totalAmount.toFixed(2)}`, 460, orderInfoY + 27);
+
+        /* -------- ITEMS TABLE -------- */
+        const tableTop = orderInfoY + 70;
+
+        // Header
+        doc.rect(50, tableTop, 500, 25).fill(primaryColor);
+        doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(10);
+        doc.text("ITEM DESCRIPTION", 65, tableTop + 8);
+        doc.text("QTY", 300, tableTop + 8, { width: 50, align: "center" });
+        doc.text("PRICE", 360, tableTop + 8, { width: 80, align: "right" });
+        doc.text("TOTAL", 450, tableTop + 8, { width: 90, align: "right" });
+
+        // Rows
+        let itemY = tableTop + 25;
+        order.items.forEach((item, index) => {
+            const itemTotal = item.quantity * item.price;
+
+            // Zebra striping
+            if (index % 2 === 1) {
+                doc.rect(50, itemY, 500, 25).fill("#fcfcfc");
+            }
+
+            doc.fillColor(secondaryColor).font("Helvetica").fontSize(10);
+            doc.text(item.name, 65, itemY + 8, { width: 230 });
+            doc.text(item.quantity.toString(), 300, itemY + 8, { width: 50, align: "center" });
+            doc.text(`₹${item.price.toFixed(2)}`, 360, itemY + 8, { width: 80, align: "right" });
+            doc.text(`₹${itemTotal.toFixed(2)}`, 450, itemY + 8, { width: 90, align: "right" });
+
+            itemY += 25;
+
+            // Bottom border for row
+            doc.strokeColor(borderColor).lineWidth(0.5).moveTo(50, itemY).lineTo(550, itemY).stroke();
+        });
+
+        /* -------- TOTALS SECTION -------- */
+        let summaryY = itemY + 15;
+        const summaryX = 350;
+
+        const drawSummaryRow = (label, value, isBold = false, color = secondaryColor) => {
+            doc.fillColor(color).font(isBold ? "Helvetica-Bold" : "Helvetica").fontSize(10);
+            doc.text(label, summaryX, summaryY);
+            doc.text(value, summaryX + 100, summaryY, { align: "right", width: 100 });
+            summaryY += 20;
+        };
+
+        drawSummaryRow("Subtotal:", `₹${order.subtotal.toFixed(2)}`);
+
+        if (order.discountAmount > 0) {
+            drawSummaryRow("Discount:", `- ₹${order.discountAmount.toFixed(2)}`, false, "#e74c3c");
+        }
+
+        if (order.deliveryCharge > 0) {
+            drawSummaryRow("Delivery Charge:", `₹${order.deliveryCharge.toFixed(2)}`);
+        }
+
+        if (order.handlingFee > 0) {
+            drawSummaryRow("Handling Fee:", `₹${order.handlingFee.toFixed(2)}`);
+        }
+
+        // GST Calculation (18%)
+        const gstAmount = order.subtotal * 0.18;
+        drawSummaryRow("GST (18%):", `₹${gstAmount.toFixed(2)}`);
+
+        doc.moveDown(0.5);
+        doc.rect(summaryX - 10, summaryY - 5, 210, 30).fill(accentColor);
+        doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(12);
+        doc.text("GRAND TOTAL:", summaryX, summaryY + 8);
+        doc.text(`₹${(order.totalAmount + gstAmount).toFixed(2)}`, summaryX + 100, summaryY + 8, { align: "right", width: 100 });
+
+        /* -------- FOOTER -------- */
+        const footerY = 760;
+        doc.strokeColor(borderColor).lineWidth(1).moveTo(50, footerY).lineTo(550, footerY).stroke();
+
+        doc.fillColor(secondaryColor).fontSize(9).font("Helvetica-Oblique").text(
+            "Thank you for shopping with KM Store! We appreciate your business.",
+            50,
+            footerY + 15,
+            { align: "center", width: 500 }
+        );
+
+        doc.fontSize(8).font("Helvetica").fillColor("#999").text(
+            "This is a computer generated invoice and does not require a physical signature.",
+            50,
+            footerY + 35,
+            { align: "center", width: 500 }
+        );
+
+        doc.end();
+    } catch (error) {
+        console.error("Invoice Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };

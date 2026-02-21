@@ -13,7 +13,7 @@ router.put('/:orderId/cancel', protect, orderController.cancelOrder);
 router.put('/:orderId/return', protect, orderController.requestReturn);
 router.put('/:orderId/items/:itemId/cancel', protect, orderController.cancelOrderItem);
 router.put('/:orderId/items/:itemId/return', protect, orderController.requestItemReturn);
-
+router.get('/:orderId/invoice', protect, orderController.downloadInvoice);
 // Admin Routes
 router.get('/all', protect, role('admin'), orderController.getAllOrders);
 router.get('/:id', protect, role('admin'), orderController.getOrderById);

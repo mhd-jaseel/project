@@ -388,7 +388,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="search-bar d-none d-md-block">
-                    <input type="text" placeholder="Search customers...">
+                    <input type="text" id="customerSearchInput" placeholder="Search customers...">
                 </div>
             </div>
 
@@ -453,8 +453,12 @@
         let currentPage = 1;
 
         async function fetchCustomers(page = 1) {
+            const searchTerm = document.getElementById('customerSearchInput')?.value || '';
+            let query = `?page=${page}`;
+            if (searchTerm) query += `&search=${encodeURIComponent(searchTerm)}`;
+
             try {
-                const res = await fetch(`/api/admin/customers?page=${page}`, {
+                const res = await fetch(`/api/admin/customers${query}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -606,6 +610,15 @@
                 }
             }
         };
+
+        // Search with Debounce
+        let searchTimeout;
+        document.getElementById('customerSearchInput').addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchCustomers(1);
+            }, 500);
+        });
 
         document.addEventListener('DOMContentLoaded', () => fetchCustomers());
 

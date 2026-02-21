@@ -384,9 +384,17 @@
                 const res = await fetch("/api/categories");
                 allCategories = await res.json();
 
+                const urlParams = new URLSearchParams(window.location.search);
+                const categoryId = urlParams.get('id');
+
+                let displayCategories = allCategories;
+                if (categoryId) {
+                    displayCategories = allCategories.filter(cat => cat._id === categoryId);
+                }
+
                 const grid = document.getElementById("categoryGrid");
                 grid.innerHTML = "";
-                if (!allCategories.length) {
+                if (!displayCategories.length) {
                     grid.innerHTML = `
             <div class="col-12 text-center text-muted">
             No categories found
@@ -395,8 +403,7 @@
                     return;
                 }
 
-
-                allCategories.forEach(cat => {
+                displayCategories.forEach(cat => {
                     grid.innerHTML += `
             <div class="col">
                 <div class="card-custom p-3 d-flex justify-content-between align-items-center flex-row">

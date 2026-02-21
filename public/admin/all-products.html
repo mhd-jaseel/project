@@ -713,11 +713,14 @@
         let allProducts = []; // Defined globally
 
         async function fetchProducts(page = 1) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
             const searchTerm = document.getElementById('searchInput')?.value || '';
             const statusFilter = document.getElementById('statusFilter')?.value || 'All';
             const categoryFilter = document.getElementById('categoryFilter')?.value || 'All';
 
             let query = `?page=${page}`;
+            if (productId) query += `&id=${productId}`;
             if (searchTerm) query += `&search=${encodeURIComponent(searchTerm)}`;
             if (categoryFilter !== 'All') query += `&category=${categoryFilter}`;
             if (statusFilter !== 'All') query += `&status=${statusFilter}`;

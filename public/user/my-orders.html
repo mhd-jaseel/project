@@ -488,48 +488,78 @@
             </div>
         </div>
     </section>
+  <!-- Order Details Modal -->
+        <div class="modal fade" id="orderDetailsModal" tabindex="-1"
+            aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
 
-    <!-- Order Details Modal -->
-    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-primary-custom text-white">
-                    <h5 class="modal-title fw-bold" id="orderDetailsModalLabel">Order Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold text-muted small">ORDER ID</h6>
-                            <p class="fw-bold" id="modalOrderId">#123456</p>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                            <h6 class="fw-bold text-muted small">DATE</h6>
-                            <p class="fw-bold" id="modalOrderDate">Jan 01, 2024</p>
-                        </div>
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow">
+
+                    <div class="modal-header bg-primary-custom text-white">
+                        <h5 class="modal-title fw-bold" id="orderDetailsModalLabel">
+                            Order Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <h6 class="fw-bold border-bottom pb-2 mb-3">Items</h6>
-                    <ul class="list-group list-group-flush mb-4" id="modalOrderItems">
-                        <!-- Dynamic Items -->
-                    </ul>
+                    <div class="modal-body p-4">
 
-                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                        <h5 class="fw-bold">Total</h5>
-                        <h5 class="fw-bold text-primary-custom" id="modalOrderTotal">₹0</h5>
-                    </div>
+                        <!-- ORDER INFO -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold text-muted small">ORDER ID</h6>
+                                <p class="fw-bold"
+                                id="modalOrderId"
+                                data-id="">
+                                #123456
+                                </p>
 
-                    <div class="mt-4 text-end" id="modalInvoiceAction">
-                        <button class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-success" id="btnDownloadInvoice"><i
-                                class="fas fa-file-invoice me-2"></i>Download Invoice</button>
+                            </div>
+
+                            <div class="col-md-6 text-md-end">
+                                <h6 class="fw-bold text-muted small">DATE</h6>
+                                <p class="fw-bold" id="modalOrderDate">
+                                    Jan 01, 2024
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- ITEMS -->
+                        <h6 class="fw-bold border-bottom pb-2 mb-3">Items</h6>
+
+                        <ul class="list-group list-group-flush mb-4"
+                            id="modalOrderItems">
+                            <!-- Dynamic Items -->
+                        </ul>
+
+                        <!-- TOTAL -->
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <h5 class="fw-bold">Total</h5>
+                            <h5 class="fw-bold text-primary-custom"
+                                id="modalOrderTotal">
+                                ₹0
+                            </h5>
+                        </div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="mt-4 text-end" id="modalInvoiceAction">
+                            <button class="btn btn-outline-secondary me-2"
+                                data-bs-dismiss="modal">
+                                Close
+                            </button>
+
+                            <button class="btn btn-success"
+                                id="btnDownloadInvoice">
+                                <i class="fas fa-file-invoice me-2"></i>
+                                Download Invoice
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-light pt-5 pb-3">
@@ -684,6 +714,7 @@
             let grossTotal = 0;
 
             document.getElementById('modalOrderId').innerText = '#' + id.substring(0, 8).toUpperCase();
+            document.getElementById('modalOrderId').dataset.id = id;
             document.getElementById('modalOrderDate').innerText = new Date(date).toLocaleDateString();
             document.getElementById('modalOrderTotal').innerText = '₹' + total;
 
@@ -1012,6 +1043,38 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             fetchMyOrders();
+        });
+
+        //downloadinvoice
+       document.getElementById("btnDownloadInvoice")
+        .addEventListener("click", async function () {
+
+            const orderId = document
+            .getElementById("modalOrderId")
+            .dataset.id;   // ✅ real MongoDB _id
+
+           
+            const response = await fetch(
+            `/api/orders/${orderId}/invoice`,
+            {
+                headers: {
+                Authorization: `Bearer ${token}`
+                }
+            }
+            );
+            console.log("Sending ID:", orderId);
+            if (!response.ok) {
+            alert("Failed to download invoice");
+            return;
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `invoice-${orderId}.pdf`;
+            a.click();
         });
     </script>
 

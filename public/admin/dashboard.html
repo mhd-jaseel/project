@@ -323,14 +323,31 @@
     <div class="main-content">
         <!-- Top Header -->
         <header class="top-header">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="search-bar d-none d-md-block">
-                    <input type="text" placeholder="Search orders, customers...">
+           <div class="d-flex align-items-center">
+    
+            <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="search-bar d-none d-md-block position-relative" style="width:300px;">
+                
+                <input 
+                    type="text" 
+                    id="adminSearch"
+                    class="form-control"
+                    placeholder="Search customers, products, orders..."
+                    autocomplete="off"
+                >
+
+                <!-- Live Result Dropdown -->
+                <div id="searchResultsBox" 
+                    class="list-group position-absolute w-100 shadow"
+                    style="top:100%; left:0; z-index:1000; display:none; max-height:400px; overflow-y:auto;">
                 </div>
+
             </div>
+
+        </div>
 
             <div class="user-profile">
                 <div class="dropdown d-inline-block position-relative me-3"><button
@@ -454,8 +471,9 @@
 
             <!-- Recent Orders -->
             <div class="d-flex justify-content-end mt-4 px-1">
-                <button class="btn btn-sm btn-success shadow-sm"><i class="fas fa-download me-2"></i> Download Sales
-                    Report</button>
+               <button id="downloadReportBtn" class="btn btn-sm btn-success shadow-sm">
+                    <i class="fas fa-download me-2"></i> Download Sales Report
+             </button>
             </div>
             <div class="card-custom mt-2">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -535,6 +553,57 @@
             localStorage.removeItem("role");
             window.location.href = "/user/login.html";
         });
+        //search option 
+    
+        const searchInput = document.getElementById("adminSearch");
+        const resultBox = document.getElementById("searchResultsBox");
+
+        let timeout = null;
+
+        searchInput.addEventListener("keyup", function () {
+
+            clearTimeout(timeout);
+
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                resultBox.style.display = "none";
+                return;
+            }
+
+            // Debounce (500ms delay)
+            timeout = setTimeout(async () => {
+
+                const response = await fetch(`/api/admin/global-search?query=${query}`);
+                const data = await response.json();
+
+                resultBox.innerHTML = "";
+
+                if (data.length === 0) {
+                    resultBox.style.display = "none";
+                    return;
+                }
+
+                data.forEach(item => {
+                    resultBox.innerHTML += `
+                        <a href="${item.link}" class="list-group-item list-group-item-action">
+                            <strong>${item.title}</strong>
+                            <small class="text-muted d-block">${item.type} ${item.subtitle || ''}</small>
+                        </a>
+                    `;
+                });
+
+                resultBox.style.display = "block";
+
+            }, 500);
+        });
+
+        // Hide when clicking outside
+        document.addEventListener("click", function(e) {
+            if (!searchInput.contains(e.target) && !resultBox.contains(e.target)) {
+                resultBox.style.display = "none";
+            }
+        });
 
 
         // Sidebar Toggle
@@ -588,7 +657,7 @@
                 }
             }
         });
-        // Fetch Unread Messages Count
+        
         // Fetch Unread Messages Count
         async function updateUnreadCount() {
             try {
@@ -797,6 +866,42 @@
                 });
             }
         });
+        //sales report
+        document.getElementById("downloadReportBtn").addEventListener("click", async () => {
+            try {
+                const token = localStorage.getItem("adminToken");
+
+                const from = prompt("Enter From Date (YYYY-MM-DD)");
+                const to = prompt("Enter To Date (YYYY-MM-DD)");
+
+                const response = await fetch(
+                `/api/admin/download-sales-report?from=${from}&to=${to}`,
+                {
+                    headers: {
+                    Authorization: `Bearer ${token}`
+                    }
+                }
+                );
+
+                if (!response.ok) {
+                alert("Download failed");
+                return;
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "sales-report.xlsx";
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+
+            } catch (err) {
+                console.error(err);
+            }
+            });
     </script>
 
 

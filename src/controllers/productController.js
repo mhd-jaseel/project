@@ -206,6 +206,11 @@ exports.getAllProducts = async (req, res) => {
       matchStage.status = req.query.status;
     }
 
+    // 🆔 ID filter
+    if (req.query.id && mongoose.Types.ObjectId.isValid(req.query.id)) {
+      matchStage._id = new mongoose.Types.ObjectId(req.query.id);
+    }
+
     /* ============================
        TOTAL COUNT (only for pagination)
     ============================ */

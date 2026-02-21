@@ -438,7 +438,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="search-bar d-none d-md-block">
-                    <input type="text" placeholder="Search orders...">
+                    <input type="text" id="orderSearchInput" placeholder="Search orders...">
                 </div>
             </div>
 
@@ -462,8 +462,6 @@
                         <option>Cancelled</option>
                         <option>Returned</option>
                     </select>
-                    <button class="btn btn-primary-custom btn-sm"><i class="fas fa-file-export me-1"></i>
-                        Export</button>
                 </div>
             </div>
 
@@ -584,8 +582,19 @@
         let currentPage = 1;
 
         async function fetchOrders(page = 1) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchId = urlParams.get('id');
             const statusFilter = document.querySelector('.form-select').value;
+            const searchTerm = document.getElementById('orderSearchInput').value.trim();
+
             let query = `?page=${page}`;
+
+            if (searchId && !searchTerm) {
+                query += `&search=${searchId}`;
+            } else if (searchTerm) {
+                query += `&search=${encodeURIComponent(searchTerm)}`;
+            }
+
             if (statusFilter && statusFilter !== 'All Status') {
                 query += `&status=${statusFilter}`;
             }
@@ -626,8 +635,8 @@
                 // Auto Open Modal if requested - ONLY ONCE
                 if (!hasHandledAutoOpen) {
                     const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get('view') === 'true' && urlParams.get('id')) {
-                        const oid = urlParams.get('id');
+                    const oid = urlParams.get('id');
+                    if (oid) {
                         setTimeout(() => openOrderModal(oid), 500);
                     }
                     hasHandledAutoOpen = true;
@@ -1052,6 +1061,15 @@
                 Swal.fire('Error', 'Server error', 'error');
             }
         }
+
+        // Search Input with Debounce
+        let searchTimeout;
+        document.getElementById('orderSearchInput').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchOrders(1);
+            }, 500);
+        });
 
         // Initial Fetch
         fetchOrders();

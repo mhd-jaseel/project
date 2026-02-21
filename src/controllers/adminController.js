@@ -1,6 +1,12 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const ExcelJS = require("exceljs");
+const Order = require("../models/Order");
+const Product = require("../models/Product")
+const Category = require("../models/Category")
+
+
 
 // ADMIN LOGIN
 exports.adminLogin = async (req, res) => {
@@ -19,7 +25,7 @@ exports.adminLogin = async (req, res) => {
     }
 
     // 3. Check password (bcrypt)
-    
+
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
@@ -171,9 +177,31 @@ exports.getAllCustomers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
     const skip = (page - 1) * limit;
-
-    const pipeline = [
+    const search = req.query.search || "";
+    let pipeline = [
       { $match: { role: 'user' } },
+      {
+        $addFields: {
+          idStr: { $toString: "$_id" }
+        }
+      }
+    ];
+
+    if (search) {
+      const regex = new RegExp(search, "i");
+      pipeline.push({
+        $match: {
+          $or: [
+            { name: regex },
+            { email: regex },
+            { phoneNumber: regex },
+            { idStr: regex }
+          ]
+        }
+      });
+    }
+
+    pipeline.push(
       {
         $lookup: {
           from: "orders",
@@ -206,7 +234,7 @@ exports.getAllCustomers = async (req, res) => {
         }
       },
       { $sort: { createdAt: -1 } }
-    ];
+    );
 
     // Get Total Count for Pagination
     const countPipeline = [...pipeline, { $count: "total" }];
@@ -403,5 +431,151 @@ exports.getNotifications = async (req, res) => {
   } catch (error) {
     console.error("Notif Error:", error);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+//sales report 
+
+
+exports.downloadSalesReportExcel = async (req, res) => {
+  try {
+    const { from, to } = req.query;
+
+    let filter = { orderStatus: "Delivered" };
+
+    if (from && to) {
+      const startDate = new Date(from);
+      const endDate = new Date(to);
+
+      if (!isNaN(startDate) && !isNaN(endDate)) {
+        endDate.setHours(23, 59, 59, 999);
+        filter.createdAt = { $gte: startDate, $lte: endDate };
+      }
+    }
+
+    const orders = await Order.find(filter)
+      .populate("user", "email")
+      .sort({ createdAt: -1 });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sales Report");
+
+    worksheet.addRow(["KM STORE SALES REPORT"]);
+    worksheet.addRow([]);
+
+    worksheet.addRow([
+      "Order ID",
+      "Customer",
+      "Email",
+      "Date",
+      "Payment",
+      "Amount"
+    ]).font = { bold: true };
+
+    let totalSales = 0;
+
+    orders.forEach(order => {
+      const amount = Number(order.totalAmount) || 0;
+      totalSales += amount;
+
+      worksheet.addRow([
+        order._id.toString().slice(-6).toUpperCase(),
+        order.shippingAddress?.fullName || "Guest",
+        order.user?.email || "N/A",
+        new Date(order.createdAt).toLocaleDateString(),
+        order.paymentMethod || "N/A",
+        amount
+      ]);
+    });
+
+    worksheet.addRow([]);
+    worksheet.addRow(["", "", "", "", "Total Sales", totalSales]);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=sales-report.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+
+  } catch (error) {
+    console.error("Excel Report Error:", error);
+    res.status(500).json({ message: "Error generating report" });
+  }
+};
+//search
+exports.globalSearchAPI = async (req, res) => {
+  try {
+    const query = req.query.query?.trim();
+    if (!query) return res.json([]);
+
+    const regex = new RegExp(query, "i");
+
+    const [customers, products, orders, categories] = await Promise.all([
+      User.find({
+        $or: [{ name: regex }, { email: regex }]
+      }).limit(5),
+
+      Product.find({ name: regex }).limit(5),
+
+      Order.find({
+        $or: [
+          { 'shippingAddress.fullName': regex },
+          { 'shippingAddress.city': regex },
+          { 'shippingAddress.mobileNumber': regex }
+        ]
+      }).limit(5),
+
+      Category.find({ name: regex }).limit(5)
+    ]);
+
+    const results = [];
+
+    customers.forEach(c => {
+      results.push({
+        type: "Customer",
+        title: c.name,
+        subtitle: c.email,
+        link: `/admin/customer-details.html?id=${c._id}`
+      });
+    });
+
+    products.forEach(p => {
+      results.push({
+        type: "Product",
+        title: p.name,
+        subtitle: `₹${p.price}`,
+        link: `/admin/all-products.html?id=${p._id}`
+      });
+    });
+
+    orders.forEach(o => {
+      results.push({
+        type: "Order",
+        title: `#${o._id.toString().substring(0, 8).toUpperCase()}`,
+        subtitle: `${o.shippingAddress?.fullName || 'Guest'} - ${o.orderStatus}`,
+        link: `/admin/order-management.html?id=${o._id}`
+      });
+    });
+
+    categories.forEach(cat => {
+      results.push({
+        type: "Category",
+        title: cat.name,
+        subtitle: "",
+        link: `/admin/categories.html?id=${cat._id}`
+      });
+    });
+
+    res.json(results);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json([]);
   }
 };
