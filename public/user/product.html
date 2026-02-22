@@ -999,12 +999,13 @@
             if (!token) return;
 
             try {
-                const res = await fetch('/api/cart', {
-                    headers: { 'Authorization': 'Bearer ' + token }
+                const res = await fetch(`/api/cart?t=${Date.now()}`, {
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    cache: 'no-store'
                 });
                 if (!res.ok) return;
                 const cart = await res.json();
-                const cartItemIds = (cart.items || []).map(item => item._id || (item.product ? (item.product._id || item.product) : null));
+                const cartItemIds = (cart.items || []).map(item => item._id || (item.product ? (item.product._id || item.product) : null) || (item.product ? item.product : null));
 
                 document.querySelectorAll('.btn-add-cart').forEach(btn => {
                     const id = btn.getAttribute('data-product-id');
@@ -1069,6 +1070,7 @@
                         });
 
                         btn.innerText = "Added";
+                        if (typeof updateCartCount === 'function') updateCartCount(data);
                     } else {
                         // Check if it's the "already in cart" message
                         if (data.message === "Product already in cart") {

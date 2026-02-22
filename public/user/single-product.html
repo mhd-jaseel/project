@@ -705,7 +705,10 @@
                     try {
                         const token = getToken();
                         if (token) {
-                            const cartRes = await fetch('/api/cart', { headers: { Authorization: 'Bearer ' + token } });
+                            const cartRes = await fetch(`/api/cart?t=${Date.now()}`, {
+                                headers: { Authorization: 'Bearer ' + token },
+                                cache: 'no-store'
+                            });
                             if (cartRes.ok) {
                                 const cart = await cartRes.json();
                                 const isInCart = (cart.items || []).some(item =>
@@ -761,6 +764,7 @@
                             });
 
                             addToCartBtn.textContent = 'Added';
+                            if (typeof updateCartCount === 'function') updateCartCount(data);
 
                         } catch (err) {
                             console.error(err);

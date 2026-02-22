@@ -603,12 +603,14 @@
 
             async function fetchCart() {
                 try {
-                    const res = await fetch('/api/cart', {
-                        headers: { 'Authorization': 'Bearer ' + getToken() }
+                    const res = await fetch(`/api/cart?t=${Date.now()}`, {
+                        headers: { 'Authorization': 'Bearer ' + getToken() },
+                        cache: 'no-store'
                     });
                     const data = await res.json();
                     if (res.ok) {
                         renderCart(data);
+                        if (typeof updateCartCount === 'function') updateCartCount(data);
                     } else {
                         console.error("Failed to fetch cart", data);
                         renderEmptyCart();
@@ -626,6 +628,7 @@
                 if (itemsTotalStrikeEl) itemsTotalStrikeEl.textContent = '';
                 if (savingsBadge) savingsBadge.style.display = 'none';
                 if (deliveryEl) deliveryEl.textContent = '₹0';
+                if (typeof updateCartCount === 'function') updateCartCount();
             }
 
             function renderCart(data) {

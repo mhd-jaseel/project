@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
 const PDFDocument = require("pdfkit")
-const mongoose=require("mongoose")
+const mongoose = require("mongoose")
 // Helper: Parse weight string to grams/ml (base unit)
 const parseWeight = (str) => {
     if (!str) return 0;
@@ -394,7 +394,7 @@ exports.updateOrderStatus = async (req, res) => {
 
     } catch (error) {
         console.error("Error updating order status:", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -412,7 +412,7 @@ exports.markOrderViewed = async (req, res) => {
         }
     } catch (error) {
         console.error("Error marking order as viewed:", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -980,142 +980,142 @@ exports.getMyReturns = async (req, res) => {
 
 exports.downloadInvoice = async (req, res) => {
     console.log("NEW PROFESSIONAL INVOICE VERSION RUNNING");
-  try {
-    const orderId = req.params.orderId;
+    try {
+        const orderId = req.params.orderId;
 
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ message: "Invalid Order ID" });
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({ message: "Invalid Order ID" });
+        }
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const doc = new PDFDocument({ size: "A4", margin: 50 });
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=invoice-${order._id}.pdf`
+        );
+
+        doc.pipe(res);
+
+        /* ================= HEADER BACKGROUND ================= */
+
+        doc.rect(0, 0, doc.page.width, 110).fill("#f4f6f8");
+
+        doc
+            .fillColor("#2c3e50")
+            .fontSize(28)
+            .font("Helvetica-Bold")
+            .text("KM Store", 50, 45);
+
+        doc
+            .fontSize(10)
+            .font("Helvetica")
+            .fillColor("black")
+            .text("Kerala, India", 50, 80);
+
+        /* ================= INVOICE DETAILS (RIGHT SIDE) ================= */
+
+        doc
+            .fontSize(10)
+            .text(`Invoice No: INV-${order._id.toString().slice(-6)}`, 350, 45)
+            .text(`Order ID: ${order._id}`, 350, 60)
+            .text(`Date: ${new Date(order.createdAt).toDateString()}`, 350, 75)
+            .text(`Payment: ${order.paymentMethod}`, 350, 90);
+
+        /* ================= TABLE HEADER ================= */
+
+        let tableTop = 150;
+
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(12)
+            .text("Product", 50, tableTop)
+            .text("Qty", 330, tableTop, { width: 50, align: "center" })
+            .text("Price", 390, tableTop, { width: 70, align: "right" })
+            .text("Total", 470, tableTop, { width: 70, align: "right" });
+
+        doc
+            .moveTo(50, tableTop + 15)
+            .lineTo(550, tableTop + 15)
+            .stroke();
+
+        /* ================= ITEMS ================= */
+
+        let position = tableTop + 30;
+        let subtotal = 0;
+
+        order.items.forEach((item) => {
+            const total = item.quantity * item.price;
+            subtotal += total;
+
+            doc
+                .font("Helvetica")
+                .fontSize(11)
+                .text(item.name, 50, position)
+                .text(item.quantity, 330, position, { width: 50, align: "center" })
+                .text(`₹${item.price}`, 390, position, { width: 70, align: "right" })
+                .text(`₹${total}`, 470, position, { width: 70, align: "right" });
+
+            position += 25;
+        });
+
+        /* ================= TOTAL SECTION ================= */
+
+        const gst = subtotal * 0.18;
+        const grandTotal = subtotal + gst;
+
+        doc
+            .moveTo(300, position + 10)
+            .lineTo(550, position + 10)
+            .stroke();
+
+        doc
+            .font("Helvetica")
+            .fontSize(11)
+            .text("Subtotal:", 390, position + 25)
+            .text(`₹${subtotal.toFixed(2)}`, 470, position + 25, {
+                width: 70,
+                align: "right",
+            });
+
+        doc
+            .text("GST (18%):", 390, position + 45)
+            .text(`₹${gst.toFixed(2)}`, 470, position + 45, {
+                width: 70,
+                align: "right",
+            });
+
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(14)
+            .text("Grand Total:", 390, position + 75)
+            .text(`₹${grandTotal.toFixed(2)}`, 470, position + 75, {
+                width: 70,
+                align: "right",
+            });
+
+        /* ================= FOOTER ================= */
+
+        doc
+            .fontSize(9)
+            .font("Helvetica")
+            .fillColor("gray")
+            .text(
+                "This is a computer-generated invoice. No signature required.",
+                50,
+                780,
+                { align: "center" }
+            );
+
+        doc.end();
+
+    } catch (error) {
+        console.error("Invoice Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
-
-    const order = await Order.findById(orderId);
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    const doc = new PDFDocument({ size: "A4", margin: 50 });
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=invoice-${order._id}.pdf`
-    );
-
-    doc.pipe(res);
-
-    /* ================= HEADER BACKGROUND ================= */
-
-    doc.rect(0, 0, doc.page.width, 110).fill("#f4f6f8");
-
-    doc
-      .fillColor("#2c3e50")
-      .fontSize(28)
-      .font("Helvetica-Bold")
-      .text("KM Store", 50, 45);
-
-    doc
-      .fontSize(10)
-      .font("Helvetica")
-      .fillColor("black")
-      .text("Kerala, India", 50, 80);
-
-    /* ================= INVOICE DETAILS (RIGHT SIDE) ================= */
-
-    doc
-      .fontSize(10)
-      .text(`Invoice No: INV-${order._id.toString().slice(-6)}`, 350, 45)
-      .text(`Order ID: ${order._id}`, 350, 60)
-      .text(`Date: ${new Date(order.createdAt).toDateString()}`, 350, 75)
-      .text(`Payment: ${order.paymentMethod}`, 350, 90);
-
-    /* ================= TABLE HEADER ================= */
-
-    let tableTop = 150;
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(12)
-      .text("Product", 50, tableTop)
-      .text("Qty", 330, tableTop, { width: 50, align: "center" })
-      .text("Price", 390, tableTop, { width: 70, align: "right" })
-      .text("Total", 470, tableTop, { width: 70, align: "right" });
-
-    doc
-      .moveTo(50, tableTop + 15)
-      .lineTo(550, tableTop + 15)
-      .stroke();
-
-    /* ================= ITEMS ================= */
-
-    let position = tableTop + 30;
-    let subtotal = 0;
-
-    order.items.forEach((item) => {
-      const total = item.quantity * item.price;
-      subtotal += total;
-
-      doc
-        .font("Helvetica")
-        .fontSize(11)
-        .text(item.name, 50, position)
-        .text(item.quantity, 330, position, { width: 50, align: "center" })
-        .text(`₹${item.price}`, 390, position, { width: 70, align: "right" })
-        .text(`₹${total}`, 470, position, { width: 70, align: "right" });
-
-      position += 25;
-    });
-
-    /* ================= TOTAL SECTION ================= */
-
-    const gst = subtotal * 0.18;
-    const grandTotal = subtotal + gst;
-
-    doc
-      .moveTo(300, position + 10)
-      .lineTo(550, position + 10)
-      .stroke();
-
-    doc
-      .font("Helvetica")
-      .fontSize(11)
-      .text("Subtotal:", 390, position + 25)
-      .text(`₹${subtotal.toFixed(2)}`, 470, position + 25, {
-        width: 70,
-        align: "right",
-      });
-
-    doc
-      .text("GST (18%):", 390, position + 45)
-      .text(`₹${gst.toFixed(2)}`, 470, position + 45, {
-        width: 70,
-        align: "right",
-      });
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(14)
-      .text("Grand Total:", 390, position + 75)
-      .text(`₹${grandTotal.toFixed(2)}`, 470, position + 75, {
-        width: 70,
-        align: "right",
-      });
-
-    /* ================= FOOTER ================= */
-
-    doc
-      .fontSize(9)
-      .font("Helvetica")
-      .fillColor("gray")
-      .text(
-        "This is a computer-generated invoice. No signature required.",
-        50,
-        780,
-        { align: "center" }
-      );
-
-    doc.end();
-
-  } catch (error) {
-    console.error("Invoice Error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 };

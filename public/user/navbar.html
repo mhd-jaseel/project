@@ -34,9 +34,14 @@
                 <a href="/user/wishlist.html" class="text-white text-decoration-none me-3" id="headerWishlistBtn"><i
                         class="fas fa-heart me-1"></i>
                     Wishlist</a>
-                <a href="/user/cart.html" class="text-white text-decoration-none me-3" id="headerCartBtn"><i
-                        class="fas fa-shopping-cart me-1"></i>
-                    Cart</a>
+                <a href="/user/cart.html" class="text-white text-decoration-none me-3 position-relative"
+                    id="headerCartBtn">
+                    <i class="fas fa-shopping-cart me-1"></i>
+                    Cart
+                    <span id="cart-count-badge"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="display: none; font-size: 0.7rem;">0</span>
+                </a>
 
                 <!-- Dynamic Auth Section -->
                 <span id="auth-actions">
@@ -75,9 +80,42 @@
 </header>
 
 <script>
+    async function updateCartCount(cartData = null) {
+        const token = localStorage.getItem("userToken");
+        if (!token) return;
+
+        try {
+            let data = cartData;
+            if (!data) {
+                const res = await fetch(`/api/cart?t=${Date.now()}`, {
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    cache: 'no-store'
+                });
+                if (res.ok) data = await res.json();
+            }
+
+            if (data) {
+                const count = data.items ? data.items.length : (data.cart ? data.cart.length : 0);
+                const badge = document.getElementById('cart-count-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.textContent = count;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Failed to update cart count", err);
+        }
+    }
+
     function initNavbarLogic() {
         // === AUTH LOGIC ===
         updateHeaderAuth();
+        // Update Cart Count
+        updateCartCount();
 
         // Highlight Active Link
         const currentPath = window.location.pathname;
@@ -262,6 +300,8 @@
                         localStorage.removeItem("userToken");
                         localStorage.removeItem("role");
                         localStorage.removeItem("user");
+                        const badge = document.getElementById('cart-count-badge');
+                        if (badge) badge.style.display = 'none';
                         window.location.href = "login.html";
                     };
                 }
