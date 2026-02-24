@@ -102,7 +102,7 @@ exports.verifyWalletTopup = async (req, res) => {
             amount: paidAmount,
             reason: "Wallet Topup",
             paymentId: razorpay_payment_id,
-        
+
         });
 
         res.json({
@@ -134,7 +134,7 @@ exports.getMyWallet = async (req, res) => {
             .sort({ createdAt: -1 });
 
         res.json({
-            balance: wallet.balance,
+            wallet: { balance: wallet.balance },
             transactions
         });
     } catch (error) {

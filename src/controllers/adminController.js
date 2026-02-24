@@ -78,12 +78,22 @@ exports.getDashboardStats = async (req, res) => {
     const pendingOrders = await Order.countDocuments({ orderStatus: 'Pending' });
     const newCustomers = await User.countDocuments({ role: 'user' });
 
-    // Total Sales (Aggregation)
+    // Total Sales (Aggregation) - Only 'Delivered' adds, 'Returned' deducts
     const salesData = await Order.aggregate([
-      { $match: { orderStatus: { $ne: 'Cancelled' } } },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $match: { orderStatus: { $in: ['Delivered', 'Returned'] } } },
+      {
+        $group: {
+          _id: null,
+          deliveredAmount: {
+            $sum: { $cond: [{ $eq: ["$orderStatus", "Delivered"] }, "$totalAmount", 0] }
+          },
+          returnedAmount: {
+            $sum: { $cond: [{ $eq: ["$orderStatus", "Returned"] }, "$totalAmount", 0] }
+          }
+        }
+      }
     ]);
-    const totalSales = salesData.length > 0 ? salesData[0].total : 0;
+    const totalSales = salesData.length > 0 ? (salesData[0].deliveredAmount - salesData[0].returnedAmount) : 0;
 
     // Sales Chart (Last 7 Days)
     const sevenDaysAgo = new Date();
@@ -92,14 +102,18 @@ exports.getDashboardStats = async (req, res) => {
     const salesChartRaw = await Order.aggregate([
       {
         $match: {
-          orderStatus: { $ne: 'Cancelled' },
+          orderStatus: { $in: ['Delivered', 'Returned'] },
           createdAt: { $gte: sevenDaysAgo }
         }
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          total: { $sum: "$totalAmount" }
+          total: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "Delivered"] }, "$totalAmount", { $multiply: ["$totalAmount", -1] }]
+            }
+          }
         }
       },
       { $sort: { _id: 1 } }
@@ -121,7 +135,7 @@ exports.getDashboardStats = async (req, res) => {
 
     // Category Chart (Top Selling Categories)
     const categoryChartData = await Order.aggregate([
-      { $match: { orderStatus: { $ne: 'Cancelled' } } },
+      { $match: { orderStatus: 'Delivered' } },
       { $unwind: "$items" },
       {
         $lookup: {
@@ -305,11 +319,35 @@ exports.getAllTransactions = async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const totalTransactions = await Order.countDocuments();
+    let query = {};
+    if (req.query.search) {
+      const search = req.query.search.trim();
+      const searchRegex = { $regex: search, $options: 'i' };
+
+      query.$or = [
+        { 'shippingAddress.fullName': searchRegex },
+        { 'shippingAddress.firstName': searchRegex },
+        { 'shippingAddress.lastName': searchRegex }
+      ];
+
+      // Support searching by partial ID (useful for truncated IDs shown in UI)
+      query.$or.push({
+        $expr: {
+          $regexMatch: {
+            input: { $toString: "$_id" },
+            regex: search,
+            options: "i"
+          }
+        }
+      });
+    }
+
+    const totalTransactions = await Order.countDocuments(query);
     const totalPages = Math.ceil(totalTransactions / limit);
 
-    const transactions = await Order.find()
-      .select('_id createdAt shippingAddress.firstName totalAmount paymentStatus paymentMethod')
+    const transactions = await Order.find(query)
+      .populate('user', 'name email')
+      .select('_id createdAt user shippingAddress totalAmount paymentStatus paymentMethod')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -440,7 +478,7 @@ exports.downloadSalesReportExcel = async (req, res) => {
   try {
     const { from, to } = req.query;
 
-    let filter = { orderStatus: "Delivered" };
+    let filter = { orderStatus: { $in: ["Delivered", "Returned"] } };
 
     if (from && to) {
       const startDate = new Date(from);
@@ -453,7 +491,7 @@ exports.downloadSalesReportExcel = async (req, res) => {
     }
 
     const orders = await Order.find(filter)
-      .populate("user", "email")
+      .populate("user", "name email")
       .sort({ createdAt: -1 });
 
     const workbook = new ExcelJS.Workbook();
@@ -467,6 +505,7 @@ exports.downloadSalesReportExcel = async (req, res) => {
       "Customer",
       "Email",
       "Date",
+      "Status",
       "Payment",
       "Amount"
     ]).font = { bold: true };
@@ -474,21 +513,30 @@ exports.downloadSalesReportExcel = async (req, res) => {
     let totalSales = 0;
 
     orders.forEach(order => {
-      const amount = Number(order.totalAmount) || 0;
-      totalSales += amount;
+      let amount = Number(order.totalAmount) || 0;
+
+      if (order.orderStatus === "Returned") {
+        totalSales -= amount;
+        amount = -amount; // Show as negative in the report
+      } else {
+        totalSales += amount;
+      }
+
+      const userName = order.user ? (order.user.name || order.user.email) : 'Guest';
 
       worksheet.addRow([
         order._id.toString().slice(-6).toUpperCase(),
-        order.shippingAddress?.fullName || "Guest",
+        userName,
         order.user?.email || "N/A",
         new Date(order.createdAt).toLocaleDateString(),
+        order.orderStatus,
         order.paymentMethod || "N/A",
         amount
       ]);
     });
 
     worksheet.addRow([]);
-    worksheet.addRow(["", "", "", "", "Total Sales", totalSales]);
+    worksheet.addRow(["", "", "", "", "", "Total Sales", totalSales]);
 
     res.setHeader(
       "Content-Type",

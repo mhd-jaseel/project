@@ -88,7 +88,7 @@ exports.placeOrder = async (req, res) => {
                 name: item.product.name,
                 price: price, // Save the actual price sold at
                 quantity: item.quantity,
-                image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : (item.product.image || '')
+                image: item.product.image || (item.product.images && item.product.images.length > 0 ? item.product.images[0] : '')
             });
         }
 
@@ -286,7 +286,9 @@ exports.placeOrder = async (req, res) => {
 // Get My Orders
 exports.getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const orders = await Order.find({ user: req.user.id })
+            .populate('items.product')
+            .sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
         console.error("Error fetching my orders:", error);
@@ -309,11 +311,37 @@ exports.getAllOrders = async (req, res) => {
             query.orderStatus = req.query.status;
         }
 
+        if (req.query.search) {
+            const search = req.query.search.trim();
+            const searchRegex = { $regex: search, $options: 'i' };
+
+            query.$or = [
+                { 'shippingAddress.fullName': searchRegex },
+                { 'shippingAddress.firstName': searchRegex },
+                { 'shippingAddress.lastName': searchRegex },
+                { 'shippingAddress.city': searchRegex },
+                { 'shippingAddress.mobileNumber': searchRegex },
+                { 'shippingAddress.phoneNumber': searchRegex }
+            ];
+
+            // Support searching by partial ID (useful for truncated IDs shown in UI)
+            query.$or.push({
+                $expr: {
+                    $regexMatch: {
+                        input: { $toString: "$_id" },
+                        regex: search,
+                        options: "i"
+                    }
+                }
+            });
+        }
+
         const totalOrders = await Order.countDocuments(query);
         const totalPages = Math.ceil(totalOrders / limit);
 
         const orders = await Order.find(query)
             .populate('user', 'name email')
+            .populate('items.product')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -508,8 +536,11 @@ exports.getMyCancellations = async (req, res) => {
     try {
         const cancellations = await Order.find({
             user: req.user.id,
-            orderStatus: 'Cancelled'
-        }).sort({ cancelledAt: -1 });
+            $or: [
+                { orderStatus: 'Cancelled' },
+                { 'items.itemStatus': 'Cancelled' }
+            ]
+        }).populate('items.product').sort({ updatedAt: -1 });
         res.json(cancellations);
     } catch (error) {
         console.error("Error fetching my cancellations:", error);
@@ -556,7 +587,6 @@ exports.requestReturn = async (req, res) => {
 ====================== */
 
 // Cancel Single Order Item
-// Cancel Single Order Item
 exports.cancelOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
@@ -581,131 +611,98 @@ exports.cancelOrderItem = async (req, res) => {
         item.itemStatus = 'Cancelled';
         item.cancellationReason = reason || 'User requested';
 
-        // Restore Stock for Item
+        // Restore Stock
         const product = await Product.findById(item.product);
         if (product) {
             const unitWeight = parseWeight(product.weight);
             if (unitWeight > 0) {
                 product.totalStock += (unitWeight * item.quantity);
-                if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
-                    product.status = 'In Stock';
-                }
                 product.stockQty = Math.floor(product.totalStock / unitWeight);
+                if (product.stockQty > 0 && product.status === 'Out of Stock') product.status = 'In Stock';
                 await product.save();
             } else {
-                let addUnit = 1;
-                // Check if likely using the 1000-unit hack for missing weight
-                if (product.totalStock >= 1000 && product.weight === "") addUnit = 1000;
-
+                let addUnit = (product.totalStock >= 1000 && product.weight === "") ? 1000 : 1;
                 product.totalStock += (item.quantity * addUnit);
-
                 if (product.totalStock >= 1000 && product.weight === "") product.stockQty = Math.floor(product.totalStock / 1000);
-
                 else product.stockQty += item.quantity;
-
                 if (product.stockQty > 0) product.status = 'In Stock';
                 await product.save();
             }
         }
 
-        // 2. Recalculate Totals
-        const oldTotalAmount = order.totalAmount;
-        let newSubtotal = 0;
+        // 2. Recalculate Logic
+        const currentTotal = order.totalAmount;
+        const itemTotal = item.price * item.quantity;
+        const originalSubtotal = order.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const originalDiscount = order.discountAmount || 0;
 
+        let newSubtotal = 0;
         order.items.forEach(i => {
-            if (i.itemStatus !== 'Cancelled') {
+            if (i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned') {
                 newSubtotal += i.price * i.quantity;
             }
         });
-
         order.subtotal = newSubtotal;
 
-        // Recalculate Discount
+        let expectedRefund = 0;
+        let isCouponRemoved = false;
+
         const hadCoupon = !!order.couponCode;
 
         if (order.couponCode) {
-            const Coupon = require('../models/Coupon');
-            const coupon = await Coupon.findOne({ code: order.couponCode });
+            const CouponModel = require('../models/Coupon');
+            const coupon = await CouponModel.findOne({ code: order.couponCode });
 
-            if (coupon) {
-                // Check if coupon is still valid for new subtotal
-                if (newSubtotal < coupon.minOrderAmount) {
-                    order.couponCode = null;
-                    order.discountAmount = 0;
-
-                    // Revert Coupon Usage - REMOVED (Strict one-time use)
-                    /*
-                    if (coupon.usedCount > 0) coupon.usedCount -= 1;
-                    const uIdx = coupon.usedUsers.findIndex(u => u.toString() === userId.toString());
-                    if (uIdx > -1) coupon.usedUsers.splice(uIdx, 1);
-                    await coupon.save();
-                    */
-
-                } else {
-                    // Recalculate Discount Value
-                    if (coupon.discountType === 'percentage') {
-                        let newDiscount = (newSubtotal * coupon.discountValue) / 100;
-                        if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
-                            newDiscount = coupon.maxDiscountAmount;
-                        }
-                        order.discountAmount = Math.round(newDiscount);
-                    } else if (coupon.discountType === 'fixed') {
-                        // Keep fixed discount unless subtotal is 0 or less than discount
-                        if (newSubtotal === 0) order.discountAmount = 0;
-                        else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
-                    }
-                }
-            } else {
-                // Coupon deleted or invalid code
+            if (coupon && newSubtotal < coupon.minOrderAmount) {
+                isCouponRemoved = true;
                 order.couponCode = null;
                 order.discountAmount = 0;
+
+                if (order.paymentMethod === 'COD') {
+                    order.totalAmount = Math.max(0, Math.round(newSubtotal + order.deliveryCharge + order.handlingFee));
+                    expectedRefund = 0;
+                } else {
+                    const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
+                    expectedRefund = Math.max(0, itemTotal - itemShare);
+                    order.totalAmount = Math.max(currentTotal - Math.round(expectedRefund), 0);
+                }
+            } else {
+                expectedRefund = itemTotal;
+                order.totalAmount = Math.max(currentTotal - Math.round(itemTotal), 0);
             }
         } else {
-            order.discountAmount = 0;
+            expectedRefund = itemTotal;
+            order.totalAmount = Math.max(currentTotal - Math.round(itemTotal), 0);
         }
 
-        // New Total
-        let newTotal = newSubtotal + order.deliveryCharge + order.handlingFee - order.discountAmount;
-        newTotal = Math.max(0, Math.round(newTotal));
-
-        order.totalAmount = newTotal;
-
-        // 3. Refund Logic (Difference)
-        if (order.paymentStatus === 'Completed' && ['Wallet', 'Razorpay'].includes(order.paymentMethod)) {
-            const refundAmount = oldTotalAmount - newTotal;
-
-            if (refundAmount > 0) {
-                const wallet = await Wallet.findOne({ user: userId });
-                if (wallet) {
-                    wallet.balance += refundAmount;
-                    await wallet.save();
-
-                    await Transaction.create({
-                        wallet: wallet._id,
-                        user: userId,
-                        amount: refundAmount,
-                        reason: 'Item Cancellation Refund',
-                        orderId: order._id,
-                        orderId: order._id
-                    });
-                }
+        // 3. Wallet Refund
+        if (expectedRefund > 0 && order.paymentStatus === 'Completed' && ['Wallet', 'Razorpay'].includes(order.paymentMethod)) {
+            const wallet = await Wallet.findOne({ user: userId });
+            if (wallet) {
+                wallet.balance += Math.round(expectedRefund);
+                await wallet.save();
+                await Transaction.create({
+                    wallet: wallet._id, user: userId, amount: Math.round(expectedRefund),
+                    reason: 'Item Cancellation Refund', orderId: order._id
+                });
             }
         }
 
-        // Check if all items are cancelled
+        // Entire Order Check
         const allCancelled = order.items.every(i => i.itemStatus === 'Cancelled');
         if (allCancelled) {
             order.orderStatus = 'Cancelled';
-            order.cancellationReason = 'All items cancelled by user';
             order.cancelledAt = new Date();
+            if (order.paymentMethod !== 'COD' && order.paymentStatus === 'Completed') {
+                order.paymentStatus = 'Refunded';
+            }
         }
 
         await order.save();
-
-        // Return couponCancelled in response
         res.json({
             message: 'Item cancelled successfully',
             order,
+            expectedRefund: Math.round(expectedRefund),
             couponCancelled: hadCoupon && !order.couponCode
         });
 
@@ -714,6 +711,8 @@ exports.cancelOrderItem = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+
 
 // Request Return Single Item
 exports.requestItemReturn = async (req, res) => {
@@ -730,6 +729,16 @@ exports.requestItemReturn = async (req, res) => {
 
         if (order.orderStatus !== 'Delivered') {
             return res.status(400).json({ message: 'Order not delivered yet' });
+        }
+
+        // 1-hour Return Window Check
+        if (order.deliveredAt) {
+            const deliveryTime = new Date(order.deliveredAt).getTime();
+            const currentTime = new Date().getTime();
+            const diffHours = (currentTime - deliveryTime) / (1000 * 60 * 60);
+            if (diffHours > 1) {
+                return res.status(400).json({ message: 'Return window closed (1 hour after delivery)' });
+            }
         }
 
         if (item.returnStatus !== 'None') {
@@ -755,7 +764,9 @@ exports.requestItemReturn = async (req, res) => {
 // Get Order By ID (Admin)
 exports.getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('user', 'name email');
+        const order = await Order.findById(req.params.id)
+            .populate('user', 'name email')
+            .populate('items.product');
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
@@ -863,10 +874,10 @@ exports.updateItemReturnStatus = async (req, res) => {
                 const unitWeight = parseWeight(product.weight);
                 if (unitWeight > 0) {
                     product.totalStock += (unitWeight * item.quantity);
-                    if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                    product.stockQty = Math.floor(product.totalStock / unitWeight);
+                    if (product.stockQty > 0 && product.status === 'Out of Stock') {
                         product.status = 'In Stock';
                     }
-                    product.stockQty = Math.floor(product.totalStock / unitWeight);
                     await product.save();
                 } else {
                     let addUnit = 1;
@@ -881,8 +892,11 @@ exports.updateItemReturnStatus = async (req, res) => {
                 }
             }
 
-            // 1. Recalculate Totals (Similar to Cancel logic)
+            // 1. Recalculate Totals
             const oldTotalAmount = order.totalAmount;
+            const originalSubtotal = order.items.reduce((sum, hi) => sum + (hi.price * hi.quantity), 0);
+            const itemTotal = item.price * item.quantity;
+            const originalDiscount = order.discountAmount || 0;
             let newSubtotal = 0;
 
             order.items.forEach(i => {
@@ -894,33 +908,35 @@ exports.updateItemReturnStatus = async (req, res) => {
 
             order.subtotal = newSubtotal;
 
+            let expectedRefund = 0;
             // 2. Recalculate Discount
             if (order.couponCode) {
-                const Coupon = require('../models/Coupon');
-                const coupon = await Coupon.findOne({ code: order.couponCode });
-
-                if (coupon && coupon.discountType === 'percentage') {
-                    let newDiscount = (newSubtotal * coupon.discountValue) / 100;
-                    if (coupon.maxDiscountAmount && newDiscount > coupon.maxDiscountAmount) {
-                        newDiscount = coupon.maxDiscountAmount;
+                const CouponModel = require('../models/Coupon');
+                const couponData = await CouponModel.findOne({ code: order.couponCode });
+                if (couponData && newSubtotal < couponData.minOrderAmount) {
+                    order.couponCode = null;
+                    order.discountAmount = 0;
+                    if (order.paymentMethod === 'COD') {
+                        order.totalAmount = Math.max(0, Math.round(newSubtotal + order.deliveryCharge + order.handlingFee));
+                        expectedRefund = 0;
+                    } else {
+                        const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
+                        expectedRefund = Math.max(0, itemTotal - itemShare);
+                        order.totalAmount = Math.max(0, Math.round(oldTotalAmount - expectedRefund));
                     }
-                    order.discountAmount = Math.round(newDiscount);
-                } else if (coupon && coupon.discountType === 'fixed') {
-                    if (newSubtotal === 0) order.discountAmount = 0;
-                    else if (order.discountAmount > newSubtotal) order.discountAmount = newSubtotal;
+                } else {
+                    expectedRefund = itemTotal;
+                    order.totalAmount = Math.max(0, Math.round(oldTotalAmount - itemTotal));
                 }
             } else {
-                // If no coupon, maintain existing logic (usually 0)
+                expectedRefund = itemTotal;
+                order.totalAmount = Math.max(0, Math.round(oldTotalAmount - itemTotal));
             }
 
-            // 3. New Total
-            let newTotal = newSubtotal + order.deliveryCharge + order.handlingFee - order.discountAmount;
-            newTotal = Math.max(0, Math.round(newTotal));
-            order.totalAmount = newTotal;
 
-            // 4. Refund Logic (Difference)
-            if (order.paymentStatus === 'Completed') {
-                const refundAmount = oldTotalAmount - newTotal;
+            // 4. Refund Logic
+            if (expectedRefund > 0 && order.paymentStatus === 'Completed') {
+                const refundAmount = expectedRefund;
 
                 if (refundAmount > 0) {
                     const wallet = await Wallet.findOne({ user: order.user });
@@ -931,11 +947,9 @@ exports.updateItemReturnStatus = async (req, res) => {
                         await Transaction.create({
                             wallet: wallet._id,
                             user: order.user,
-                            type: 'CREDIT',
-                            amount: refundAmount,
+                            amount: Math.round(refundAmount),
                             reason: 'Item Return Refund',
-                            orderId: order._id,
-                            description: `Refund for Returned Item: ${item.name}`
+                            orderId: order._id
                         });
 
                         // If all items returned, update payment status?
@@ -968,8 +982,11 @@ exports.getMyReturns = async (req, res) => {
     try {
         const returns = await Order.find({
             user: req.user.id,
-            returnStatus: { $ne: 'None' }
-        }).sort({ returnRequestedAt: -1 });
+            $or: [
+                { returnStatus: { $ne: 'None' } },
+                { 'items.returnStatus': { $ne: 'None' } }
+            ]
+        }).populate('items.product').sort({ updatedAt: -1 });
         res.json(returns);
     } catch (error) {
         console.error("Error fetching my returns:", error);
@@ -1117,5 +1134,84 @@ exports.downloadInvoice = async (req, res) => {
     } catch (error) {
         console.error("Invoice Error:", error);
         res.status(500).json({ message: "Server error" });
+    }
+};
+
+/* ======================
+    REFUND CALCULATION
+====================== */
+
+exports.calculateItemRefundInfo = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.params;
+        const userId = req.user.id;
+
+        const order = await Order.findOne({ _id: orderId, user: userId });
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        const item = order.items.id(itemId);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+
+        const itemTotal = item.price * item.quantity;
+        const originalSubtotal = order.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+        let newSubtotal = 0;
+        order.items.forEach(idx => {
+            if (idx.itemStatus !== 'Cancelled' && idx.itemStatus !== 'Returned' && idx._id.toString() !== itemId) {
+                newSubtotal += idx.price * idx.quantity;
+            }
+        });
+
+        const currentTotalAmount = order.totalAmount;
+        let isCouponRemoved = false;
+        let couponAdjustmentMessage = "";
+        let expectedRefund = 0;
+        let newTotal = 0;
+
+        if (order.couponCode) {
+            const Coupon = require('../models/Coupon');
+            const coupon = await Coupon.findOne({ code: order.couponCode });
+
+            if (coupon && newSubtotal < coupon.minOrderAmount) {
+                isCouponRemoved = true;
+
+                if (order.paymentMethod === 'COD') {
+                    newTotal = newSubtotal + order.deliveryCharge + order.handlingFee;
+                    expectedRefund = 0;
+                    couponAdjustmentMessage = "Cancelling this item invalidates the coupon. The total payable amount will be updated without the coupon discount.";
+                } else {
+                    const itemShare = (itemTotal / originalSubtotal) * (order.discountAmount || 0);
+                    expectedRefund = Math.max(0, itemTotal - itemShare);
+
+                    if (itemTotal <= itemShare) {
+                        expectedRefund = 0;
+                        couponAdjustmentMessage = "This product amount has already been covered by the applied coupon. No refund will be issued.";
+                    } else {
+                        couponAdjustmentMessage = `Only ₹${Math.round(expectedRefund)} will be refunded for this cancellation. The coupon discount was split across all products.`;
+                    }
+                    newTotal = currentTotalAmount - expectedRefund;
+                }
+            } else {
+                expectedRefund = itemTotal;
+                newTotal = currentTotalAmount - expectedRefund;
+            }
+        } else {
+            expectedRefund = itemTotal;
+            newTotal = currentTotalAmount - expectedRefund;
+        }
+
+        res.json({
+            expectedRefund: Math.round(expectedRefund),
+            itemPrice: itemTotal,
+            isCouponRemoved,
+            newTotal: Math.round(newTotal),
+            currentTotalAmount,
+            paymentMethod: order.paymentMethod,
+            couponAdjustmentMessage
+        });
+
+    } catch (error) {
+        console.error("Error calculating refund info:", error);
+        res.status(500).json({ message: "Server Error" });
     }
 };

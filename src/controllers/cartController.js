@@ -20,10 +20,18 @@ exports.getCart = async (req, res) => {
 
         let subtotal = 0;
 
-        const items = user.cart.map(item => {
-            const product = item.product;
-            if (!product) return null; // Handle deleted products
+        // Identify items that failed to populate (product was deleted)
+        const validItems = user.cart.filter(item => item.product !== null);
+        const hasInvalidItems = validItems.length !== user.cart.length;
 
+        // If some products were deleted, update the user's cart in DB silently
+        if (hasInvalidItems) {
+            user.cart = validItems;
+            await user.save();
+        }
+
+        const items = validItems.map(item => {
+            const product = item.product;
             // Determine Effective Price & Discount
             let finalPrice = product.price; // Default to original
             let isDiscounted = false;
@@ -56,11 +64,11 @@ exports.getCart = async (req, res) => {
                 price: product.price, // Original Price
                 discount: isDiscounted ? finalPrice : 0, // Frontend uses this property as "Discounted Price" if > 0
                 quantity: item.quantity,
-                stock: product.stock,
+                stock: product.stockQty || 0, // Fixed to use stockQty
                 status: product.status,
                 subtotal: finalPrice * item.quantity
             };
-        }).filter(item => item !== null);
+        });
 
         const handlingCharge = 2; // Fixed as seen in HTML
         const deliveryCharge = subtotal > 2000 ? 0 : 25;

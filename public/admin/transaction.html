@@ -501,9 +501,33 @@
 
         let currentPage = 1;
 
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTransactions(1);
+
+            // Dynamic Search Logic
+            const searchInput = document.querySelector('.search-bar input');
+            if (searchInput) {
+                searchInput.id = 'transactionSearchInput';
+                let debounceTimer;
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        fetchTransactions(1);
+                    }, 500);
+                });
+            }
+        });
+
         async function fetchTransactions(page = 1) {
+            const searchInput = document.getElementById('transactionSearchInput');
+            const searchTerm = searchInput ? searchInput.value.trim() : '';
+            let query = `?page=${page}`;
+            if (searchTerm) {
+                query += `&search=${encodeURIComponent(searchTerm)}`;
+            }
+
             try {
-                const res = await fetch(`/api/admin/transactions?page=${page}`, {
+                const res = await fetch(`/api/admin/transactions${query}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -578,6 +602,8 @@
                         else if (trx.paymentStatus === 'Refunded') statusClass = 'status-info';
 
 
+                        const userName = trx.user ? (trx.user.name || trx.user.email) : 'Guest';
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>
@@ -592,9 +618,9 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm me-2 fw-bold bg-light text-primary rounded-circle d-flex align-items-center justify-content-center">
-                                        ${(trx.shippingAddress && trx.shippingAddress.firstName) ? trx.shippingAddress.firstName.charAt(0).toUpperCase() : 'G'}
+                                        ${userName.charAt(0).toUpperCase()}
                                     </div>
-                                    <span class="fw-medium text-dark">${trx.shippingAddress ? (trx.shippingAddress.firstName || 'Guest') : 'Guest'}</span>
+                                    <span class="fw-medium text-dark">${userName}</span>
                                 </div>
                             </td>
                             <td class="fw-bold text-dark">₹${trx.totalAmount.toLocaleString()}</td>
@@ -645,7 +671,7 @@
             container.innerHTML = html;
         }
 
-        document.addEventListener('DOMContentLoaded', () => fetchTransactions(1));
+
     </script>
 
 

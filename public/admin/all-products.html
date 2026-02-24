@@ -658,53 +658,7 @@
         updateUnreadCount();
         setInterval(updateUnreadCount, 10000);
 
-        // Stock Update Logic
-        document.querySelectorAll('.btn-stock-update').forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Find the closest row and stock element
-                const row = this.closest('tr');
-                const stockBadge = row.querySelector('td:nth-child(5) span');
-                const currentStatus = stockBadge.innerText;
 
-                Swal.fire({
-                    title: 'Update Stock',
-                    html: `
-                        <p>Current Status: <strong>${currentStatus}</strong></p>
-                        <select id="swal-stock-status" class="form-select mb-3">
-                            <option value="In Stock" ${currentStatus === 'In Stock' ? 'selected' : ''}>In Stock</option>
-                            <option value="Low Stock" ${currentStatus === 'Low Stock' ? 'selected' : ''}>Low Stock</option>
-                            <option value="Out of Stock" ${currentStatus === 'Out of Stock' ? 'selected' : ''}>Out of Stock</option>
-                        </select>
-                        <input type="number" id="swal-stock-qty" class="form-control" placeholder="Enter Quantity" value="50">
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Update',
-                    confirmButtonColor: '#0f9d58',
-                    preConfirm: () => {
-                        const status = document.getElementById('swal-stock-status').value;
-                        const qty = document.getElementById('swal-stock-qty').value;
-                        if (!qty) {
-                            Swal.showValidationMessage('Please enter quantity');
-                        }
-                        return { status, qty };
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const { status, qty } = result.value;
-
-                        // Update UI
-                        let badgeClass = 'bg-success text-success';
-                        if (status === 'Low Stock') badgeClass = 'bg-warning text-warning';
-                        if (status === 'Out of Stock') badgeClass = 'bg-danger text-danger';
-
-                        stockBadge.className = `badge ${badgeClass} bg-opacity-10 rounded-pill px-3 py-2`;
-                        stockBadge.innerText = status;
-
-                        Swal.fire('Updated!', `Stock updated to ${status} (${qty} items).`, 'success');
-                    }
-                });
-            });
-        });
 
 
         let currentPage = 1;
@@ -755,12 +709,7 @@
         }
 
         function getDisplayStatus(p) {
-            const qty = getDisplayQty(p);
-            if (qty > 0) {
-                if (p.status === 'Out of Stock') return 'In Stock';
-                return p.status || 'In Stock';
-            }
-            return 'Out of Stock';
+            return p.status || 'Out of Stock';
         }
 
         function getStatusBadgeClass(status) {
@@ -807,10 +756,11 @@
         <tr>
           <td>
             <img 
-              src="${p.image || 'https://placehold.co/50'}" 
+              src="${p.image && (p.image.startsWith('http') || p.image.startsWith('/')) ? p.image : (p.image ? '/' + p.image : 'https://placehold.co/50')}" 
               width="50" 
               height="50"
               style="object-fit: cover;"
+              onerror="this.src='https://placehold.co/50'"
             >
           </td>
 
@@ -818,7 +768,12 @@
 
           <td>${p.category?.name || "Uncategorized"}</td>
 
-          <td>₹${p.price}</td>
+          <td>
+            ${p.discount && p.discount > 0
+                        ? `<span class="text-danger fw-bold">₹${p.discount}</span>`
+                        : `<span class="fw-bold text-dark">₹${p.price}</span>`
+                    }
+          </td>
 
           <td>
             <span class="badge bg-light text-dark border fw-bold">${getDisplayQty(p)}</span>

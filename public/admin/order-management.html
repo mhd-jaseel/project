@@ -900,10 +900,19 @@
                     imgClass += ' opacity-50';
                 }
 
+                // Item Image prioritization - use current product image if exists for consistency
+                let rawItemImage = item.image;
+                if (item.product && item.product.image) {
+                    rawItemImage = item.product.image;
+                }
+                const itemImgSrc = (rawItemImage && (rawItemImage.startsWith('http') || rawItemImage.startsWith('/'))) ? rawItemImage : (rawItemImage ? '/' + rawItemImage : 'https://placehold.co/50');
+
                 itemsHtml += `
                     <div class="d-flex flex-column mb-3 border-bottom pb-2">
                         <div class="d-flex align-items-center">
-                            <img src="${item.image || 'https://via.placeholder.com/50'}" class="${imgClass}" style="width:50px;height:50px;object-fit:contain;">
+                            <img src="${itemImgSrc}" 
+                                onerror="this.src='https://placehold.co/50'"
+                                class="${imgClass}" style="width:50px;height:50px;object-fit:contain;">
                             <div class="flex-grow-1">
                                 <h6 class="m-0 ${textClass}">${item.name} ${statusBadge}</h6>
                                 <small class="text-muted ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'text-decoration-line-through' : ''}">Qty: ${item.quantity} x ₹${item.price}</small>

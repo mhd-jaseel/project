@@ -17,8 +17,7 @@ const {
   updateProfile,
   changeEmail,
   changePassword,
-  googleLoginSuccess,
-  deleteProfilePicture
+  googleLoginSuccess
 } = require("../controllers/authController");
 
 
@@ -53,8 +52,7 @@ router.get("/wallet", authMiddleware, getWalletBalance);
 
 // Profile Routes
 router.get("/me", authMiddleware, getProfile);
-router.put("/update-profile", authMiddleware, upload.single("profilePicture"), updateProfile);
-router.delete("/profile-picture", authMiddleware, deleteProfilePicture);
+router.put("/update-profile", authMiddleware, updateProfile);
 router.put("/change-email", authMiddleware, changeEmail);
 router.put("/change-password", authMiddleware, changePassword);
 

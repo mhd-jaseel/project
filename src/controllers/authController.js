@@ -307,11 +307,6 @@ exports.updateProfile = async (req, res) => {
       updates.password = await bcrypt.hash(password, 10);
     }
 
-    // Handle Profile Picture
-    if (req.file) {
-      updates.profilePicture = `/uploads/profile/${req.file.filename}`;
-    }
-
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       updates,
@@ -402,19 +397,3 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-/* ======================
-    DELETE PROFILE PICTURE
-====================== */
-exports.deleteProfilePicture = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    user.profilePicture = "";
-    await user.save();
-
-    res.json({ message: "Profile picture removed successfully", user });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};

@@ -3,7 +3,7 @@ const Category = require("../models/Category");
 // ADMIN: Add Category
 exports.addCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: "Category name is required" });
@@ -28,7 +28,6 @@ exports.addCategory = async (req, res) => {
     // 4. If not duplicate, save the category
     const category = new Category({
       name: name.trim(), // Save with original spacing but trimmed ends
-      description,
       image: req.file ? `/uploads/categories/${req.file.filename}` : null
     });
 
@@ -43,17 +42,36 @@ exports.addCategory = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 // PUBLIC: Get all categories
 exports.getCategories = async (req, res) => {
-  const categories = await Category.find().sort({ createdAt: -1 });
-  res.json(categories);
+  try {
+    let categories = await Category.find().sort({ createdAt: -1 });
+
+    // Ensure "Uncategorized" category exists
+    let uncategorized = categories.find(c => c.name.toLowerCase() === 'uncategorized');
+    if (!uncategorized) {
+      uncategorized = await Category.findOne({ name: /Uncategorized/i });
+      if (!uncategorized) {
+        uncategorized = new Category({
+          name: "Uncategorized"
+        });
+        await uncategorized.save();
+      }
+      categories.push(uncategorized);
+    }
+
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch categories" });
+  }
 };
 
 // ADMIN: Update Category
 exports.updateCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
-    let updateData = { name, description };
+    const { name } = req.body;
+    let updateData = { name };
 
     if (req.file) {
       updateData.image = `/uploads/categories/${req.file.filename}`;
@@ -81,17 +99,55 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
-    await Category.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
+    const categoryId = req.params.id;
+
+    // First ensure Uncategorized exists
+    let uncategorized = await Category.findOne({ name: /Uncategorized/i });
+    if (!uncategorized) {
+      uncategorized = new Category({
+        name: "Uncategorized"
+      });
+      await uncategorized.save();
+    }
+
+    // Prevent deleting the Uncategorized category itself
+    if (uncategorized._id.toString() === categoryId) {
+      return res.status(400).json({ message: "Cannot delete the default Uncategorized category" });
+    }
+
+    // Move all products belonging to this category to Uncategorized
+    const Product = require("../models/Product"); // ensure Product model is loaded
+    await Product.updateMany(
+      { category: categoryId },
+      { category: uncategorized._id }
+    );
+
+    // Now delete the category
+    await Category.findByIdAndDelete(categoryId);
+    res.json({ success: true, message: "Category deleted and products moved to Uncategorized." });
   } catch (err) {
+    console.error("❌ Delete category error:", err);
     res.status(500).json({ message: "Delete failed" });
   }
 };
 
-
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    let categories = await Category.find().sort({ createdAt: -1 });
+
+    // Ensure "Uncategorized" category exists
+    let uncategorized = categories.find(c => c.name.toLowerCase() === 'uncategorized');
+    if (!uncategorized) {
+      uncategorized = await Category.findOne({ name: /Uncategorized/i });
+      if (!uncategorized) {
+        uncategorized = new Category({
+          name: "Uncategorized"
+        });
+        await uncategorized.save();
+      }
+      categories.push(uncategorized);
+    }
+
     res.json(categories);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch categories" });

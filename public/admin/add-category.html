@@ -308,11 +308,7 @@
                                     required>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label text-muted small">Description</label>
-                                <textarea class="form-control" id="categoryDescription" rows="3"
-                                    placeholder="Category description..."></textarea>
-                            </div>
+
 
                             <div class="mb-4">
                                 <label class="form-label text-muted small">Category Image</label>
@@ -366,14 +362,42 @@
 
             const nameInput = document.getElementById("categoryName");
             const originalName = nameInput.value.trim();
-            const description = document.getElementById("categoryDescription").value.trim();
             const imageInput = document.getElementById("categoryImage");
 
+            // Reset Errors
+            document.querySelectorAll('form .invalid-feedback').forEach(el => el.remove());
+            document.querySelectorAll('form .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            let isValid = true;
+            const showError = (elementId, message) => {
+                const input = document.getElementById(elementId);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback text-danger small mt-1';
+                    errorDiv.innerText = message;
+                    input.parentNode.appendChild(errorDiv);
+                }
+                isValid = false;
+            };
+
+            // Validation Rules
             if (!originalName) {
-                alert("Category name is required");
-                nameInput.focus();
-                return;
+                showError('categoryName', "Category Name is required.");
+            } else if (originalName.length < 3) {
+                showError('categoryName', "Category Name must be at least 3 characters long.");
+            } else if (originalName.length > 50) {
+                showError('categoryName', "Category Name cannot exceed 50 characters.");
+            } else {
+                const nameRegex = /^[A-Za-z0-9&]+( [A-Za-z0-9&]+)*$/;
+                if (!nameRegex.test(originalName)) {
+                    showError('categoryName', "Category Name must contain only letters, numbers, and '&', with single spaces between words.");
+                }
             }
+
+
+
+            if (!isValid) return;
 
             // --- NEW VALIDATION LOGIC ---
             // 1. Normalize: Remove ALL spaces and make lowercase
@@ -391,15 +415,13 @@
                 });
 
                 if (isDuplicate) {
-                    alert("❌ This category already exists (even with different spacing or case)!");
-                    nameInput.classList.add("is-invalid");
+                    showError('categoryName', "This category already exists (even with different spacing or case)!");
                     return;
                 }
                 // --- END OF NEW VALIDATION ---
 
                 const formData = new FormData();
                 formData.append("name", originalName);
-                formData.append("description", description);
 
                 if (imageInput.files.length > 0) {
                     formData.append("image", imageInput.files[0]);
@@ -447,10 +469,9 @@
                     li.className = "list-group-item d-flex justify-content-between align-items-center";
                     li.innerHTML = `
                         <div class="d-flex align-items-center">
-                            <img src="${cat.image || 'https://placehold.co/40'}" alt="${cat.name}" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                            <img src="${cat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(cat.name)}&background=0f9d58&color=fff&size=40`}" alt="${cat.name}" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
                             <div>
                                 <h6 class="mb-0 fw-bold">${cat.name}</h6>
-                                <small class="text-muted">${cat.description || 'No description'}</small>
                             </div>
                         </div>
                     `;

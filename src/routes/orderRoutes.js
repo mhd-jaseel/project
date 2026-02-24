@@ -22,4 +22,7 @@ router.put('/:orderId/return-status', protect, role('admin'), orderController.up
 router.put('/:orderId/items/:itemId/return-status', protect, role('admin'), orderController.updateItemReturnStatus);
 router.put('/:orderId/viewed', protect, role('admin'), orderController.markOrderViewed);
 
+// Refund calculation endpoints
+router.get('/:orderId/items/:itemId/refund-calculation', protect, orderController.calculateItemRefundInfo);
+
 module.exports = router;

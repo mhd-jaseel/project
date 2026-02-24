@@ -402,20 +402,368 @@
 
 <body>
 
-    <!-- Header Section -->
-    <div id="navbar-placeholder"></div>
+    <header class="bg-primary-custom text-white">
+        <div class="container py-2">
+            <div class="row align-items-center">
+                <!-- Logo -->
+                <div class="col-md-3">
+                    <a href="/user/homepage.html" class="navbar-brand fw-bold fs-3 text-white">
+                        <i class="fas fa-leaf me-2"></i>KM Store
+                    </a>
+                </div>
+
+                <!--search bar-->
+                <div class="col-md-5">
+                    <form id="globalSearchForm" class="position-relative">
+
+                        <div class="input-group">
+                            <input type="text" id="globalSearchInput" class="form-control border-0"
+                                placeholder="Search for products..." autocomplete="off">
+
+                            <button class="btn btn-light text-primary-custom" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <!--  Suggestions Dropdown -->
+                        <div id="searchSuggestions" class="list-group position-absolute w-100 shadow"
+                            style="top: 100%; left: 0; z-index: 1000; display: none; border-radius: 8px;">
+                        </div>
+
+                    </form>
+                </div>
+                <!-- User Actions -->
+                <div class="col-md-4 text-end">
+                    <a href="/user/wishlist.html" class="text-white text-decoration-none me-3 position-relative"
+                        id="headerWishlistBtn">
+                        <i class="fas fa-heart me-1"></i>
+                        Wishlist
+                        <span id="wishlist-count-badge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="display: none; font-size: 0.7rem;">0</span>
+                    </a>
+                    <a href="/user/cart.html" class="text-white text-decoration-none me-3 position-relative"
+                        id="headerCartBtn">
+                        <i class="fas fa-shopping-cart me-1"></i>
+                        Cart
+                        <span id="cart-count-badge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="display: none; font-size: 0.7rem;">0</span>
+                    </a>
+
+                    <!-- Dynamic Auth Section -->
+                    <span id="auth-actions">
+                        <!-- Default to Login -->
+                        <a href="/user/login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
+                                class="fas fa-sign-in-alt me-1"></i>
+                            Login</a>
+                    </span>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-dark p-0 mt-2">
+                <div class="container-fluid p-0">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="/user/homepage.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/user/about.html">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/user/contact.html">Contact</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/user/product.html">Products</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Curve SVG at the bottom -->
+        <div class="header-curve">
+            <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#ffffff"
+                    d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320L0,320Z">
+                </path>
+            </svg>
+        </div>
+    </header>
+
     <script>
-        fetch('navbar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('navbar-placeholder').innerHTML = html;
-                const scripts = document.getElementById('navbar-placeholder').querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    newScript.textContent = script.textContent;
-                    document.body.appendChild(newScript);
+        async function updateCartCount(cartData = null) {
+            const token = localStorage.getItem("userToken");
+            if (!token) return;
+
+            try {
+                let data = cartData;
+                if (!data) {
+                    const res = await fetch(`/api/cart?t=${Date.now()}`, {
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        cache: 'no-store'
+                    });
+                    if (res.ok) data = await res.json();
+                }
+
+                if (data) {
+                    const count = data.items ? data.items.length : (data.cart ? data.cart.length : 0);
+                    const badge = document.getElementById('cart-count-badge');
+                    if (badge) {
+                        if (count > 0) {
+                            badge.textContent = count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to update cart count", err);
+            }
+        }
+
+        async function updateWishlistCount() {
+            const token = localStorage.getItem("userToken");
+            if (!token) return;
+
+            try {
+                const res = await fetch(`/api/wishlist?t=${Date.now()}`, {
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    cache: 'no-store'
                 });
+                if (res.ok) {
+                    const data = await res.json();
+                    const count = data.length || 0;
+                    const badge = document.getElementById('wishlist-count-badge');
+                    if (badge) {
+                        if (count > 0) {
+                            badge.textContent = count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to update wishlist count", err);
+            }
+        }
+
+        function initNavbarLogic() {
+            // === AUTH LOGIC ===
+            updateHeaderAuth();
+
+            // Update Cart Count
+            // Check if a page already fetched cart data before navbar script loaded
+            if (window.pendingCartData) {
+                updateCartCount(window.pendingCartData);
+                delete window.pendingCartData;
+            } else {
+                updateCartCount();
+            }
+
+            // Update Wishlist Count
+            updateWishlistCount();
+
+            // Highlight Active Link
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/user/homepage.html')) {
+                    link.classList.add('active');
+                }
             });
+
+            // === SEARCH LOGIC ===
+            const input = document.getElementById("globalSearchInput");
+            const form = document.getElementById("globalSearchForm");
+            const suggestionsBox = document.getElementById("searchSuggestions");
+
+            if (!input) return;
+
+            let debounceTimer;
+
+            function debounce(func, delay) {
+                return function (...args) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            function highlightMatch(text, keyword) {
+                const regex = new RegExp(`(${keyword})`, "gi");
+                return text.replace(regex, `<span class="text-success fw-bold">$1</span>`);
+            }
+
+            function saveRecentSearch(keyword) {
+                let recent = JSON.parse(localStorage.getItem("recentSearches")) || [];
+                recent = recent.filter(item => item !== keyword);
+                recent.unshift(keyword);
+                if (recent.length > 5) recent.pop();
+                localStorage.setItem("recentSearches", JSON.stringify(recent));
+            }
+
+            function showRecentSearches() {
+                let recent = JSON.parse(localStorage.getItem("recentSearches")) || [];
+                if (!recent.length) return;
+
+                suggestionsBox.innerHTML = `
+                <div class="list-group-item text-muted small">Recent Searches</div>
+                ${recent.map(item => `
+                    <a href="product.html?search=${item}"
+                    class="list-group-item list-group-item-action">
+                        <i class="fas fa-clock me-2 text-secondary"></i>${item}
+                    </a>
+                `).join("")}
+            `;
+                suggestionsBox.style.display = "block";
+            }
+
+            async function fetchSuggestions(keyword) {
+
+                if (!keyword) {
+                    showRecentSearches();
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/products?search=${keyword}&limit=5`);
+                    const data = await res.json();
+                    const products = data.products || data;
+
+                    if (!products.length) {
+                        suggestionsBox.innerHTML = `
+                        <div class="list-group-item text-muted">
+                            No products found
+                        </div>
+                    `;
+                        suggestionsBox.style.display = "block";
+                        return;
+                    }
+
+                    suggestionsBox.innerHTML = products.map(p => `
+                    <a href="single-product.html?id=${p._id}"
+                    class="list-group-item list-group-item-action d-flex gap-2 align-items-center">
+                    
+                        <img src="${p.image && (p.image.startsWith('http') || p.image.startsWith('/')) ? p.image : (p.image ? '/' + p.image : 'https://placehold.co/40')}"
+                            width="40"
+                            height="40"
+                            style="object-fit:contain;"
+                            onerror="this.src='https://placehold.co/40'">
+    
+                        <div class="flex-grow-1">
+                            <div>${highlightMatch(p.name, keyword)}</div>
+                            <small class="text-muted">
+                                ${p.category ? p.category.name : ""}
+                            </small>
+                        </div>
+    
+                        <div class="text-success fw-semibold">
+                            ₹${p.price}
+                        </div>
+                    </a>
+                `).join("");
+
+                    suggestionsBox.style.display = "block";
+
+                } catch (err) {
+                    console.error("Search suggestion error", err);
+                }
+            }
+
+            const debouncedSearch = debounce(fetchSuggestions, 400);
+
+            input.addEventListener("input", function () {
+                debouncedSearch(this.value.trim());
+            });
+
+            input.addEventListener("focus", function () {
+                if (!this.value.trim()) showRecentSearches();
+            });
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const keyword = input.value.trim();
+                if (!keyword) return;
+
+                saveRecentSearch(keyword);
+                window.location.href = `product.html?search=${encodeURIComponent(keyword)}`;
+            });
+
+            document.addEventListener("click", function (e) {
+                if (!form.contains(e.target)) {
+                    suggestionsBox.style.display = "none";
+                }
+            });
+        }
+
+        // === UTILS ===
+        function getToken() {
+            return localStorage.getItem("userToken");
+        }
+
+        function checkLogin(e) {
+            const token = getToken();
+            if (!token) {
+                e?.preventDefault();
+                Swal.fire({
+                    title: "Login Required",
+                    text: "Please login to continue",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Login",
+                    confirmButtonColor: "#2ecc71"
+                }).then(res => {
+                    if (res.isConfirmed) window.location.href = "login.html";
+                });
+                return false;
+            }
+            return true;
+        }
+
+        function updateHeaderAuth() {
+            const authContainer = document.getElementById("auth-actions");
+            if (!authContainer) return;
+
+            if (getToken()) {
+                authContainer.innerHTML = `
+    <div class="dropdown d-inline-block">
+    <a href="#" class="text-white text-decoration-none dropdown-toggle"
+       data-bs-toggle="dropdown">
+      <i class="fas fa-user me-1"></i> Account
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="account.html">My Account</a></li>
+        <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
+    </ul>
+    </div>
+    `;
+
+                setTimeout(() => {
+                    const logoutBtn = document.getElementById("headerLogoutBtn");
+                    if (logoutBtn) {
+                        logoutBtn.onclick = e => {
+                            e.preventDefault();
+                            localStorage.removeItem("userToken");
+                            localStorage.removeItem("role");
+                            localStorage.removeItem("user");
+                            const badge = document.getElementById('cart-count-badge');
+                            if (badge) badge.style.display = 'none';
+                            window.location.href = "login.html";
+                        };
+                    }
+                }, 100);
+
+            } else {
+                authContainer.innerHTML = `
+    <a href="login.html" class="text-white text-decoration-none">
+    <i class="fas fa-sign-in-alt me-1"></i> Login
+    </a>
+    `;
+            }
+        }
+
+        // Run Initialization
+        initNavbarLogic();
     </script>
 
     <!-- Breadcrumb -->
@@ -488,78 +836,72 @@
             </div>
         </div>
     </section>
-  <!-- Order Details Modal -->
-        <div class="modal fade" id="orderDetailsModal" tabindex="-1"
-            aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel"
+        aria-hidden="true">
 
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content border-0 shadow">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
 
-                    <div class="modal-header bg-primary-custom text-white">
-                        <h5 class="modal-title fw-bold" id="orderDetailsModalLabel">
-                            Order Details
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white"
-                            data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                <div class="modal-header bg-primary-custom text-white">
+                    <h5 class="modal-title fw-bold" id="orderDetailsModalLabel">
+                        Order Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-                    <div class="modal-body p-4">
+                <div class="modal-body p-4">
 
-                        <!-- ORDER INFO -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h6 class="fw-bold text-muted small">ORDER ID</h6>
-                                <p class="fw-bold"
-                                id="modalOrderId"
-                                data-id="">
+                    <!-- ORDER INFO -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted small">ORDER ID</h6>
+                            <p class="fw-bold" id="modalOrderId" data-id="">
                                 #123456
-                                </p>
+                            </p>
 
-                            </div>
-
-                            <div class="col-md-6 text-md-end">
-                                <h6 class="fw-bold text-muted small">DATE</h6>
-                                <p class="fw-bold" id="modalOrderDate">
-                                    Jan 01, 2024
-                                </p>
-                            </div>
                         </div>
 
-                        <!-- ITEMS -->
-                        <h6 class="fw-bold border-bottom pb-2 mb-3">Items</h6>
-
-                        <ul class="list-group list-group-flush mb-4"
-                            id="modalOrderItems">
-                            <!-- Dynamic Items -->
-                        </ul>
-
-                        <!-- TOTAL -->
-                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                            <h5 class="fw-bold">Total</h5>
-                            <h5 class="fw-bold text-primary-custom"
-                                id="modalOrderTotal">
-                                ₹0
-                            </h5>
+                        <div class="col-md-6 text-md-end">
+                            <h6 class="fw-bold text-muted small">DATE</h6>
+                            <p class="fw-bold" id="modalOrderDate">
+                                Jan 01, 2024
+                            </p>
                         </div>
-
-                        <!-- ACTION BUTTONS -->
-                        <div class="mt-4 text-end" id="modalInvoiceAction">
-                            <button class="btn btn-outline-secondary me-2"
-                                data-bs-dismiss="modal">
-                                Close
-                            </button>
-
-                            <button class="btn btn-success"
-                                id="btnDownloadInvoice">
-                                <i class="fas fa-file-invoice me-2"></i>
-                                Download Invoice
-                            </button>
-                        </div>
-
                     </div>
+
+                    <!-- ITEMS -->
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">Items</h6>
+
+                    <ul class="list-group list-group-flush mb-4" id="modalOrderItems">
+                        <!-- Dynamic Items -->
+                    </ul>
+
+                    <!-- TOTAL -->
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                        <h5 class="fw-bold">Total</h5>
+                        <h5 class="fw-bold text-primary-custom" id="modalOrderTotal">
+                            ₹0
+                        </h5>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="mt-4 text-end" id="modalInvoiceAction">
+                        <button class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button class="btn btn-success" id="btnDownloadInvoice">
+                            <i class="fas fa-file-invoice me-2"></i>
+                            Download Invoice
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-light pt-5 pb-3">
@@ -684,7 +1026,7 @@
                                 <i class="fas fa-ellipsis-v text-muted"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
-                                <li><a class="dropdown-item small" href="#" onclick="openOrderModal('${order._id}', '${order.createdAt}', ${listTotal}, '${itemsJson}', ${order.subtotal || 0}, ${order.discountAmount || 0}, ${order.deliveryCharge || 0}, ${order.handlingFee || 0}, '${order.orderStatus}')"><i class="fas fa-eye me-2 text-primary"></i>View Details</a></li>
+                                <li><a class="dropdown-item small" href="#" onclick="openOrderModal('${order._id}', '${order.createdAt}', ${listTotal}, '${itemsJson}', ${order.subtotal || 0}, ${order.discountAmount || 0}, ${order.deliveryCharge || 0}, ${order.handlingFee || 0}, '${order.orderStatus}', '${order.deliveredAt || ''}')"><i class="fas fa-eye me-2 text-primary"></i>View Details</a></li>
                                 
                                 ${(order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') ?
                             `<li><a class="dropdown-item small text-danger" href="#" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2"></i>Cancel Order</a></li>` : ''
@@ -707,7 +1049,7 @@
             }
         }
 
-        window.openOrderModal = (id, date, total, itemsStr, subtotal, discount, delivery, handling, orderStatus) => {
+        window.openOrderModal = (id, date, total, itemsStr, subtotal, discount, delivery, handling, orderStatus, deliveredAt) => {
             const items = JSON.parse(decodeURIComponent(itemsStr));
             let cancelledTotal = 0;
             let returnedTotal = 0;
@@ -720,6 +1062,17 @@
 
             const list = document.getElementById('modalOrderItems');
             list.innerHTML = '';
+
+            // Check Return Window
+            let isReturnWindowExpired = false;
+            if (deliveredAt) {
+                const deliveryTime = new Date(deliveredAt).getTime();
+                const currentTime = new Date().getTime();
+                const diffHours = (currentTime - deliveryTime) / (1000 * 60 * 60);
+                if (diffHours > 1) {
+                    isReturnWindowExpired = true;
+                }
+            }
 
             items.forEach(item => {
                 const itemTotal = item.price * item.quantity;
@@ -761,21 +1114,32 @@
 
                 if (item.itemStatus === 'Delivered' || (item.itemStatus === 'Pending' && item.returnStatus !== 'None')) {
                     if (item.returnStatus === 'None') {
-                        // Only allow return if order is Delivered
+                        // Only allow return if order is Delivered and WITHIN 1 HOUR
                         if (orderStatus === 'Delivered') {
-                            actionBtn = `<button class="btn btn-sm btn-outline-warning ms-auto" onclick="requestItemReturn('${id}', '${item._id}')">Return</button>`;
+                            if (!isReturnWindowExpired) {
+                                actionBtn = `<button class="btn btn-sm btn-outline-warning ms-auto" onclick="requestItemReturn('${id}', '${item._id}')">Return</button>`;
+                            } else {
+                                statusBadge += `<br><small class="text-danger">Return window expired</small>`;
+                            }
                         }
                     } else {
                         statusBadge += `<br><small class="text-muted">Return: ${item.returnStatus}</small>`;
                     }
                 }
 
+                // Item Image prioritization - use current product image if exists for consistency
+                let rawItemImage = item.image;
+                if (item.product && item.product.image) {
+                    rawItemImage = item.product.image;
+                }
+                const itemImgSrc = (rawItemImage && (rawItemImage.startsWith('http') || rawItemImage.startsWith('/'))) ? rawItemImage : (rawItemImage ? '/' + rawItemImage : 'https://placehold.co/50');
+
                 const listEl = document.createElement('li');
                 listEl.className = rowClass;
                 listEl.innerHTML = `
                     <div class="d-flex align-items-center">
-                         <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : '/' + item.image}" 
-                             onerror="this.src='https://via.placeholder.com/50'"
+                         <img src="${itemImgSrc}" 
+                             onerror="this.src='https://placehold.co/50'"
                              style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'opacity-50' : ''}">
                         <div>
                             ${nameHtml}
@@ -843,9 +1207,29 @@
         };
 
         window.cancelItem = async (orderId, itemId) => {
+            // Check refund info dynamically
+            let refundInfo = null;
+            try {
+                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) refundInfo = await res.json();
+            } catch (e) { }
+
+            let refundMsg = '';
+            if (refundInfo) {
+                if (refundInfo.couponAdjustmentMessage) {
+                    refundMsg = `<br><br><span class="text-warning fw-bold" style="font-size:0.95rem;">${refundInfo.couponAdjustmentMessage}</span>`;
+                } else if (refundInfo.paymentMethod === 'COD') {
+                    refundMsg = `<br><br><span class="text-success fw-bold">New Payable Amount: ₹${refundInfo.newTotal}</span>`;
+                } else {
+                    refundMsg = `<br><br><span class="text-success fw-bold">Estimated Refund: ₹${refundInfo.expectedRefund}</span>`;
+                }
+            }
+
             const { value: reason } = await Swal.fire({
                 title: 'Cancel Item',
-                text: "Reason for cancellation?",
+                html: "Reason for cancellation?" + refundMsg,
                 input: 'select',
                 inputOptions: {
                     'Mistake': 'Ordered by mistake',
@@ -891,9 +1275,27 @@
         };
 
         window.requestItemReturn = async (orderId, itemId) => {
+            // Check refund info dynamically
+            let refundInfo = null;
+            try {
+                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) refundInfo = await res.json();
+            } catch (e) { }
+
+            let refundMsg = '';
+            if (refundInfo) {
+                if (refundInfo.couponAdjustmentMessage) {
+                    refundMsg = `<br><br><span class="text-warning fw-bold" style="font-size:0.95rem;">${refundInfo.couponAdjustmentMessage}</span>`;
+                } else {
+                    refundMsg = `<br><br><span class="text-success fw-bold" style="font-size:0.95rem;">Estimated Refund: ₹${refundInfo.expectedRefund}</span>`;
+                }
+            }
+
             const { value: reason } = await Swal.fire({
                 title: 'Return Item',
-                text: "Reason for return?",
+                html: "Reason for return?" + refundMsg,
                 input: 'select',
                 inputOptions: {
                     'Defective': 'Defective or Damaged',
@@ -1046,36 +1448,36 @@
         });
 
         //downloadinvoice
-       document.getElementById("btnDownloadInvoice")
-        .addEventListener("click", async function () {
+        document.getElementById("btnDownloadInvoice")
+            .addEventListener("click", async function () {
 
-            const orderId = document
-            .getElementById("modalOrderId")
-            .dataset.id;   // ✅ real MongoDB _id
+                const orderId = document
+                    .getElementById("modalOrderId")
+                    .dataset.id;   // ✅ real MongoDB _id
 
-           
-            const response = await fetch(
-            `/api/orders/${orderId}/invoice`,
-            {
-                headers: {
-                Authorization: `Bearer ${token}`
+
+                const response = await fetch(
+                    `/api/orders/${orderId}/invoice`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                console.log("Sending ID:", orderId);
+                if (!response.ok) {
+                    alert("Failed to download invoice");
+                    return;
                 }
-            }
-            );
-            console.log("Sending ID:", orderId);
-            if (!response.ok) {
-            alert("Failed to download invoice");
-            return;
-            }
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
 
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `invoice-${orderId}.pdf`;
-            a.click();
-        });
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `invoice-${orderId}.pdf`;
+                a.click();
+            });
     </script>
 
 

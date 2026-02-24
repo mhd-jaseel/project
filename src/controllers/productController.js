@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 
 // Helper: Parse weight string to grams/ml (base unit)
 
@@ -90,8 +91,20 @@ exports.addProduct = async (req, res) => {
       errors.push("Discount cannot be negative or greater than the actual price.");
     }
 
-    // Category and Stock check
-    if (!category) errors.push("Please select a valid category.");
+    // Category check - and auto-assign "Uncategorized"
+    let finalCategory = category;
+    if (!finalCategory || finalCategory === "null" || finalCategory === "undefined") {
+      let uncategorized = await Category.findOne({ name: /Uncategorized/i });
+      if (!uncategorized) {
+        uncategorized = new Category({
+          name: "Uncategorized",
+          description: "Default category for products with no specific category."
+        });
+        await uncategorized.save();
+      }
+      finalCategory = uncategorized._id;
+    }
+
     const stockVal = parseWeight(totalStock); // Assumes your helper function exists
     if (stockVal < 0) errors.push("Stock cannot be negative.");
 
@@ -128,7 +141,7 @@ exports.addProduct = async (req, res) => {
       discount: numDiscount,
       isHotDeal: isHotDeal === 'true',
       description,
-      category,
+      category: finalCategory,
       totalStock: stockVal,
       initialStock: stockVal,
       stockQty: calculatedStockQty,
@@ -154,6 +167,36 @@ exports.addProduct = async (req, res) => {
    ============================ */
 exports.getAllProducts = async (req, res) => {
   try {
+    // Migration: Ensure all products have a category
+    const validCategoryIds = await Category.find().distinct('_id');
+    const orphanedProductsCount = await Product.countDocuments({
+      $or: [
+        { category: null },
+        { category: { $exists: false } },
+        { category: { $nin: validCategoryIds } }
+      ]
+    });
+
+    if (orphanedProductsCount > 0) {
+      let uncategorized = await Category.findOne({ name: /Uncategorized/i });
+      if (!uncategorized) {
+        uncategorized = new Category({
+          name: "Uncategorized",
+          description: "Default category for products."
+        });
+        await uncategorized.save();
+      }
+      await Product.updateMany(
+        {
+          $or: [
+            { category: null },
+            { category: { $exists: false } },
+            { category: { $nin: validCategoryIds } }
+          ]
+        },
+        { category: uncategorized._id }
+      );
+    }
 
     const page = parseInt(req.query.page) || 1;
 
@@ -291,6 +334,20 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    // Category handling - auto-assign "Uncategorized" if empty
+    let finalCategory = category;
+    if (!finalCategory || finalCategory === "null" || finalCategory === "undefined") {
+      let uncategorized = await Category.findOne({ name: /Uncategorized/i });
+      if (!uncategorized) {
+        uncategorized = new Category({
+          name: "Uncategorized",
+          description: "Default category for products with no specific category."
+        });
+        await uncategorized.save();
+      }
+      finalCategory = uncategorized._id;
+    }
+
     let updateData = {
       name,
       company,
@@ -298,7 +355,7 @@ exports.updateProduct = async (req, res) => {
       price,
       discount: discountValue,
       description,
-      category,
+      category: finalCategory,
       isHotDeal: isHotDeal === 'true'
     };
 
@@ -350,12 +407,16 @@ exports.updateProduct = async (req, res) => {
     // Apply changes if calculated
     if (newStockQty !== undefined) {
       updateData.stockQty = newStockQty;
-      // Auto-update status
-      if (newStockQty === 0) {
-        updateData.status = 'Out of Stock';
-      } else if (updateData.status === 'Out of Stock' && newStockQty > 0) {
-        updateData.status = 'In Stock';
-      }
+    } else {
+      // If no new stock was calculated, use current to ensure state consistency
+      newStockQty = product.stockQty || 0;
+    }
+
+    // Auto-update status to prevent desync
+    if (newStockQty === 0) {
+      updateData.status = 'Out of Stock';
+    } else if (product.status === 'Out of Stock' && newStockQty > 0) {
+      updateData.status = 'In Stock';
     }
 
     // Update main image if provided

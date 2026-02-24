@@ -289,19 +289,20 @@
     <div class="main-content">
         <!-- Top Header -->
         <header class="top-header">
-            <h4 class="fw-bold m-0 text-dark">Categories</h4>
-            <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-dark d-lg-none me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="search-bar">
-                    <input type="text" placeholder="Search data, users, or reports" class="bg-light border-0">
+                    <input type="text" placeholder="Search categories..." class="bg-light border-0">
                 </div>
-
             </div>
         </header>
 
         <!-- Content Area -->
         <div class="content-wrapper">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-dark m-0">Discover</h5>
+                <h4 class="fw-bold text-dark m-0">Categories</h4>
                 <div class="d-flex gap-2">
                     <a href="add-category.html" class="btn btn-primary-custom px-4"><i class="fas fa-plus me-2"></i> Add
                         Categories</a>
@@ -326,10 +327,7 @@
                                     <label class="form-label">Category Name</label>
                                     <input type="text" class="form-control" id="editCategoryName" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" id="editCategoryDescription" rows="3"></textarea>
-                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label">Category Image</label>
                                     <input type="file" class="form-control" id="editCategoryImage" accept="image/*">
@@ -383,28 +381,35 @@
             try {
                 const res = await fetch("/api/categories");
                 allCategories = await res.json();
+                renderCategories(allCategories);
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Failed to load categories", "error");
+            }
+        }
 
-                const urlParams = new URLSearchParams(window.location.search);
-                const categoryId = urlParams.get('id');
+        function renderCategories(categoriesToDisplay) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('id');
 
-                let displayCategories = allCategories;
-                if (categoryId) {
-                    displayCategories = allCategories.filter(cat => cat._id === categoryId);
-                }
+            let displayCategories = categoriesToDisplay;
+            if (categoryId) {
+                displayCategories = categoriesToDisplay.filter(cat => cat._id === categoryId);
+            }
 
-                const grid = document.getElementById("categoryGrid");
-                grid.innerHTML = "";
-                if (!displayCategories.length) {
-                    grid.innerHTML = `
-            <div class="col-12 text-center text-muted">
-            No categories found
-            </div>
-        `;
-                    return;
-                }
+            const grid = document.getElementById("categoryGrid");
+            grid.innerHTML = "";
+            if (!displayCategories.length) {
+                grid.innerHTML = `
+        <div class="col-12 text-center text-muted">
+        No categories found
+        </div>
+    `;
+                return;
+            }
 
-                displayCategories.forEach(cat => {
-                    grid.innerHTML += `
+            displayCategories.forEach(cat => {
+                grid.innerHTML += `
             <div class="col">
                 <div class="card-custom p-3 d-flex justify-content-between align-items-center flex-row">
 
@@ -412,12 +417,12 @@
                 <a href="all-products.html?category=${cat._id}"
                     class="d-flex align-items-center gap-3 text-decoration-none text-dark">
                     <img 
-                    src="${cat.image || 'https://placehold.co/60'}"
+                    src="${cat.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(cat.name)}&background=0f9d58&color=fff&size=60`}"
                     width="60"
                     height="60"
                     class="rounded"
                     style="object-fit: cover;"
-                    onerror="this.src='https://placehold.co/60'">
+                    onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(cat.name)}&background=0f9d58&color=fff&size=60'">
                     <h6 class="fw-bold m-0">${cat.name}</h6>
                 </a>
 
@@ -430,24 +435,24 @@
                     </button>
 
                     <!-- DELETE BUTTON -->
+                    ${cat.name.toLowerCase() === 'uncategorized' ? '' : `
                     <button
                         class="btn btn-sm btn-light text-danger"
                         onclick="deleteCategory('${cat._id}', this)">
                         <i class="fas fa-trash"></i>
                     </button>
+                    `}
                 </div>
 
                 </div>
             </div>
             `;
 
-                });
-
-            } catch (err) {
-                console.error(err);
-                Swal.fire("Error", "Failed to load categories", "error");
-            }
+            });
         }
+
+        // Search Input logic already handled in INIT section if I move it there.
+        // Actually let's just put the listener inside an init function.
 
         /* =========================
            EDIT CATEGORY LOGIC
@@ -458,7 +463,6 @@
 
             document.getElementById('editCategoryId').value = category._id;
             document.getElementById('editCategoryName').value = category.name;
-            document.getElementById('editCategoryDescription').value = category.description || '';
 
             const imgPreview = document.getElementById('currentImagePreview');
             if (category.image) {
@@ -477,18 +481,58 @@
         async function saveEditCategory() {
             const id = document.getElementById('editCategoryId').value;
             const name = document.getElementById('editCategoryName').value.trim();
-            const description = document.getElementById('editCategoryDescription').value.trim();
             const imageInput = document.getElementById('editCategoryImage');
             const token = localStorage.getItem('adminToken');
 
+            // Reset Errors
+            document.querySelectorAll('#editCategoryForm .invalid-feedback').forEach(el => el.remove());
+            document.querySelectorAll('#editCategoryForm .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+            let isValid = true;
+            const showError = (elementId, message) => {
+                const input = document.getElementById(elementId);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback';
+                    errorDiv.innerText = message;
+                    input.parentNode.appendChild(errorDiv);
+                }
+                isValid = false;
+            };
+
+            // Validation Rules
             if (!name) {
-                Swal.fire("Error", "Category name is required", "error");
+                showError('editCategoryName', "Category Name is required.");
+            } else if (name.length < 3) {
+                showError('editCategoryName', "Category Name must be at least 3 characters long.");
+            } else if (name.length > 50) {
+                showError('editCategoryName', "Category Name cannot exceed 50 characters.");
+            } else {
+                const nameRegex = /^[A-Za-z0-9&]+( [A-Za-z0-9&]+)*$/;
+                if (!nameRegex.test(name)) {
+                    showError('editCategoryName', "Category Name must contain only letters, numbers, and '&', with single spaces between words.");
+                }
+            }
+
+
+
+            if (!isValid) return;
+
+            // Extra Duplicate Validation
+            const normalizedInput = name.replace(/\s+/g, '').toLowerCase();
+            const isDuplicate = allCategories.some(cat => {
+                const normalizedExisting = cat.name.replace(/\s+/g, '').toLowerCase();
+                return normalizedExisting === normalizedInput && cat._id !== id;
+            });
+
+            if (isDuplicate) {
+                showError('editCategoryName', "This category already exists (even with different spacing or case)!");
                 return;
             }
 
             const formData = new FormData();
             formData.append("name", name);
-            formData.append("description", description);
             if (imageInput.files.length > 0) {
                 formData.append("image", imageInput.files[0]);
             }
@@ -575,6 +619,28 @@
            INIT
         ========================= */
         loadCategories();
+
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+
+        // Dynamic Search Logic for Categories
+        const searchInput = document.querySelector('.search-bar input');
+        if (searchInput) {
+            searchInput.id = 'categorySearchInput';
+            searchInput.addEventListener('input', () => {
+                const keyword = searchInput.value.toLowerCase().trim();
+                const filtered = allCategories.filter(cat =>
+                    cat.name.toLowerCase().includes(keyword)
+                );
+                renderCategories(filtered);
+            });
+        }
+
         document.addEventListener("click", (e) => {
             const link = e.target.closest(".category-link");
             if (!link) return;
