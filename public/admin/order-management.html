@@ -714,9 +714,31 @@
 
                 const listDelivery = order.deliveryCharge || 0;
                 const listHandling = order.handlingFee || 0;
-                const listDiscount = order.discountAmount || 0;
 
-                const listTotal = Math.max(0, listGross - listCancelled - listReturned + listDelivery + listHandling - listDiscount);
+                let actualDiscount = order.discountAmount || 0;
+                const mathDiff = listGross - listCancelled - listReturned + listDelivery + listHandling - (order.totalAmount || 0);
+                if (mathDiff > 0.01) {
+                    actualDiscount = mathDiff;
+                }
+
+                let cancelledRefund = 0;
+                let returnedRefund = 0;
+
+                if (order.items) {
+                    order.items.forEach(itm => {
+                        const val = itm.price * itm.quantity;
+                        if (itm.itemStatus === 'Cancelled') {
+                            const share = (val / listGross) * actualDiscount;
+                            cancelledRefund += (val > actualDiscount) ? (val - share) : 0;
+                        }
+                        if (itm.itemStatus === 'Returned') {
+                            const share = (val / listGross) * actualDiscount;
+                            returnedRefund += (val > actualDiscount) ? (val - share) : 0;
+                        }
+                    });
+                }
+
+                const listTotal = listGross + listDelivery + listHandling - actualDiscount - cancelledRefund - returnedRefund;
 
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', order._id);
@@ -937,18 +959,56 @@
             // Calculate final total locally to ensure display accuracy
             const delivery = order.deliveryCharge || 0;
             const handling = order.handlingFee || 0;
-            const discount = order.discountAmount || 0;
-            const calculatedTotal = Math.max(0, grossTotal - cancelledTotal - returnedTotal + delivery + handling - discount);
+
+            let actualDiscount = order.discountAmount || 0;
+            const mathDiff = grossTotal - cancelledTotal - returnedTotal + delivery + handling - (order.totalAmount || 0);
+            if (mathDiff > 0.01) {
+                actualDiscount = mathDiff;
+            }
+
+            let totalRefunded = 0;
+            let cancelledRefund = 0;
+            let returnedRefund = 0;
+            let cancelledCouponReclaimed = 0;
+            let returnedCouponReclaimed = 0;
+
+            order.items.forEach(itm => {
+                const itemTotal = itm.price * itm.quantity;
+                if (itm.itemStatus === 'Cancelled') {
+                    const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                    if (itemTotal > actualDiscount) {
+                        cancelledRefund += (itemTotal - itemShare);
+                        cancelledCouponReclaimed += itemShare;
+                    } else {
+                        cancelledCouponReclaimed += itemTotal;
+                    }
+                } else if (itm.itemStatus === 'Returned') {
+                    const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                    if (itemTotal > actualDiscount) {
+                        returnedRefund += (itemTotal - itemShare);
+                        returnedCouponReclaimed += itemShare;
+                    } else {
+                        returnedCouponReclaimed += itemTotal;
+                    }
+                }
+            });
+            totalRefunded = cancelledRefund + returnedRefund;
+
+            const calculatedTotal = grossTotal - cancelledRefund - returnedRefund + delivery + handling - actualDiscount;
+            const amountAfterCharges = grossTotal + delivery + handling - actualDiscount;
 
             // Add breakdown
             itemsHtml += `
-                <div class="d-flex justify-content-between small"><span>Subtotal (Gross):</span> <span>₹${grossTotal}</span></div>
-                ${cancelledTotal > 0 ? `<div class="d-flex justify-content-between small text-danger"><span>Cancelled:</span> <span>-₹${cancelledTotal}</span></div>` : ''}
-                ${returnedTotal > 0 ? `<div class="d-flex justify-content-between small text-secondary"><span>Returned:</span> <span>-₹${returnedTotal}</span></div>` : ''}
-                <div class="d-flex justify-content-between small"><span>Delivery:</span> <span>₹${delivery}</span></div>
-                <div class="d-flex justify-content-between small"><span>Handling:</span> <span>₹${handling}</span></div>
-                ${discount > 0 ? `<div class="d-flex justify-content-between small text-success"><span>Discount:</span> <span>-₹${discount}</span></div>` : ''}
-                <div class="d-flex justify-content-between small fw-bold border-top pt-2 mt-2"><span>Total:</span> <span>₹${calculatedTotal.toFixed(2)}</span></div>
+                <div class="d-flex justify-content-between small mb-2"><span>Subtotal (Gross)</span> <span>₹${grossTotal.toFixed(2)}</span></div>
+                ${actualDiscount > 0 ? `<div class="d-flex justify-content-between small mb-2 text-success"><span>Coupon Discount</span> <span>-₹${actualDiscount.toFixed(2)}</span></div>` : ''}
+                <div class="d-flex justify-content-between small mb-2"><span>Delivery Charge</span> <span>+₹${delivery}</span></div>
+                <div class="d-flex justify-content-between small mb-2"><span>Handling Fee</span> <span>+₹${handling}</span></div>
+                <div class="d-flex justify-content-between small fw-bold mb-3 pb-3 border-bottom text-muted"><span>Amount After Charges</span> <span>₹${amountAfterCharges.toFixed(2)}</span></div>
+                ${cancelledTotal > 0 ? `<div class="d-flex justify-content-between small mb-2 text-danger"><span>Cancelled Item<br><small class="text-muted">(Original: ₹${cancelledTotal.toFixed(2)})</small></span> <span class="d-flex flex-column align-items-end"><span class="text-muted small">Actual Refund</span>-₹${cancelledRefund.toFixed(2)}</span></div>` : ''}
+                ${returnedTotal > 0 ? `<div class="d-flex justify-content-between small mb-2 text-secondary"><span>Returned Item<br><small class="text-muted">(Original: ₹${returnedTotal.toFixed(2)})</small></span> <span class="d-flex flex-column align-items-end"><span class="text-muted small">Actual Refund</span>-₹${returnedRefund.toFixed(2)}</span></div>` : ''}
+                ${cancelledCouponReclaimed > 0 ? `<div class="d-flex justify-content-between small mb-2 text-success"><span>Coupon portion used by cancelled item</span> <span>+₹${cancelledCouponReclaimed.toFixed(2)}</span></div>` : ''}
+                ${returnedCouponReclaimed > 0 ? `<div class="d-flex justify-content-between small mb-2 text-success"><span>Coupon portion used by returned item</span> <span>+₹${returnedCouponReclaimed.toFixed(2)}</span></div>` : ''}
+                <div class="d-flex justify-content-between small fw-bold border-top pt-2 mt-2"><span>Final Amount Paid by User</span> <span>₹${calculatedTotal.toFixed(2)}</span></div>
             `;
 
             itemsContainer.innerHTML = itemsHtml;
@@ -1082,12 +1142,7 @@
 
         // Initial Fetch
         fetchOrders();
-
     </script>
-
-
-
-
 </body>
 
 </html>

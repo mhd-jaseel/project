@@ -977,8 +977,9 @@
 
                     transactions.forEach(tx => {
                         const date = new Date(tx.createdAt).toLocaleDateString();
-                        const amountClass = tx.amount >= 0 ? 'text-success' : 'text-danger';
-                        const amountSign = tx.amount >= 0 ? '+' : '';
+                        const isDeduction = tx.reason === 'Order Payment';
+                        const amountClass = isDeduction ? 'text-danger' : 'text-success';
+                        const amountSign = isDeduction ? '-' : '+';
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${date}</td>
@@ -1007,11 +1008,12 @@
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const tx = await res.json();
-                    const amountSign = tx.amount >= 0 ? '+' : '-';
+                    const isDeduction = tx.reason === 'Order Payment';
+                    const amountSign = isDeduction ? '-' : '+';
                     document.getElementById('tx-amount').innerText = `${amountSign}₹${Math.abs(tx.amount)}`;
-                    document.getElementById('tx-amount').className = `fw-bold mb-1 ${tx.amount >= 0 ? 'text-success' : 'text-danger'}`;
+                    document.getElementById('tx-amount').className = `fw-bold mb-1 ${isDeduction ? 'text-danger' : 'text-success'}`;
                     const iconContainer = document.getElementById('tx-icon-container');
-                    if (tx.amount >= 0) {
+                    if (!isDeduction) {
                         iconContainer.innerHTML = '<i class="fas fa-arrow-down fa-3x text-success"></i>';
                     } else {
                         iconContainer.innerHTML = '<i class="fas fa-arrow-up fa-3x text-danger"></i>';

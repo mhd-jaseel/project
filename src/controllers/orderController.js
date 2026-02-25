@@ -659,20 +659,24 @@ exports.cancelOrderItem = async (req, res) => {
                 order.discountAmount = 0;
 
                 if (order.paymentMethod === 'COD') {
-                    order.totalAmount = Math.max(0, Math.round(newSubtotal + order.deliveryCharge + order.handlingFee));
+                    order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
                     expectedRefund = 0;
-                } else {
+                } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
                     const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
-                    expectedRefund = Math.max(0, itemTotal - itemShare);
-                    order.totalAmount = Math.max(currentTotal - Math.round(expectedRefund), 0);
+                    if (itemTotal <= originalDiscount) {
+                        expectedRefund = 0;
+                    } else {
+                        expectedRefund = itemTotal - itemShare;
+                    }
+                    order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
                 }
             } else {
                 expectedRefund = itemTotal;
-                order.totalAmount = Math.max(currentTotal - Math.round(itemTotal), 0);
+                order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
             }
         } else {
             expectedRefund = itemTotal;
-            order.totalAmount = Math.max(currentTotal - Math.round(itemTotal), 0);
+            order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
         }
 
         // 3. Wallet Refund
@@ -708,7 +712,7 @@ exports.cancelOrderItem = async (req, res) => {
 
     } catch (error) {
         console.error("Error cancelling item:", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Server Error", error: error.message, stack: error.stack });
     }
 };
 
@@ -917,20 +921,24 @@ exports.updateItemReturnStatus = async (req, res) => {
                     order.couponCode = null;
                     order.discountAmount = 0;
                     if (order.paymentMethod === 'COD') {
-                        order.totalAmount = Math.max(0, Math.round(newSubtotal + order.deliveryCharge + order.handlingFee));
+                        order.totalAmount = Math.max(0, Math.round(newSubtotal + deliveryCharge + handlingFee));
                         expectedRefund = 0;
-                    } else {
+                    } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
                         const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
-                        expectedRefund = Math.max(0, itemTotal - itemShare);
-                        order.totalAmount = Math.max(0, Math.round(oldTotalAmount - expectedRefund));
+                        if (itemTotal <= originalDiscount) {
+                            expectedRefund = 0;
+                        } else {
+                            expectedRefund = itemTotal - itemShare;
+                        }
+                        order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
                     }
                 } else {
                     expectedRefund = itemTotal;
-                    order.totalAmount = Math.max(0, Math.round(oldTotalAmount - itemTotal));
+                    order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
                 }
             } else {
                 expectedRefund = itemTotal;
-                order.totalAmount = Math.max(0, Math.round(oldTotalAmount - itemTotal));
+                order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
             }
 
 
@@ -1171,33 +1179,33 @@ exports.calculateItemRefundInfo = async (req, res) => {
         if (order.couponCode) {
             const Coupon = require('../models/Coupon');
             const coupon = await Coupon.findOne({ code: order.couponCode });
+            const originalDiscount = order.discountAmount || 0;
 
             if (coupon && newSubtotal < coupon.minOrderAmount) {
                 isCouponRemoved = true;
 
                 if (order.paymentMethod === 'COD') {
-                    newTotal = newSubtotal + order.deliveryCharge + order.handlingFee;
+                    newTotal = newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0);
                     expectedRefund = 0;
                     couponAdjustmentMessage = "Cancelling this item invalidates the coupon. The total payable amount will be updated without the coupon discount.";
-                } else {
-                    const itemShare = (itemTotal / originalSubtotal) * (order.discountAmount || 0);
-                    expectedRefund = Math.max(0, itemTotal - itemShare);
-
-                    if (itemTotal <= itemShare) {
+                } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
+                    const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
+                    if (itemTotal <= originalDiscount) {
                         expectedRefund = 0;
-                        couponAdjustmentMessage = "This product amount has already been covered by the applied coupon. No refund will be issued.";
+                        couponAdjustmentMessage = "No refund will be provided. The cancelled item's amount is less than the applied coupon discount.";
                     } else {
-                        couponAdjustmentMessage = `Only ₹${Math.round(expectedRefund)} will be refunded for this cancellation. The coupon discount was split across all products.`;
+                        expectedRefund = itemTotal - itemShare;
+                        couponAdjustmentMessage = `The coupon has been removed. You will be refunded ₹${Math.round(expectedRefund)} after deducting its coupon share.`;
                     }
-                    newTotal = currentTotalAmount - expectedRefund;
+                    newTotal = currentTotalAmount - Math.round(itemTotal);
                 }
             } else {
                 expectedRefund = itemTotal;
-                newTotal = currentTotalAmount - expectedRefund;
+                newTotal = currentTotalAmount - Math.round(itemTotal);
             }
         } else {
             expectedRefund = itemTotal;
-            newTotal = currentTotalAmount - expectedRefund;
+            newTotal = currentTotalAmount - Math.round(itemTotal);
         }
 
         res.json({
@@ -1212,6 +1220,6 @@ exports.calculateItemRefundInfo = async (req, res) => {
 
     } catch (error) {
         console.error("Error calculating refund info:", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Server Error", error: error.message, stack: error.stack });
     }
 };
