@@ -4,6 +4,7 @@ const Category = require("../models/Category");
 
 // Helper: Parse weight string to grams/ml (base unit)
 
+// Helper function to convert a weight string into its numeric base unit value
 const parseWeight = (str) => {
   if (!str) return 0;
 
@@ -31,6 +32,7 @@ const parseWeight = (str) => {
   return val;
 };
 
+// Determine if a weight string refers to mass, volume, or count
 const getUnitType = (str) => {
   if (!str) return 'unknown';
   const s = str.toString().toLowerCase().trim();
@@ -61,6 +63,7 @@ const getUnitType = (str) => {
   // So 'count' is a safe default for "100"
 };
 
+// Calculate the quantity of units available based on total stock weight
 const calculateStockQty = (stockVal, weightVal) => {
   if (stockVal <= 0) return 0;
   if (weightVal > 0) return Math.floor(stockVal / weightVal);
@@ -71,6 +74,7 @@ const calculateStockQty = (stockVal, weightVal) => {
 /* ============================
    ADMIN: ADD PRODUCT
 ============================ */
+// Create and save a new product including multiple images and category links
 exports.addProduct = async (req, res) => {
   try {
     const { name, company, weight, price, discount, description, category, isHotDeal, totalStock } = req.body;
@@ -165,6 +169,7 @@ exports.addProduct = async (req, res) => {
    ADMIN + USER: GET ALL PRODUCTS
    WITH SEARCH + LIMIT + PAGINATION
    ============================ */
+// Retrieve all products with support for searching, filtering, and pagination
 exports.getAllProducts = async (req, res) => {
   try {
     // Migration: Ensure all products have a category
@@ -316,6 +321,7 @@ exports.getAllProducts = async (req, res) => {
 /* ============================
    ADMIN: UPDATE PRODUCT
    ============================ */
+// Update a product's details, including its images and stock calculation
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -460,6 +466,7 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// Permanently delete a product from the database
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -485,6 +492,7 @@ exports.deleteProduct = async (req, res) => {
 /* ============================
    GET PRODUCTS BY CATEGORY
 ============================ */
+// Get a list of products that belong to a specific category
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
@@ -503,6 +511,7 @@ exports.getProductsByCategory = async (req, res) => {
 /* ============================
    GET SINGLE PRODUCT BY ID
 ============================ */
+// Find and return the full details of a single product by its ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category", "name");
@@ -519,6 +528,7 @@ exports.getProductById = async (req, res) => {
 /* ============================
    ADMIN: TOGGLE HOT DEAL
 ============================ */
+// Enable or disable the "Hot Deal" status for a specific product
 exports.toggleHotDeal = async (req, res) => {
   try {
     const { id } = req.params;
@@ -548,6 +558,7 @@ exports.toggleHotDeal = async (req, res) => {
 /* ============================
    ADMIN: UPDATE STOCK STATUS
 ============================ */
+// Manually update the stock availability status of a product
 exports.updateStockStatus = async (req, res) => {
   try {
     const { id } = req.params;

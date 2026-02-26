@@ -443,8 +443,6 @@
             </div>
 
 
-
-
         </header>
 
         <!-- Content Area -->
@@ -630,7 +628,6 @@
 
                 renderOrders(orders);
                 renderPagination(totalPages, currentPage);
-                updateNotificationCount();
 
                 // Auto Open Modal if requested - ONLY ONCE
                 if (!hasHandledAutoOpen) {
@@ -716,11 +713,6 @@
                 const listHandling = order.handlingFee || 0;
 
                 let actualDiscount = order.discountAmount || 0;
-                const mathDiff = listGross - listCancelled - listReturned + listDelivery + listHandling - (order.totalAmount || 0);
-                if (mathDiff > 0.01) {
-                    actualDiscount = mathDiff;
-                }
-
                 let cancelledRefund = 0;
                 let returnedRefund = 0;
 
@@ -738,7 +730,7 @@
                     });
                 }
 
-                const listTotal = listGross + listDelivery + listHandling - actualDiscount - cancelledRefund - returnedRefund;
+                const listTotal = order.totalAmount || 0;
 
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', order._id);
@@ -961,10 +953,6 @@
             const handling = order.handlingFee || 0;
 
             let actualDiscount = order.discountAmount || 0;
-            const mathDiff = grossTotal - cancelledTotal - returnedTotal + delivery + handling - (order.totalAmount || 0);
-            if (mathDiff > 0.01) {
-                actualDiscount = mathDiff;
-            }
 
             let totalRefunded = 0;
             let cancelledRefund = 0;
@@ -976,25 +964,17 @@
                 const itemTotal = itm.price * itm.quantity;
                 if (itm.itemStatus === 'Cancelled') {
                     const itemShare = (itemTotal / grossTotal) * actualDiscount;
-                    if (itemTotal > actualDiscount) {
-                        cancelledRefund += (itemTotal - itemShare);
-                        cancelledCouponReclaimed += itemShare;
-                    } else {
-                        cancelledCouponReclaimed += itemTotal;
-                    }
+                    cancelledRefund += (itemTotal - itemShare);
+                    cancelledCouponReclaimed += itemShare;
                 } else if (itm.itemStatus === 'Returned') {
                     const itemShare = (itemTotal / grossTotal) * actualDiscount;
-                    if (itemTotal > actualDiscount) {
-                        returnedRefund += (itemTotal - itemShare);
-                        returnedCouponReclaimed += itemShare;
-                    } else {
-                        returnedCouponReclaimed += itemTotal;
-                    }
+                    returnedRefund += (itemTotal - itemShare);
+                    returnedCouponReclaimed += itemShare;
                 }
             });
             totalRefunded = cancelledRefund + returnedRefund;
 
-            const calculatedTotal = grossTotal - cancelledRefund - returnedRefund + delivery + handling - actualDiscount;
+            const calculatedTotal = order.totalAmount || 0;
             const amountAfterCharges = grossTotal + delivery + handling - actualDiscount;
 
             // Add breakdown
@@ -1042,7 +1022,6 @@
                 // Update row UI if needed (e.g. remove bold)
                 const row = document.querySelector(`tr[data-id="${orderId}"]`);
                 if (row) row.classList.remove('fw-bold');
-                updateNotificationCount();
             }
 
             const modalEl = document.getElementById('orderDetailsModal');
@@ -1061,20 +1040,7 @@
             } catch (e) { console.error(e); }
         }
 
-        function updateNotificationCount() {
-            const unviewedCount = allOrders.filter(o => !o.viewedByAdmin).length;
-            // Target the bell icon badge in the header
-            const notificationBadge = document.querySelector('.user-profile .icon-btn .badge');
 
-            if (notificationBadge) {
-                if (unviewedCount > 0) {
-                    notificationBadge.innerText = unviewedCount;
-                    notificationBadge.style.display = 'inline-block';
-                } else {
-                    notificationBadge.style.display = 'none';
-                }
-            }
-        }
 
         async function updateStatus(orderId) {
             const statusSelect = document.getElementById('orderStatusSelect');

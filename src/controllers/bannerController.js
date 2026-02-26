@@ -5,6 +5,7 @@ const path = require('path');
 // --- Admin Controllers ---
 
 // Add New Banner
+// Create and save a new banner with an image
 exports.addBanner = async (req, res) => {
     try {
         if (!req.file) {
@@ -30,6 +31,7 @@ exports.addBanner = async (req, res) => {
 };
 
 // Get All Banners (Admin)
+// Retrieve all banners from the database
 exports.getAllBanners = async (req, res) => {
     try {
         const banners = await Banner.find().sort({ createdAt: -1 });
@@ -41,6 +43,7 @@ exports.getAllBanners = async (req, res) => {
 };
 
 // Toggle Banner Status
+// Turn a banner on or off based on its current state
 exports.toggleBannerStatus = async (req, res) => {
     try {
         const { bannerId } = req.params;
@@ -62,6 +65,7 @@ exports.toggleBannerStatus = async (req, res) => {
 };
 
 // Delete Banner
+// Remove a banner and delete its image file from storage
 exports.deleteBanner = async (req, res) => {
     try {
         const { bannerId } = req.params;
@@ -94,6 +98,7 @@ exports.deleteBanner = async (req, res) => {
 // --- Public Controllers ---
 
 // Get Active Banners
+// Get only the banners that are currently active for the homepage
 exports.getActiveBanners = async (req, res) => {
     try {
         const banners = await Banner.find({ isActive: true }).sort({ createdAt: -1 });

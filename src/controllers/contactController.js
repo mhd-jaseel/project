@@ -2,6 +2,7 @@ const ContactMessage = require('../models/ContactMessage');
 const nodemailer = require('nodemailer');
 
 // Send a message (Public)
+// Save a contact message sent by a user from the contact page
 exports.sendMessage = async (req, res) => {
     try {
         const { name, email, subject, message } = req.body;
@@ -27,6 +28,7 @@ exports.sendMessage = async (req, res) => {
 };
 
 // Get all messages (Admin)
+// Retrieve all contact messages for the admin to review
 exports.getAllMessages = async (req, res) => {
     try {
         const messages = await ContactMessage.find().sort({ createdAt: -1 });
@@ -38,6 +40,7 @@ exports.getAllMessages = async (req, res) => {
 };
 
 // Mark message as read (Admin)
+// Mark a specific contact message as having been read by the admin
 exports.markAsRead = async (req, res) => {
     try {
         const { id } = req.params;
@@ -59,6 +62,7 @@ exports.markAsRead = async (req, res) => {
 };
 
 // Reply to message (Admin)
+// Send an email reply to a user's contact message
 exports.replyMessage = async (req, res) => {
     try {
         const { id } = req.params;

@@ -28,11 +28,44 @@
             color: var(--text-dark);
         }
 
+        /* Custom Colors */
+        .bg-primary-custom {
+            background-color: var(--primary-color) !important;
+        }
+
+        .text-primary-custom {
+            color: var(--primary-color) !important;
+        }
+
         /* Header */
+        header {
+            position: relative;
+            padding-bottom: 50px;
+            /* Space for the curve */
+        }
+
+        .header-curve {
+            position: absolute;
+            bottom: -1px;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .header-curve svg {
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 60px;
+        }
+
+        .header-curve path {
+            fill: var(--bg-light);
+        }
+
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-color) !important;
+            color: #ffffff !important;
         }
 
         /* Cards */

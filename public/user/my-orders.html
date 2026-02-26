@@ -402,7 +402,7 @@
 
 <body>
 
-    <header class="bg-primary-custom text-white">
+    <header class="bg-primary-custom text-white" style="background-color: var(--primary-green) !important;">
         <div class="container py-2">
             <div class="row align-items-center">
                 <!-- Logo -->
@@ -1007,10 +1007,6 @@
                     const listHandling = order.handlingFee || 0;
 
                     let actualDiscount = order.discountAmount || 0;
-                    const mathDiff = listGross - listCancelled - listReturned + listDelivery + listHandling - (order.totalAmount || 0);
-                    if (mathDiff > 0.01) {
-                        actualDiscount = mathDiff;
-                    }
 
                     let cancelledRefund = 0;
                     let returnedRefund = 0;
@@ -1029,7 +1025,7 @@
                         });
                     }
 
-                    const listTotal = listGross + listDelivery + listHandling - actualDiscount - cancelledRefund - returnedRefund;
+                    const listTotal = order.totalAmount || 0;
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -1208,12 +1204,7 @@
                 list.appendChild(listEl);
             });
 
-            // Extract missing original coupon from math difference (if nullified gracefully)
             let actualDiscount = discount;
-            const mathDiff = grossTotal - cancelledTotal - returnedTotal + delivery + handling - total;
-            if (mathDiff > 0.01) {
-                actualDiscount = mathDiff;
-            }
 
             // Calculate precisely how much was refunded to their Wallet
             let totalRefunded = 0;
@@ -1226,26 +1217,18 @@
                 const itemTotal = itm.price * itm.quantity;
                 if (itm.itemStatus === 'Cancelled') {
                     const itemShare = (itemTotal / grossTotal) * actualDiscount;
-                    if (itemTotal > actualDiscount) {
-                        cancelledRefund += (itemTotal - itemShare);
-                        cancelledCouponReclaimed += itemShare;
-                    } else {
-                        cancelledCouponReclaimed += itemTotal;
-                    }
+                    cancelledRefund += (itemTotal - itemShare);
+                    cancelledCouponReclaimed += itemShare;
                 } else if (itm.itemStatus === 'Returned') {
                     const itemShare = (itemTotal / grossTotal) * actualDiscount;
-                    if (itemTotal > actualDiscount) {
-                        returnedRefund += (itemTotal - itemShare);
-                        returnedCouponReclaimed += itemShare;
-                    } else {
-                        returnedCouponReclaimed += itemTotal;
-                    }
+                    returnedRefund += (itemTotal - itemShare);
+                    returnedCouponReclaimed += itemShare;
                 }
             });
             totalRefunded = cancelledRefund + returnedRefund;
 
             const amountAfterCharges = grossTotal + delivery + handling - actualDiscount;
-            const finalDisplayTotal = amountAfterCharges - cancelledRefund - returnedRefund;
+            const finalDisplayTotal = total;
 
             // Summary Section
             let summaryDiv = document.getElementById('orderSummaryDetails');
@@ -1303,14 +1286,14 @@
             // Check refund info dynamically
             let refundInfo = null;
             try {
-                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation`, {
+                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation?action=cancel`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) refundInfo = await res.json();
             } catch (e) { }
 
             let refundMsg = '';
-            if (refundInfo) {
+            if (refundInfo && !refundInfo.hideMessage) {
                 if (refundInfo.couponAdjustmentMessage) {
                     refundMsg = `<br><br><span class="text-warning fw-bold" style="font-size:0.95rem;">${refundInfo.couponAdjustmentMessage}</span>`;
                 } else if (refundInfo.paymentMethod === 'COD') {
@@ -1371,7 +1354,7 @@
             // Check refund info dynamically
             let refundInfo = null;
             try {
-                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation`, {
+                const res = await fetch(`/api/orders/${orderId}/items/${itemId}/refund-calculation?action=return`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) refundInfo = await res.json();

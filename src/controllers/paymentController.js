@@ -7,6 +7,7 @@ const Address = require("../models/Address");
 const Coupon = require("../models/Coupon");
 
 // Helper from orderController (to ensure consistent stock logic)
+// Helper function to extract base units from a weight string like "500g"
 const parseWeight = (str) => {
   if (!str) return 0;
   const s = str.toString().toLowerCase().trim();
@@ -24,6 +25,7 @@ const parseWeight = (str) => {
 };
 
 // 1. Create Razorpay Order (Securely)
+// Create a Razorpay order on the server to initiate a secure payment
 exports.createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -39,6 +41,24 @@ exports.createOrder = async (req, res) => {
       // Matches orderController logic
       const price = (item.product.discount && item.product.discount > 0) ? item.product.discount : item.product.price;
       subtotal += price * item.quantity;
+
+      // Stock Check
+      const unitWeight = parseWeight(item.product.weight);
+      if (unitWeight > 0) {
+        const requiredStock = unitWeight * item.quantity;
+        if (item.product.totalStock < requiredStock) {
+          return res.status(400).json({ message: `Insufficient stock for ${item.product.name}` });
+        }
+      } else {
+        let available = item.product.stockQty || 0;
+        if (available === 0 && item.product.totalStock > 0) {
+          if (item.product.totalStock >= 1000) available = Math.floor(item.product.totalStock / 1000);
+          else available = item.product.totalStock;
+        }
+        if (available < item.quantity) {
+          return res.status(400).json({ message: `Insufficient stock for ${item.product.name}` });
+        }
+      }
     }
 
     const deliveryCharge = subtotal > 2000 ? 0 : 25;
@@ -83,6 +103,7 @@ exports.createOrder = async (req, res) => {
 };
 
 // 2. Verify & SAVE Order
+// Verify the Razorpay payment signature and save the order details to the database
 exports.verifyPayment = async (req, res) => {
   try {
     const {

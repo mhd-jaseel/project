@@ -1,5 +1,6 @@
 const Address = require('../models/Address');
 
+// Save a new address for the user
 exports.saveAddress = async (req, res) => {
     try {
         const { fullName, mobileNumber, houseName, street, landmark, city, pincode } = req.body;
@@ -29,8 +30,7 @@ exports.saveAddress = async (req, res) => {
     }
 };
 
-//function for get all user addresses
-
+// Get all addresses saved for the logged-in user
 exports.getAddresses = async (req, res) => {
     try {
         // Sort by isDefault (descending -> true first) then createdAt (descending -> newest first)
@@ -44,6 +44,7 @@ exports.getAddresses = async (req, res) => {
 
 //function to change default address
 
+// Set a specific address as the default for the user
 exports.setDefaultAddress = async (req, res) => {
     try {
         const { addressId } = req.params;   //gets addree id from URL
@@ -71,7 +72,8 @@ exports.setDefaultAddress = async (req, res) => {
 };
 
 
-//function for edit address
+
+// Update an existing address with new details
 exports.updateAddress = async (req, res) => {
     try {
         const { addressId } = req.params;
@@ -96,6 +98,7 @@ exports.updateAddress = async (req, res) => {
     }
 };
 
+// Delete a specific address from the user's list
 exports.deleteAddress = async (req, res) => {
     try {
         const { addressId } = req.params;

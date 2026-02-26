@@ -445,7 +445,43 @@
         <div class="content-wrapper">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold m-0 text-main">Recent Transactions</h4>
-                <button class="btn-filter"><i class="fas fa-filter text-secondary"></i> Filter</button>
+                <div class="dropdown">
+                    <button class="btn-filter" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter text-secondary"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-2"
+                        style="border-radius: 12px; min-width: 200px;">
+                        <li>
+                            <h6 class="dropdown-header fw-bold text-uppercase"
+                                style="font-size: 0.75rem; letter-spacing: 0.5px;">Payment Status</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-btn rounded py-2 active" href="#" data-type="status"
+                                data-value="All">All Status</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="status"
+                                data-value="Completed">Completed</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="status"
+                                data-value="Pending">Pending</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="status"
+                                data-value="Failed">Failed</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="status"
+                                data-value="Refunded">Refunded</a></li>
+                        <li>
+                            <hr class="dropdown-divider my-2">
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header fw-bold text-uppercase"
+                                style="font-size: 0.75rem; letter-spacing: 0.5px;">Payment Method</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-btn rounded py-2 active" href="#" data-type="method"
+                                data-value="All">All Methods</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="method"
+                                data-value="COD">Cash on Delivery</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="method"
+                                data-value="Razorpay">Online Payment</a></li>
+                        <li><a class="dropdown-item filter-btn rounded py-2" href="#" data-type="method"
+                                data-value="Wallet">Wallet</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="card-custom">
@@ -500,6 +536,8 @@
         }
 
         let currentPage = 1;
+        let currentStatusFilter = 'All';
+        let currentMethodFilter = 'All';
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchTransactions(1);
@@ -516,12 +554,32 @@
                     }, 500);
                 });
             }
+
+            // Filter logic
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Optional styling to highlight active filter
+                    const rootGroup = e.target.closest('.dropdown-menu');
+                    const siblings = rootGroup.querySelectorAll(`.filter-btn[data-type="${e.target.dataset.type}"]`);
+                    siblings.forEach(s => s.classList.remove('active', 'bg-light', 'text-primary'));
+                    e.target.classList.add('active', 'bg-light', 'text-primary');
+
+                    const type = e.target.getAttribute('data-type');
+                    const val = e.target.getAttribute('data-value');
+
+                    if (type === 'status') currentStatusFilter = val;
+                    if (type === 'method') currentMethodFilter = val;
+
+                    fetchTransactions(1);
+                });
+            });
         });
 
         async function fetchTransactions(page = 1) {
             const searchInput = document.getElementById('transactionSearchInput');
             const searchTerm = searchInput ? searchInput.value.trim() : '';
-            let query = `?page=${page}`;
+            let query = `?page=${page}&status=${encodeURIComponent(currentStatusFilter)}&method=${encodeURIComponent(currentMethodFilter)}`;
             if (searchTerm) {
                 query += `&search=${encodeURIComponent(searchTerm)}`;
             }

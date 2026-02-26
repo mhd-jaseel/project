@@ -1,6 +1,7 @@
 const Category = require("../models/Category");
 
 // ADMIN: Add Category
+// Create a new product category with an optional image
 exports.addCategory = async (req, res) => {
   try {
     const { name } = req.body;
@@ -44,6 +45,7 @@ exports.addCategory = async (req, res) => {
 };
 
 // PUBLIC: Get all categories
+// Retrieve all categories and ensure a default Uncategorized category exists
 exports.getCategories = async (req, res) => {
   try {
     let categories = await Category.find().sort({ createdAt: -1 });
@@ -68,6 +70,7 @@ exports.getCategories = async (req, res) => {
 };
 
 // ADMIN: Update Category
+// Update the name or image of an existing category
 exports.updateCategory = async (req, res) => {
   try {
     const { name } = req.body;
@@ -97,6 +100,7 @@ exports.updateCategory = async (req, res) => {
   }
 };
 
+// Delete a category and move its products to the default Uncategorized category
 exports.deleteCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -131,6 +135,7 @@ exports.deleteCategory = async (req, res) => {
   }
 };
 
+// Get a list of all categories sorted by creation date
 exports.getAllCategories = async (req, res) => {
   try {
     let categories = await Category.find().sort({ createdAt: -1 });

@@ -2,6 +2,7 @@ const Coupon = require('../models/Coupon');
 const Order = require('../models/Order');
 
 // 1. Create Coupon (Admin)
+// Create a new discount coupon with custom rules and limits
 exports.createCoupon = async (req, res) => {
     try {
         const {
@@ -37,6 +38,7 @@ exports.createCoupon = async (req, res) => {
 };
 
 // 2. Get All Coupons (Admin)
+// Retrieve all coupons from the system for admin management
 exports.getAllCoupons = async (req, res) => {
     try {
         const coupons = await Coupon.find().sort({ createdAt: -1 });
@@ -48,6 +50,7 @@ exports.getAllCoupons = async (req, res) => {
 };
 
 // 3. Update Coupon (Admin)
+// Update the details and rules of an existing coupon
 exports.updateCoupon = async (req, res) => {
     try {
         const { id } = req.params;
@@ -68,6 +71,7 @@ exports.updateCoupon = async (req, res) => {
 };
 
 // 4. Delete Coupon (Admin - Optional)
+// Permanently remove a coupon from the database
 exports.deleteCoupon = async (req, res) => {
     try {
         await Coupon.findByIdAndDelete(req.params.id);
@@ -78,6 +82,7 @@ exports.deleteCoupon = async (req, res) => {
 };
 
 // 5. Apply Coupon (User - Checkout)
+// Validate and apply a coupon code to calculate discounts for an order
 exports.applyCoupon = async (req, res) => {
     try {
         const { code, orderAmount } = req.body;
@@ -148,6 +153,7 @@ exports.applyCoupon = async (req, res) => {
     }
 };
 // 6. Get Available Coupons for User
+// Get a list of coupons that are currently valid for the user to use
 exports.getAvailableCoupons = async (req, res) => {
     try {
         const userId = req.user.id;

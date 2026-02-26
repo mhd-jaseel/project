@@ -353,6 +353,49 @@
             border-radius: 50%;
             margin-right: 8px;
         }
+
+        /* Edit Modal Image Styles */
+        .edit-img-slot {
+            position: relative;
+            border: 2px dashed #e4e6ef;
+            border-radius: 8px;
+            transition: all 0.2s;
+            background-color: #f8f9fa;
+        }
+
+        .edit-img-slot:hover {
+            border-color: var(--primary-color);
+        }
+
+        .edit-img-slot img {
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .edit-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .edit-img-slot:hover .edit-overlay {
+            opacity: 1;
+        }
+
+        .slot-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
     </style>
     <!-- SweetAlert2 -->
 
@@ -555,43 +598,68 @@
                                     <textarea class="form-control" id="editProductDescription" rows="3"></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Product Images</label>
+                                    <label class="form-label fw-bold d-block mb-3">Product Images (Up to 3)</label>
                                     <div class="row g-3">
-                                        <!-- Main Image -->
+                                        <!-- Main Image Slot -->
                                         <div class="col-md-4">
-                                            <div class="border rounded p-2 text-center bg-light">
-                                                <small class="d-block mb-2 fw-bold text-muted">Main Image</small>
-                                                <img id="currentProductImage" src="https://via.placeholder.com/100"
-                                                    class="img-fluid mb-2 rounded"
-                                                    style="height: 80px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm"
+                                            <div
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                <span class="badge bg-success slot-label mb-2">Main Card Image</span>
+                                                <div class="position-relative w-100" style="height: 100px;">
+                                                    <img id="currentProductImage" src="https://via.placeholder.com/100"
+                                                        class="img-fluid rounded">
+                                                    <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100"
+                                                        onclick="document.getElementById('editProductImage').click()">
+                                                        <i class="fas fa-edit me-1"></i> Change
+                                                    </div>
+                                                </div>
+                                                <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductImage" accept="image/*">
+                                                <small class="text-muted mt-2 d-none d-md-block"
+                                                    style="font-size: 0.65rem;">Shown on product card</small>
                                             </div>
                                         </div>
-                                        <!-- Extra Image 1 -->
+                                        <!-- Extra Image 1 Slot -->
                                         <div class="col-md-4">
-                                            <div class="border rounded p-2 text-center bg-light">
-                                                <small class="d-block mb-2 fw-bold text-muted">Extra Image 1</small>
-                                                <img id="currentExtraImage1" src="https://via.placeholder.com/100"
-                                                    class="img-fluid mb-2 rounded"
-                                                    style="height: 80px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm"
+                                            <div
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                <span class="badge bg-secondary slot-label mb-2">Details Image 1</span>
+                                                <div class="position-relative w-100" style="height: 100px;">
+                                                    <img id="currentExtraImage1" src="https://via.placeholder.com/100"
+                                                        class="img-fluid rounded">
+                                                    <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100"
+                                                        onclick="document.getElementById('editProductExtraImage1').click()">
+                                                        <i class="fas fa-edit me-1"></i> Change
+                                                    </div>
+                                                </div>
+                                                <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductExtraImage1" accept="image/*">
+                                                <small class="text-muted mt-2 d-none d-md-block"
+                                                    style="font-size: 0.65rem;">Single product page only</small>
                                             </div>
                                         </div>
-                                        <!-- Extra Image 2 -->
+                                        <!-- Extra Image 2 Slot -->
                                         <div class="col-md-4">
-                                            <div class="border rounded p-2 text-center bg-light">
-                                                <small class="d-block mb-2 fw-bold text-muted">Extra Image 2</small>
-                                                <img id="currentExtraImage2" src="https://via.placeholder.com/100"
-                                                    class="img-fluid mb-2 rounded"
-                                                    style="height: 80px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm"
+                                            <div
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                <span class="badge bg-secondary slot-label mb-2">Details Image 2</span>
+                                                <div class="position-relative w-100" style="height: 100px;">
+                                                    <img id="currentExtraImage2" src="https://via.placeholder.com/100"
+                                                        class="img-fluid rounded">
+                                                    <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100"
+                                                        onclick="document.getElementById('editProductExtraImage2').click()">
+                                                        <i class="fas fa-edit me-1"></i> Change
+                                                    </div>
+                                                </div>
+                                                <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductExtraImage2" accept="image/*">
+                                                <small class="text-muted mt-2 d-none d-md-block"
+                                                    style="font-size: 0.65rem;">Single product page only</small>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -709,6 +777,8 @@
         }
 
         function getDisplayStatus(p) {
+            const qty = getDisplayQty(p);
+            if (p.status === 'Out of Stock' && qty > 0) return 'In Stock';
             return p.status || 'Out of Stock';
         }
 
@@ -1084,10 +1154,29 @@
 
                 setImgSrc('currentProductImage', product.image);
 
-                // Handle Extra Images (assuming product.images is an array of strings)
+                // Handle Extra Images 
                 const extras = product.images || [];
                 setImgSrc('currentExtraImage1', extras[0]);
                 setImgSrc('currentExtraImage2', extras[1]);
+
+                // ✅ Add preview listeners for the edit modal slots
+                const setupEditPreview = (inputId, imgId) => {
+                    const input = document.getElementById(inputId);
+                    const img = document.getElementById(imgId);
+                    if (input && img) {
+                        input.addEventListener('change', function () {
+                            if (this.files && this.files[0]) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => img.src = e.target.result;
+                                reader.readAsDataURL(this.files[0]);
+                            }
+                        });
+                    }
+                };
+                setupEditPreview('editProductImage', 'currentProductImage');
+                setupEditPreview('editProductExtraImage1', 'currentExtraImage1');
+                setupEditPreview('editProductExtraImage2', 'currentExtraImage2');
+
 
 
                 // Modal Show

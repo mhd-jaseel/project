@@ -9,6 +9,7 @@ const Category = require("../models/Category")
 
 
 // ADMIN LOGIN
+// Authenticate the admin and generate a login token
 exports.adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -57,7 +58,8 @@ exports.adminLogin = async (req, res) => {
   }
 };
 
-// Get Current Admin Details
+
+// Retrieve information about the currently logged-in admin
 exports.getMe = async (req, res) => {
   try {
     const admin = await User.findById(req.user.id).select("-password");
@@ -71,6 +73,7 @@ exports.getMe = async (req, res) => {
   }
 };
 // Get Dashboard Stats
+// Calculate and return various statistics for the admin dashboard
 exports.getDashboardStats = async (req, res) => {
   try {
     const Order = require('../models/Order');
@@ -95,20 +98,36 @@ exports.getDashboardStats = async (req, res) => {
     ]);
     const totalSales = salesData.length > 0 ? (salesData[0].deliveredAmount - salesData[0].returnedAmount) : 0;
 
-    // Sales Chart (Last 7 Days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Sales Chart
+    const timeframe = req.query.timeframe || 'This Week';
+    let startDate = new Date();
+    let fillCount = 7;
+    let step = 'day';
+    let groupByFormat = "%Y-%m-%d";
+
+    if (timeframe === 'This Month') {
+      startDate.setDate(startDate.getDate() - 30);
+      fillCount = 30;
+    } else if (timeframe === 'This Year') {
+      startDate.setMonth(startDate.getMonth() - 11);
+      startDate.setDate(1);
+      fillCount = 12;
+      step = 'month';
+      groupByFormat = "%Y-%m";
+    } else { // This Week
+      startDate.setDate(startDate.getDate() - 6);
+    }
 
     const salesChartRaw = await Order.aggregate([
       {
         $match: {
           orderStatus: { $in: ['Delivered', 'Returned'] },
-          createdAt: { $gte: sevenDaysAgo }
+          createdAt: { $gte: startDate }
         }
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: { $dateToString: { format: groupByFormat, date: "$createdAt" } },
           total: {
             $sum: {
               $cond: [{ $eq: ["$orderStatus", "Delivered"] }, "$totalAmount", { $multiply: ["$totalAmount", -1] }]
@@ -119,16 +138,32 @@ exports.getDashboardStats = async (req, res) => {
       { $sort: { _id: 1 } }
     ]);
 
-    // Fill in missing days for smoother chart
+    // Fill in missing days/months for smoother chart
     const salesChartData = [];
     const today = new Date();
-    for (let i = 6; i >= 0; i--) {
+    for (let i = fillCount - 1; i >= 0; i--) {
       const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
+      let dateStr, labelStr;
+
+      if (step === 'day') {
+        d.setDate(d.getDate() - i);
+        dateStr = d.toISOString().split('T')[0];
+        // Short day name
+        labelStr = d.toLocaleDateString('en-US', { weekday: 'short' });
+        if (timeframe === 'This Month') {
+          // Include date for month view
+          labelStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+      } else {
+        d.setMonth(d.getMonth() - i);
+        dateStr = d.toISOString().substring(0, 7); // YYYY-MM
+        labelStr = d.toLocaleDateString('en-US', { month: 'short' });
+      }
+
       const found = salesChartRaw.find(r => r._id === dateStr);
       salesChartData.push({
         date: dateStr,
+        label: labelStr,
         total: found ? found.total : 0
       });
     }
@@ -185,7 +220,8 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-// Get All Customers
+
+// Get a list of all registered customers with search and pagination
 exports.getAllCustomers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -277,7 +313,8 @@ exports.getAllCustomers = async (req, res) => {
   }
 };
 
-// Delete Customer
+
+// Permanently delete a customer account from the database
 exports.deleteCustomer = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -289,7 +326,8 @@ exports.deleteCustomer = async (req, res) => {
   }
 };
 
-// Toggle Block Status
+
+// Block or unblock a customer based on their current status
 exports.toggleBlockStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -311,7 +349,8 @@ exports.toggleBlockStatus = async (req, res) => {
   }
 };
 
-// Get All Transactions (derived from Orders)
+
+// Get a history of all customer transactions with filtering options
 exports.getAllTransactions = async (req, res) => {
   try {
     const Order = require('../models/Order');
@@ -320,6 +359,14 @@ exports.getAllTransactions = async (req, res) => {
     const skip = (page - 1) * limit;
 
     let query = {};
+
+    if (req.query.status && req.query.status !== 'All') {
+      query.paymentStatus = req.query.status;
+    }
+    if (req.query.method && req.query.method !== 'All') {
+      query.paymentMethod = req.query.method;
+    }
+
     if (req.query.search) {
       const search = req.query.search.trim();
       const searchRegex = { $regex: search, $options: 'i' };
@@ -363,7 +410,8 @@ exports.getAllTransactions = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-// Get Customer Details
+
+// Retrieve detailed information for a specific customer
 exports.getCustomerDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -427,6 +475,7 @@ exports.getCustomerDetails = async (req, res) => {
   }
 };
 
+// Fetch all notifications for the admin system
 exports.getNotifications = async (req, res) => {
   try {
     const Order = require('../models/Order');
@@ -474,6 +523,7 @@ exports.getNotifications = async (req, res) => {
 //sales report 
 
 
+// Generate and download a sales report in Excel format
 exports.downloadSalesReportExcel = async (req, res) => {
   try {
     const { from, to } = req.query;
@@ -557,6 +607,7 @@ exports.downloadSalesReportExcel = async (req, res) => {
   }
 };
 //search
+// Perform a global search across products, categories, and orders
 exports.globalSearchAPI = async (req, res) => {
   try {
     const query = req.query.query?.trim();

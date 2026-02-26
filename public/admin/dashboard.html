@@ -446,10 +446,11 @@
                     <div class="card-custom">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="fw-bold m-0">Sales Statistics</h5>
-                            <select class="form-select form-select-sm" style="width: 120px;">
-                                <option>This Week</option>
-                                <option>This Month</option>
-                                <option>This Year</option>
+                            <select class="form-select form-select-sm" style="width: 120px;" id="dashboardTimeframe"
+                                onchange="fetchDashboardStats()">
+                                <option value="This Week">This Week</option>
+                                <option value="This Month">This Month</option>
+                                <option value="This Year">This Year</option>
                             </select>
                         </div>
                         <canvas id="salesChart" height="120"></canvas>
@@ -684,7 +685,10 @@
         // Fetch and Update Dashboard Stats
         async function fetchDashboardStats() {
             try {
-                const res = await fetch('/api/admin/stats', {
+                const timeframeSelect = document.getElementById('dashboardTimeframe');
+                const timeframe = timeframeSelect ? timeframeSelect.value : 'This Week';
+
+                const res = await fetch(`/api/admin/stats?timeframe=${encodeURIComponent(timeframe)}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -699,10 +703,7 @@
 
                     // Update Sales Chart
                     if (data.salesChartData && salesChart) {
-                        salesChart.data.labels = data.salesChartData.map(d => {
-                            const date = new Date(d.date);
-                            return date.toLocaleDateString('en-US', { weekday: 'short' });
-                        });
+                        salesChart.data.labels = data.salesChartData.map(d => d.label || d.date);
                         salesChart.data.datasets[0].data = data.salesChartData.map(d => d.total);
                         salesChart.update();
                     }

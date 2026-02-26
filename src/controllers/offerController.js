@@ -1,6 +1,7 @@
 const Offer = require('../models/Offer');
 
 // Create Offer (Admin)
+// Create a new promotional offer with timing and discount details
 exports.createOffer = async (req, res) => {
     try {
         const { title, subtitle, description, startDate, endDate, themeColor, link, textColor, isFullBackground, category, discountType, discountValue } = req.body;
@@ -36,6 +37,7 @@ exports.createOffer = async (req, res) => {
 };
 
 // Get All Offers (Admin)
+// Retrieve all promotional offers for admin review and management
 exports.getAllOffers = async (req, res) => {
     try {
         const offers = await Offer.find().sort({ createdAt: -1 });
@@ -47,6 +49,7 @@ exports.getAllOffers = async (req, res) => {
 };
 
 // Get Active Offers (User/Homepage)
+// Get offers that are currently active based on the current date
 exports.getActiveOffers = async (req, res) => {
     try {
         const now = new Date();
@@ -63,6 +66,7 @@ exports.getActiveOffers = async (req, res) => {
 };
 
 // Get Upcoming Offers (User/Homepage)
+// Retrieve promotional offers that are scheduled to start in the future
 exports.getUpcomingOffers = async (req, res) => {
     try {
         const now = new Date();
@@ -78,6 +82,7 @@ exports.getUpcomingOffers = async (req, res) => {
 };
 
 // Delete Offer (Admin)
+// Permanently delete a promotional offer from the database
 exports.deleteOffer = async (req, res) => {
     try {
         const { id } = req.params;
@@ -90,6 +95,7 @@ exports.deleteOffer = async (req, res) => {
 };
 
 // Get Offer By ID (Admin/Edit)
+// Find and return detailed information for a single promotional offer
 exports.getOfferById = async (req, res) => {
     try {
         const offer = await Offer.findById(req.params.id);
@@ -102,6 +108,7 @@ exports.getOfferById = async (req, res) => {
 };
 
 // Update Offer (Admin)
+// Update the rules, timing, or visual details of an existing offer
 exports.updateOffer = async (req, res) => {
     try {
         const { title, subtitle, description, startDate, endDate, link, isActive, themeColor, textColor, isFullBackground, category, discountType, discountValue } = req.body;

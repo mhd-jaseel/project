@@ -6,6 +6,7 @@ const Transaction = require('../models/Transaction');
 const PDFDocument = require("pdfkit")
 const mongoose = require("mongoose")
 // Helper: Parse weight string to grams/ml (base unit)
+// Helper function to convert weight strings like "1kg" into base units like 1000
 const parseWeight = (str) => {
     if (!str) return 0;
 
@@ -34,6 +35,7 @@ const parseWeight = (str) => {
 };
 
 // Place Order
+// Process and save a new order after validating items and stock
 exports.placeOrder = async (req, res) => {
     try {
         const { shippingAddress, paymentMethod, saveAddressInfo, couponCode } = req.body;
@@ -284,6 +286,7 @@ exports.placeOrder = async (req, res) => {
 };
 
 // Get My Orders
+// Retrieve all orders placed by the currently logged-in user
 exports.getMyOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user.id })
@@ -300,6 +303,7 @@ exports.getMyOrders = async (req, res) => {
 
 // Get All Orders
 // Get All Orders
+// Get a list of all orders in the system with search and filtering for admin
 exports.getAllOrders = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -361,6 +365,7 @@ exports.getAllOrders = async (req, res) => {
 };
 
 // Update Order Status
+// Update the status of an entire order and handle related logic
 exports.updateOrderStatus = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -427,6 +432,7 @@ exports.updateOrderStatus = async (req, res) => {
 };
 
 // Mark Order as Viewed
+// Mark an order as having been viewed by the admin
 exports.markOrderViewed = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -445,6 +451,7 @@ exports.markOrderViewed = async (req, res) => {
 };
 
 // Cancel Order (User)
+// Cancel an entire order and process refunds if applicable
 exports.cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -473,11 +480,10 @@ exports.cancelOrder = async (req, res) => {
                 const unitWeight = parseWeight(product.weight);
                 if (unitWeight > 0) {
                     product.totalStock += (unitWeight * item.quantity);
-                    // Check if status improves
-                    if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                    product.stockQty = Math.floor(product.totalStock / unitWeight);
+                    if (product.stockQty > 0 && product.status === 'Out of Stock') {
                         product.status = 'In Stock';
                     }
-                    product.stockQty = Math.floor(product.totalStock / unitWeight);
                     await product.save();
                 } else {
                     // Restore fallback
@@ -498,7 +504,9 @@ exports.cancelOrder = async (req, res) => {
 
         // Wallet Refund (if paid)
         if (order.paymentStatus === 'Completed' && ['Wallet', 'Razorpay'].includes(order.paymentMethod)) {
-            const wallet = await Wallet.findOne({ user: userId });
+            let wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) wallet = await Wallet.create({ user: userId, balance: 0 });
+
             if (wallet) {
                 wallet.balance += order.totalAmount;
                 await wallet.save();
@@ -532,6 +540,7 @@ exports.cancelOrder = async (req, res) => {
 };
 
 // Get My Cancellations
+// Retrieve all orders that have been cancelled by the user
 exports.getMyCancellations = async (req, res) => {
     try {
         const cancellations = await Order.find({
@@ -548,6 +557,7 @@ exports.getMyCancellations = async (req, res) => {
     }
 };
 // Request Return (User)
+// Submit a return request for an entire delivered order
 exports.requestReturn = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -587,6 +597,7 @@ exports.requestReturn = async (req, res) => {
 ====================== */
 
 // Cancel Single Order Item
+// Cancel a specific item within an order
 exports.cancelOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
@@ -635,6 +646,7 @@ exports.cancelOrderItem = async (req, res) => {
         const itemTotal = item.price * item.quantity;
         const originalSubtotal = order.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const originalDiscount = order.discountAmount || 0;
+        const itemShare = originalDiscount > 0 ? (itemTotal / originalSubtotal) * originalDiscount : 0;
 
         let newSubtotal = 0;
         order.items.forEach(i => {
@@ -649,39 +661,61 @@ exports.cancelOrderItem = async (req, res) => {
 
         const hadCoupon = !!order.couponCode;
 
-        if (order.couponCode) {
-            const CouponModel = require('../models/Coupon');
-            const coupon = await CouponModel.findOne({ code: order.couponCode });
-
-            if (coupon && newSubtotal < coupon.minOrderAmount) {
+        if (order.items.length === 1) {
+            // Full Refund for single product order cancellation
+            expectedRefund = order.paymentMethod === 'COD' ? 0 : currentTotal;
+            order.totalAmount = 0; // entire order cancelled
+            if (hadCoupon) {
                 isCouponRemoved = true;
                 order.couponCode = null;
                 order.discountAmount = 0;
+            }
+        } else {
+            if (order.couponCode) {
+                const CouponModel = require('../models/Coupon');
+                const coupon = await CouponModel.findOne({ code: order.couponCode });
 
-                if (order.paymentMethod === 'COD') {
-                    order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
-                    expectedRefund = 0;
-                } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
-                    const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
-                    if (itemTotal <= originalDiscount) {
+                if (coupon && newSubtotal < coupon.minOrderAmount) {
+                    isCouponRemoved = true;
+
+                    if (order.paymentMethod === 'COD') {
+                        order.couponCode = null;
+                        order.discountAmount = 0;
+                        order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
                         expectedRefund = 0;
                     } else {
+                        order.couponCode = null;
                         expectedRefund = itemTotal - itemShare;
+                        order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
                     }
+                } else {
+                    if (order.paymentMethod === 'COD') {
+                        expectedRefund = itemTotal;
+                        order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
+                    } else {
+                        expectedRefund = itemTotal - itemShare;
+                        order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
+                    }
+                }
+            } else if (originalDiscount > 0) {
+                if (order.paymentMethod !== 'COD') {
+                    expectedRefund = itemTotal - itemShare;
+                    order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
+                } else {
+                    expectedRefund = itemTotal;
                     order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
                 }
             } else {
                 expectedRefund = itemTotal;
                 order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
             }
-        } else {
-            expectedRefund = itemTotal;
-            order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
         }
 
         // 3. Wallet Refund
         if (expectedRefund > 0 && order.paymentStatus === 'Completed' && ['Wallet', 'Razorpay'].includes(order.paymentMethod)) {
-            const wallet = await Wallet.findOne({ user: userId });
+            let wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) wallet = await Wallet.create({ user: userId, balance: 0 });
+
             if (wallet) {
                 wallet.balance += Math.round(expectedRefund);
                 await wallet.save();
@@ -719,6 +753,7 @@ exports.cancelOrderItem = async (req, res) => {
 
 
 // Request Return Single Item
+// Request a return for a specific item within a delivered order
 exports.requestItemReturn = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
@@ -766,6 +801,7 @@ exports.requestItemReturn = async (req, res) => {
 };
 
 // Get Order By ID (Admin)
+// Retrieve detailed information for a single order by its ID
 exports.getOrderById = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id)
@@ -782,6 +818,7 @@ exports.getOrderById = async (req, res) => {
 };
 
 // Update Return Status (Admin)
+// Update the status of a return request for an entire order
 exports.updateReturnStatus = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -804,10 +841,10 @@ exports.updateReturnStatus = async (req, res) => {
                     const unitWeight = parseWeight(product.weight);
                     if (unitWeight > 0) {
                         product.totalStock += (unitWeight * item.quantity);
-                        if (product.initialStock > 0 && product.totalStock > (product.initialStock * 0.1)) {
+                        product.stockQty = Math.floor(product.totalStock / unitWeight);
+                        if (product.stockQty > 0 && product.status === 'Out of Stock') {
                             product.status = 'In Stock';
                         }
-                        product.stockQty = Math.floor(product.totalStock / unitWeight);
                         await product.save();
                     } else {
                         let addUnit = 1;
@@ -825,16 +862,20 @@ exports.updateReturnStatus = async (req, res) => {
 
             // Wallet Refund
             if (order.paymentStatus === 'Completed') {
-                const wallet = await Wallet.findOne({ user: order.user });
+                let wallet = await Wallet.findOne({ user: order.user });
+                if (!wallet) wallet = await Wallet.create({ user: order.user, balance: 0 });
+
                 if (wallet) {
-                    wallet.balance += order.totalAmount;
+                    const refundAmount = Math.max(0, Math.round(order.totalAmount - (order.deliveryCharge || 0) - (order.handlingFee || 0)));
+
+                    wallet.balance += refundAmount;
                     await wallet.save();
 
                     await Transaction.create({
                         wallet: wallet._id,
                         user: order.user,
                         type: 'CREDIT',
-                        amount: order.totalAmount,
+                        amount: refundAmount,
                         reason: 'Return Refund',
                         orderId: order._id,
                         description: `Refund for Returned Order #${order._id}`
@@ -856,6 +897,7 @@ exports.updateReturnStatus = async (req, res) => {
     }
 };
 // Update Item Return Status (Admin)
+// Update the return status for a single item and process associated refunds
 exports.updateItemReturnStatus = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
@@ -913,32 +955,52 @@ exports.updateItemReturnStatus = async (req, res) => {
             order.subtotal = newSubtotal;
 
             let expectedRefund = 0;
+            const itemShare = originalDiscount > 0 ? (itemTotal / originalSubtotal) * originalDiscount : 0;
+
             // 2. Recalculate Discount
-            if (order.couponCode) {
-                const CouponModel = require('../models/Coupon');
-                const couponData = await CouponModel.findOne({ code: order.couponCode });
-                if (couponData && newSubtotal < couponData.minOrderAmount) {
+            if (order.items.length === 1) {
+                expectedRefund = itemTotal - originalDiscount;
+                order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                if (order.couponCode) {
                     order.couponCode = null;
                     order.discountAmount = 0;
-                    if (order.paymentMethod === 'COD') {
-                        order.totalAmount = Math.max(0, Math.round(newSubtotal + deliveryCharge + handlingFee));
-                        expectedRefund = 0;
-                    } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
-                        const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
-                        if (itemTotal <= originalDiscount) {
+                }
+            } else {
+                if (order.couponCode) {
+                    const CouponModel = require('../models/Coupon');
+                    const couponData = await CouponModel.findOne({ code: order.couponCode });
+                    if (couponData && newSubtotal < couponData.minOrderAmount) {
+                        if (order.paymentMethod === 'COD') {
+                            order.couponCode = null;
+                            order.discountAmount = 0;
+                            order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
                             expectedRefund = 0;
                         } else {
+                            order.couponCode = null;
                             expectedRefund = itemTotal - itemShare;
+                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
                         }
+                    } else {
+                        if (order.paymentMethod === 'COD') {
+                            expectedRefund = itemTotal;
+                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
+                        } else {
+                            expectedRefund = itemTotal - itemShare;
+                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                        }
+                    }
+                } else if (originalDiscount > 0) {
+                    if (order.paymentMethod !== 'COD') {
+                        expectedRefund = itemTotal - itemShare;
+                        order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                    } else {
+                        expectedRefund = itemTotal;
                         order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
                     }
                 } else {
                     expectedRefund = itemTotal;
                     order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
                 }
-            } else {
-                expectedRefund = itemTotal;
-                order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
             }
 
 
@@ -947,7 +1009,9 @@ exports.updateItemReturnStatus = async (req, res) => {
                 const refundAmount = expectedRefund;
 
                 if (refundAmount > 0) {
-                    const wallet = await Wallet.findOne({ user: order.user });
+                    let wallet = await Wallet.findOne({ user: order.user });
+                    if (!wallet) wallet = await Wallet.create({ user: order.user, balance: 0 });
+
                     if (wallet) {
                         wallet.balance += refundAmount;
                         await wallet.save();
@@ -970,11 +1034,23 @@ exports.updateItemReturnStatus = async (req, res) => {
             item.itemStatus = 'Delivered';
         }
 
-        // Do NOT change main order status unless ALL items are returned/cancelled
-        // (User Request: "The order status on the order page should change only when the entire order is cancelled.")
-        // But if all items are Returned, maybe we should mark order as Returned?
-        // User said: "If a single product is cancelled, the order status should not change."
-        // Let's implicitely follow this for Returns too.
+        // Update main order status if ALL items are returned/cancelled
+        const allProcessed = order.items.every(i => i.itemStatus === 'Cancelled' || i.itemStatus === 'Returned');
+        if (allProcessed) {
+            const allReturned = order.items.every(i => i.itemStatus === 'Returned' || i.itemStatus === 'Cancelled'); // Mixed state
+            const strictlyReturned = order.items.some(i => i.itemStatus === 'Returned');
+
+            if (strictlyReturned) {
+                order.orderStatus = 'Returned';
+                if (order.paymentStatus === 'Completed' && order.paymentMethod !== 'COD') {
+                    // Check if there was any refund
+                    // (Actually we keep paymentStatus as is or mark Refunded)
+                }
+            } else if (order.items.every(i => i.itemStatus === 'Cancelled')) {
+                order.orderStatus = 'Cancelled';
+                order.paymentStatus = 'Refunded';
+            }
+        }
 
         await order.save();
         res.json({ message: 'Item return status updated', order });
@@ -986,6 +1062,7 @@ exports.updateItemReturnStatus = async (req, res) => {
 };
 
 // Get My Returns
+// Get a list of all products that the user has requested to return
 exports.getMyReturns = async (req, res) => {
     try {
         const returns = await Order.find({
@@ -1003,6 +1080,7 @@ exports.getMyReturns = async (req, res) => {
 };
 //downloadInvoice
 
+// Generate and download a PDF invoice for a specific order
 exports.downloadInvoice = async (req, res) => {
     console.log("NEW PROFESSIONAL INVOICE VERSION RUNNING");
     try {
@@ -1072,27 +1150,58 @@ exports.downloadInvoice = async (req, res) => {
         /* ================= ITEMS ================= */
 
         let position = tableTop + 30;
-        let subtotal = 0;
+        let grossTotal = 0;
+        let cancelledTotal = 0;
+        let returnedTotal = 0;
 
         order.items.forEach((item) => {
             const total = item.quantity * item.price;
-            subtotal += total;
+            grossTotal += total;
+            if (item.itemStatus === 'Cancelled') cancelledTotal += total;
+            if (item.itemStatus === 'Returned') returnedTotal += total;
 
             doc
                 .font("Helvetica")
                 .fontSize(11)
+                .fillColor("black")
                 .text(item.name, 50, position)
                 .text(item.quantity, 330, position, { width: 50, align: "center" })
                 .text(`₹${item.price}`, 390, position, { width: 70, align: "right" })
                 .text(`₹${total}`, 470, position, { width: 70, align: "right" });
+
+            if (item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned') {
+                doc.fillColor('red').fontSize(9).text(`[${item.itemStatus}]`, 50, position + 12).fillColor('black');
+            }
 
             position += 25;
         });
 
         /* ================= TOTAL SECTION ================= */
 
-        const gst = subtotal * 0.18;
-        const grandTotal = subtotal + gst;
+        const delivery = order.deliveryCharge || 0;
+        const handling = order.handlingFee || 0;
+
+        let actualDiscount = order.discountAmount || 0;
+        const mathDiff = grossTotal - cancelledTotal - returnedTotal + delivery + handling - (order.totalAmount || 0);
+        if (mathDiff > 0.01) {
+            actualDiscount = mathDiff;
+        }
+
+        let cancelledRefund = 0;
+        let returnedRefund = 0;
+
+        order.items.forEach(itm => {
+            const itemTotal = itm.price * itm.quantity;
+            if (itm.itemStatus === 'Cancelled') {
+                const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                cancelledRefund += (itemTotal - itemShare);
+            } else if (itm.itemStatus === 'Returned') {
+                const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                returnedRefund += (itemTotal - itemShare);
+            }
+        });
+
+        const calculatedTotal = grossTotal - cancelledRefund - returnedRefund + delivery + handling - actualDiscount;
 
         doc
             .moveTo(300, position + 10)
@@ -1102,27 +1211,36 @@ exports.downloadInvoice = async (req, res) => {
         doc
             .font("Helvetica")
             .fontSize(11)
-            .text("Subtotal:", 390, position + 25)
-            .text(`₹${subtotal.toFixed(2)}`, 470, position + 25, {
-                width: 70,
-                align: "right",
-            });
+            .text("Subtotal (Gross):", 340, position + 25)
+            .text(`₹${grossTotal.toFixed(2)}`, 470, position + 25, { width: 70, align: "right" });
 
-        doc
-            .text("GST (18%):", 390, position + 45)
-            .text(`₹${gst.toFixed(2)}`, 470, position + 45, {
-                width: 70,
-                align: "right",
-            });
+        let currentPos = position + 45;
+
+        if (actualDiscount > 0) {
+            doc.fillColor("green").text("Coupon Discount:", 340, currentPos).text(`-₹${actualDiscount.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            currentPos += 20;
+        }
+
+        if (delivery > 0 || handling > 0) {
+            doc.text("Shipping & Handling:", 340, currentPos).text(`+₹${(delivery + handling).toFixed(2)}`, 470, currentPos, { width: 70, align: "right" });
+            currentPos += 20;
+        }
+
+        if (cancelledRefund > 0) {
+            doc.fillColor("red").text(`Cancelled Refund:`, 340, currentPos).text(`-₹${cancelledRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            currentPos += 20;
+        }
+
+        if (returnedRefund > 0) {
+            doc.fillColor("gray").text(`Returned Refund:`, 340, currentPos).text(`-₹${returnedRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            currentPos += 20;
+        }
 
         doc
             .font("Helvetica-Bold")
             .fontSize(14)
-            .text("Grand Total:", 390, position + 75)
-            .text(`₹${grandTotal.toFixed(2)}`, 470, position + 75, {
-                width: 70,
-                align: "right",
-            });
+            .text("Final Paid Amount:", 320, currentPos + 10)
+            .text(`₹${calculatedTotal.toFixed(2)}`, 470, currentPos + 10, { width: 70, align: "right" });
 
         /* ================= FOOTER ================= */
 
@@ -1149,6 +1267,7 @@ exports.downloadInvoice = async (req, res) => {
     REFUND CALCULATION
 ====================== */
 
+// Calculate the refund amount for a specific item based on order totals
 exports.calculateItemRefundInfo = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
@@ -1176,36 +1295,73 @@ exports.calculateItemRefundInfo = async (req, res) => {
         let expectedRefund = 0;
         let newTotal = 0;
 
-        if (order.couponCode) {
-            const Coupon = require('../models/Coupon');
-            const coupon = await Coupon.findOne({ code: order.couponCode });
+        const action = req.query.action || 'return';
+        let hideMessage = false;
+
+        if (order.items.length === 1 && action === 'cancel') {
+            expectedRefund = order.paymentMethod === 'COD' ? 0 : currentTotalAmount;
+            newTotal = 0;
+            isCouponRemoved = !!order.couponCode;
+            hideMessage = true;
+            couponAdjustmentMessage = "";
+        } else if (order.items.length === 1 && action === 'return') {
             const originalDiscount = order.discountAmount || 0;
+            expectedRefund = itemTotal - originalDiscount;
+            newTotal = currentTotalAmount - Math.round(expectedRefund);
+            isCouponRemoved = !!order.couponCode;
+            couponAdjustmentMessage = `For single-item returns, delivery and handling fees are non-refundable. You will be refunded ₹${Math.round(expectedRefund)} for the product.`;
+        } else {
+            if (order.couponCode) {
+                const Coupon = require('../models/Coupon');
+                const coupon = await Coupon.findOne({ code: order.couponCode });
+                const originalDiscount = order.discountAmount || 0;
+                const itemShare = originalDiscount > 0 ? (itemTotal / originalSubtotal) * originalDiscount : 0;
 
-            if (coupon && newSubtotal < coupon.minOrderAmount) {
-                isCouponRemoved = true;
+                if (coupon && newSubtotal < coupon.minOrderAmount) {
+                    isCouponRemoved = true;
 
-                if (order.paymentMethod === 'COD') {
-                    newTotal = newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0);
-                    expectedRefund = 0;
-                    couponAdjustmentMessage = "Cancelling this item invalidates the coupon. The total payable amount will be updated without the coupon discount.";
-                } else if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
-                    const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
-                    if (itemTotal <= originalDiscount) {
+                    if (order.paymentMethod === 'COD') {
+                        newTotal = newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0);
                         expectedRefund = 0;
-                        couponAdjustmentMessage = "No refund will be provided. The cancelled item's amount is less than the applied coupon discount.";
+                        couponAdjustmentMessage = "Cancelling this item invalidates the coupon. The total payable amount will be updated without the coupon discount.";
                     } else {
                         expectedRefund = itemTotal - itemShare;
-                        couponAdjustmentMessage = `The coupon has been removed. You will be refunded ₹${Math.round(expectedRefund)} after deducting its coupon share.`;
+                        couponAdjustmentMessage = `The coupon condition fails, so it will be removed. You will be refunded ₹${Math.max(0, Math.round(expectedRefund))} after deducting the coupon share assigned to this item.`;
+                        newTotal = currentTotalAmount - Math.round(expectedRefund);
                     }
+                } else {
+                    if (order.paymentMethod === 'COD') {
+                        expectedRefund = 0;
+                        newTotal = currentTotalAmount - Math.round(itemTotal);
+                    } else {
+                        expectedRefund = itemTotal - itemShare;
+                        if (expectedRefund > 0) {
+                            couponAdjustmentMessage = `You will be refunded ₹${Math.round(expectedRefund)} after deducting the proportional coupon share assigned to this item.`;
+                        } else {
+                            couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${Math.round(expectedRefund)}).`;
+                        }
+                        newTotal = currentTotalAmount - Math.round(expectedRefund);
+                    }
+                }
+            } else if ((order.discountAmount || 0) > 0) {
+                const originalDiscount = order.discountAmount || 0;
+                const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
+                if (order.paymentMethod === 'COD') {
+                    expectedRefund = 0;
                     newTotal = currentTotalAmount - Math.round(itemTotal);
+                } else {
+                    expectedRefund = itemTotal - itemShare;
+                    if (expectedRefund > 0) {
+                        couponAdjustmentMessage = `You will be refunded ₹${Math.round(expectedRefund)} after deducting the proportional coupon share assigned to this item.`;
+                    } else {
+                        couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${Math.round(expectedRefund)}).`;
+                    }
+                    newTotal = currentTotalAmount - Math.round(expectedRefund);
                 }
             } else {
                 expectedRefund = itemTotal;
                 newTotal = currentTotalAmount - Math.round(itemTotal);
             }
-        } else {
-            expectedRefund = itemTotal;
-            newTotal = currentTotalAmount - Math.round(itemTotal);
         }
 
         res.json({
@@ -1215,7 +1371,8 @@ exports.calculateItemRefundInfo = async (req, res) => {
             newTotal: Math.round(newTotal),
             currentTotalAmount,
             paymentMethod: order.paymentMethod,
-            couponAdjustmentMessage
+            couponAdjustmentMessage,
+            hideMessage
         });
 
     } catch (error) {

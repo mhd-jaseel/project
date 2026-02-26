@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path'); //To correctly build the image file path
 
 // Add Brand
+// Add a new brand image to the system
 exports.addBrand = async (req, res) => {
     try {
         if (!req.file) {
@@ -23,6 +24,7 @@ exports.addBrand = async (req, res) => {
 };
 
 // Get All Brands
+// Get a list of all current brands
 exports.getAllBrands = async (req, res) => {
     try {
         const brands = await Brand.find().sort({ createdAt: -1 });
@@ -34,6 +36,7 @@ exports.getAllBrands = async (req, res) => {
 };
 
 // Delete Brand (Admin)
+// Permanently delete a brand and its image file
 exports.deleteBrand = async (req, res) => {
     try {
         const { brandId } = req.params;

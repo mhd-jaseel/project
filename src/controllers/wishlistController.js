@@ -1,8 +1,6 @@
 const User = require("../models/User");
 
-/* ===============================
-   GET USER WISHLIST
-================================ */
+// Retrieve all products currently saved in the user's wishlist
 exports.getWishlist = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate("wishlist");
@@ -17,9 +15,8 @@ exports.getWishlist = async (req, res) => {
   }
 };
 
-/* ===============================
-   ADD TO WISHLIST ✅ FIXED
-================================ */
+
+// Add a product to the user's wishlist if it's not already there
 exports.addToWishlist = async (req, res) => {
   try {
     const { productId } = req.params; // ✅ FIX HERE
@@ -48,9 +45,8 @@ exports.addToWishlist = async (req, res) => {
   }
 };
 
-/* ===============================
-   REMOVE FROM WISHLIST
-================================ */
+
+// Remove a specific product from the user's wishlist
 exports.removeFromWishlist = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -72,10 +68,7 @@ exports.removeFromWishlist = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-/* ===============================
-   CLEAR WISHLIST
-================================ */
+// Remove all products from the user's wishlist at once
 exports.clearWishlist = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);

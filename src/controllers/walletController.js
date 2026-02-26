@@ -12,6 +12,7 @@ const razorpay = new Razorpay({
 
 
 //add money
+// Create a Razorpay order to initiate a wallet balance top-up
 exports.createWalletTopupOrder = async (req, res) => {
     try {
         const { amount } = req.body;
@@ -40,6 +41,7 @@ exports.createWalletTopupOrder = async (req, res) => {
 
 
 
+// Verify the payment signature and credit the amount to the user's wallet
 exports.verifyWalletTopup = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -120,6 +122,7 @@ exports.verifyWalletTopup = async (req, res) => {
 };
 
 // Get My Wallet (Balance + History)
+// Retrieve the current user's wallet balance and transaction history
 exports.getMyWallet = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -144,6 +147,7 @@ exports.getMyWallet = async (req, res) => {
 };
 
 // Get Single Transaction Details
+// Get detailed information and reason for a specific wallet transaction
 exports.getTransactionDetails = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -164,6 +168,7 @@ exports.getTransactionDetails = async (req, res) => {
 };
 
 // Admin: Get User Wallet
+// Retrieve the wallet balance and history for a specific user (Admin)
 exports.getUserWallet = async (req, res) => {
     try {
         const { userId } = req.params;

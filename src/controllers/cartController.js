@@ -5,6 +5,7 @@ const Offer = require("../models/Offer");
 /* ===============================
    GET CART
 ================================ */
+// Retrieve the current user's shopping cart with totals and savings
 exports.getCart = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).populate("cart.product"); // Populates product details
@@ -101,6 +102,7 @@ exports.getCart = async (req, res) => {
 /* ===============================
    ADD TO CART
 ================================ */
+// Add a product to the user's shopping cart
 exports.addToCart = async (req, res) => {
     try {
         const { id, quantity } = req.body;
@@ -137,6 +139,7 @@ exports.addToCart = async (req, res) => {
 /* ===============================
    UPDATE QUANTITY
 ================================ */
+// Increase or decrease the quantity of an item in the cart
 exports.updateCartItem = async (req, res) => {
     try {
         const { id, action } = req.body; // action: 'increase' or 'decrease'
@@ -180,6 +183,7 @@ exports.updateCartItem = async (req, res) => {
 /* ===============================
    REMOVE ITEM
 ================================ */
+// Remove a specific item from the shopping cart
 exports.removeFromCart = async (req, res) => {
     try {
         const { id } = req.params;
@@ -200,6 +204,7 @@ exports.removeFromCart = async (req, res) => {
 /* ===============================
    CLEAR CART
 ================================ */
+// Remove all items from the user's shopping cart
 exports.clearCart = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);

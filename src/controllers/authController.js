@@ -16,13 +16,14 @@ const transporter = nodemailer.createTransport({
 });// Object used to send emails
 
 
-// OTP generator
+// Helper function to generate a secure 6-digit numeric OTP
 const generateOTP = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 // ===============================
 // GOOGLE LOGIN SUCCESS (JWT)
 // ===============================
+// Handle successful Google login and return user details with a token
 exports.googleLoginSuccess = async (req, res) => {
   try {
     const user = req.user;
@@ -56,6 +57,7 @@ exports.googleLoginSuccess = async (req, res) => {
 /* ======================
    REGISTER (SIGNUP)
 ====================== */
+// Register a new user and send an OTP for email verification
 exports.register = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;  //Get data from request body.
@@ -87,6 +89,9 @@ exports.register = async (req, res) => {
     });
 
 
+    // Create Wallet logic inside the try statement just before success response
+    await Wallet.create({ user: user._id, balance: 0 });
+
     res.status(201).json({
       message: "OTP sent to email",
       email,
@@ -95,13 +100,12 @@ exports.register = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-  // Create Wallet
-  await Wallet.create({ user: user._id });
 };
 
 /* ======================
    LOGIN
 ====================== */
+// Log in a user by verifying their email and password
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -142,6 +146,7 @@ exports.login = async (req, res) => {
 /* ======================   //Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
    VERIFY OTP
 ====================== */
+// Verify the OTP provided by the user to complete registration or password reset
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp, purpose } = req.body;
@@ -194,6 +199,7 @@ exports.verifyOTP = async (req, res) => {
 /* ======================
    FORGOT PASSWORD
 ====================== */
+// Initiate the password reset process by sending an OTP to the user's email
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -229,6 +235,7 @@ exports.forgotPassword = async (req, res) => {
    RESET PASSWORD
 ====================== */
 //This runs after OTP verification in forgot-password flow.
+// Reset the user's password after successful OTP verification
 exports.resetPassword = async (req, res) => {
   try {
     const { resetToken, newPassword } = req.body;    //resetToken → received after OTP verification
@@ -263,6 +270,7 @@ exports.resetPassword = async (req, res) => {
    GET WALLET
 ====================== */
 //get logged-in user's wallet balance
+// Get the current wallet balance for the logged-in user
 exports.getWalletBalance = async (req, res) => {
   try {
     const wallet = await Wallet.findOne({ user: req.user.id }); // Find wallet document using the logged-in user's ID (from JWT middleware)
@@ -276,6 +284,7 @@ exports.getWalletBalance = async (req, res) => {
 /* ======================
    GET PROFILE
 ====================== */
+// Retrieve the profile details of the logged-in user
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password -otp -otpExpiry -resetToken"); // Find user by ID from JWT and exclude sensitive fields
@@ -289,6 +298,7 @@ exports.getProfile = async (req, res) => {
 /* ======================
    UPDATE PROFILE
 ====================== */
+// Update the profile information for the logged-in user
 exports.updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -327,6 +337,7 @@ exports.updateProfile = async (req, res) => {
 /* ======================
    CHANGE EMAIL
 ====================== */
+// Change the user's registered email address
 exports.changeEmail = async (req, res) => {
   try {
     const { oldEmail, newEmail } = req.body;
@@ -365,6 +376,7 @@ exports.changeEmail = async (req, res) => {
 /* ======================
    CHANGE PASSWORD
 ====================== */
+// Change the user's password after verifying the old password
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;

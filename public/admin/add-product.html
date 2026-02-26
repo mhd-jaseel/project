@@ -293,6 +293,46 @@
             background-color: #e4e6ef;
             color: #3f4254;
         }
+
+        /* Image Upload Improvements */
+        .img-slot {
+            transition: all 0.2s;
+            border: 2px dashed #e4e6ef;
+        }
+
+        .img-slot:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa !important;
+        }
+
+        .img-slot.has-image {
+            border-style: solid;
+            border-color: #e4e6ef;
+        }
+
+        .slot-pill {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .edit-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .img-slot:hover .edit-overlay {
+            opacity: 1;
+        }
     </style>
     <!-- SweetAlert2 -->
 
@@ -449,48 +489,76 @@
                             <h6 class="fw-bold mb-3 small text-uppercase text-muted border-bottom pb-2">Visuals & Desc
                             </h6>
 
-                            <!-- Image Preview -->
-                            <div class="border rounded bg-light position-relative mb-2 d-flex align-items-center justify-content-center"
-                                style="height: 160px; overflow: hidden;">
-                                <img src="https://m.media-amazon.com/images/I/71Zt4Kk2l8L._SL1500_.jpg"
-                                    id="mainProductImage" class="img-fluid"
-                                    style="max-height: 100%; object-fit: contain;">
-                                <div class="position-absolute bottom-0 end-0 p-1">
-                                    <button type="button" class="btn btn-sm btn-light border shadow-sm"
-                                        style="width: 30px; height: 30px; padding: 0;" id="btnBrowseImage"
-                                        title="Main Image"><i class="fas fa-camera small"></i></button>
-                                </div>
-                                <input type="file" id="productImageInput" accept="image/*" hidden>
-                            </div>
+                            <!-- Image Preview System -->
+                            <div class="mb-3">
+                                <label class="form-label x-small fw-bold mb-2">Product Images (Max 3)</label>
 
-                            <!-- Additional Images (2 Columns) -->
-                            <div class="d-flex gap-2 mb-3">
-                                <!-- Extra Image 1 -->
-                                <div class="border rounded bg-light position-relative d-flex align-items-center justify-content-center flex-fill"
-                                    style="height: 80px; overflow: hidden; cursor:pointer;"
-                                    onclick="document.getElementById('extraImageInput1').click();">
-                                    <img src="" id="extraImagePreview1" class="img-fluid"
+                                <!-- Main Image Slot -->
+                                <div class="img-slot border rounded bg-light position-relative mb-2 d-flex align-items-center justify-content-center overflow-hidden"
+                                    style="height: 160px; cursor: pointer;" id="slotMain"
+                                    onclick="document.getElementById('productImageInput').click()">
+                                    <img src="" id="mainProductImage" class="img-fluid"
                                         style="max-height: 100%; object-fit: contain; display: none;">
-                                    <div class="position-absolute top-50 start-50 translate-middle text-muted"
-                                        id="extraIcon1">
-                                        <i class="fas fa-plus small"></i>
+
+                                    <div class="text-center text-muted" id="placeholderMain">
+                                        <i class="fas fa-camera fa-2x mb-2"></i>
+                                        <div class="x-small fw-bold">Main Product Image</div>
                                     </div>
-                                    <input type="file" id="extraImageInput1" accept="image/*" hidden>
+
+                                    <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </div>
+
+                                    <span class="position-absolute top-0 start-0 m-2 badge bg-success slot-pill">Product
+                                        Card</span>
+                                    <input type="file" id="productImageInput" accept="image/*" hidden>
                                 </div>
 
-                                <!-- Extra Image 2 -->
-                                <div class="border rounded bg-light position-relative d-flex align-items-center justify-content-center flex-fill"
-                                    style="height: 80px; overflow: hidden; cursor:pointer;"
-                                    onclick="document.getElementById('extraImageInput2').click();">
-                                    <img src="" id="extraImagePreview2" class="img-fluid"
-                                        style="max-height: 100%; object-fit: contain; display: none;">
-                                    <div class="position-absolute top-50 start-50 translate-middle text-muted"
-                                        id="extraIcon2">
-                                        <i class="fas fa-plus small"></i>
+                                <!-- Extra Images Row -->
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="img-slot border rounded bg-light position-relative d-flex align-items-center justify-content-center overflow-hidden"
+                                            style="height: 90px; cursor: pointer;" id="slotExtra1"
+                                            onclick="document.getElementById('extraImageInput1').click()">
+                                            <img src="" id="extraImagePreview1" class="img-fluid"
+                                                style="max-height: 100%; object-fit: contain; display: none;">
+                                            <div class="text-muted text-center" id="placeholderExtra1">
+                                                <i class="fas fa-plus"></i>
+                                            </div>
+                                            <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
+                                            <span
+                                                class="position-absolute top-0 start-0 m-1 badge bg-secondary slot-pill"
+                                                style="font-size: 0.55rem;">Details Only</span>
+                                            <input type="file" id="extraImageInput1" accept="image/*" hidden>
+                                        </div>
                                     </div>
-                                    <input type="file" id="extraImageInput2" accept="image/*" hidden>
+                                    <div class="col-6">
+                                        <div class="img-slot border rounded bg-light position-relative d-flex align-items-center justify-content-center overflow-hidden"
+                                            style="height: 90px; cursor: pointer;" id="slotExtra2"
+                                            onclick="document.getElementById('extraImageInput2').click()">
+                                            <img src="" id="extraImagePreview2" class="img-fluid"
+                                                style="max-height: 100%; object-fit: contain; display: none;">
+                                            <div class="text-muted text-center" id="placeholderExtra2">
+                                                <i class="fas fa-plus"></i>
+                                            </div>
+                                            <div class="edit-overlay position-absolute top-0 start-0 w-100 h-100">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
+                                            <span
+                                                class="position-absolute top-0 start-0 m-1 badge bg-secondary slot-pill"
+                                                style="font-size: 0.55rem;">Details Only</span>
+                                            <input type="file" id="extraImageInput2" accept="image/*" hidden>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-text x-small mt-2 text-muted">
+                                    <i class="fas fa-info-circle me-1"></i> First image will be the primary one shown in
+                                    search and list.
                                 </div>
                             </div>
+
 
                             <!-- Description -->
                             <div class="flex-grow-1 d-flex flex-column">
@@ -631,10 +699,11 @@
 
 
         // Image Upload & Preview Logic
-        const setupPreview = (inputId, imgId, iconId) => {
+        const setupPreview = (inputId, imgId, placeholderId, slotId) => {
             const input = document.getElementById(inputId);
             const img = document.getElementById(imgId);
-            const icon = iconId ? document.getElementById(iconId) : null;
+            const placeholder = document.getElementById(placeholderId);
+            const slot = document.getElementById(slotId);
 
             if (input && img) {
                 input.addEventListener('change', function () {
@@ -642,8 +711,9 @@
                         const reader = new FileReader();
                         reader.onload = function (e) {
                             img.src = e.target.result;
-                            img.style.display = 'block'; // Ensure visible
-                            if (icon) icon.style.display = 'none';
+                            img.style.display = 'block';
+                            if (placeholder) placeholder.style.display = 'none';
+                            if (slot) slot.classList.add('has-image');
                         }
                         reader.readAsDataURL(this.files[0]);
                     }
@@ -651,17 +721,11 @@
             }
         };
 
-        // Main Image
-        const btnBrowse = document.getElementById('btnBrowseImage');
-        const fileInput = document.getElementById('productImageInput');
-        if (btnBrowse && fileInput) {
-            btnBrowse.addEventListener('click', () => fileInput.click());
-        }
-        setupPreview('productImageInput', 'mainProductImage');
+        // Initialize Previews
+        setupPreview('productImageInput', 'mainProductImage', 'placeholderMain', 'slotMain');
+        setupPreview('extraImageInput1', 'extraImagePreview1', 'placeholderExtra1', 'slotExtra1');
+        setupPreview('extraImageInput2', 'extraImagePreview2', 'placeholderExtra2', 'slotExtra2');
 
-        // Extra Images
-        setupPreview('extraImageInput1', 'extraImagePreview1', 'extraIcon1');
-        setupPreview('extraImageInput2', 'extraImagePreview2', 'extraIcon2');
 
         // --- Auto-Categorization Logic ---
         const productNameInput = document.getElementById('productName');
@@ -773,12 +837,10 @@
 
                 // --- Image Validation ---
                 if (!imageInput.files || imageInput.files.length === 0) {
-                    // For file inputs, the parent might differ structurally, handle specifically or use general toaster if tricky
-                    // But user asked for inline. Let's try to append to parent of browse button or container.
-                    const container = document.getElementById('btnBrowseImage').closest('.border'); // The main image container
+                    const container = document.getElementById('slotMain'); // The main image container
                     if (container) {
                         // Add red border to container
-                        container.style.border = "1px solid #dc3545";
+                        container.style.borderColor = "#dc3545";
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'text-danger small mt-1 invalid-feedback d-block';
                         errorDiv.innerText = "Main product image is required.";
@@ -786,9 +848,10 @@
                         isValid = false;
                     }
                 } else {
-                    const container = document.getElementById('btnBrowseImage').closest('.border');
-                    if (container) container.style.border = ""; // Reset
+                    const container = document.getElementById('slotMain');
+                    if (container) container.style.borderColor = ""; // Reset
                 }
+
 
 
                 // --- Build FormData ---
