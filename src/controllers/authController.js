@@ -141,9 +141,7 @@ exports.login = async (req, res) => {
   }
 };
 
-/* ======================   //Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
-   VERIFY OTP
-====================== */
+ //Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
 // Verify the OTP provided by the user to complete registration or password reset
 exports.verifyOTP = async (req, res) => {
   try {
