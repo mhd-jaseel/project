@@ -1,7 +1,6 @@
 const Coupon = require('../models/Coupon');
 const Order = require('../models/Order');
 
-// 1. Create Coupon (Admin)
 // Create a new discount coupon with custom rules and limits
 exports.createCoupon = async (req, res) => {
     try {
@@ -36,8 +35,6 @@ exports.createCoupon = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// 2. Get All Coupons (Admin)
 // Retrieve all coupons from the system for admin management
 exports.getAllCoupons = async (req, res) => {
     try {
@@ -49,7 +46,6 @@ exports.getAllCoupons = async (req, res) => {
     }
 };
 
-// 3. Update Coupon (Admin)
 // Update the details and rules of an existing coupon
 exports.updateCoupon = async (req, res) => {
     try {
@@ -70,7 +66,6 @@ exports.updateCoupon = async (req, res) => {
     }
 };
 
-// 4. Delete Coupon (Admin - Optional)
 // Permanently remove a coupon from the database
 exports.deleteCoupon = async (req, res) => {
     try {
@@ -81,7 +76,6 @@ exports.deleteCoupon = async (req, res) => {
     }
 };
 
-// 5. Apply Coupon (User - Checkout)
 // Validate and apply a coupon code to calculate discounts for an order
 exports.applyCoupon = async (req, res) => {
     try {
@@ -152,7 +146,7 @@ exports.applyCoupon = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
-// 6. Get Available Coupons for User
+
 // Get a list of coupons that are currently valid for the user to use
 exports.getAvailableCoupons = async (req, res) => {
     try {
