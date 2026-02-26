@@ -20,9 +20,7 @@ const transporter = nodemailer.createTransport({
 const generateOTP = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
-// ===============================
-// GOOGLE LOGIN SUCCESS (JWT)
-// ===============================
+
 // Handle successful Google login and return user details with a token
 exports.googleLoginSuccess = async (req, res) => {
   try {
