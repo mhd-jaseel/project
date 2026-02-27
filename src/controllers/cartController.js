@@ -51,12 +51,12 @@ exports.getCart = async (req, res) => {
 
                 if (productOffer && productOffer.discountValue > 0) {
                     const discountAmount = (product.price * productOffer.discountValue) / 100;
-                    finalPrice = Math.round(product.price - discountAmount);
+                    finalPrice = Math.round((product.price - discountAmount) * 100) / 100;
                     isDiscounted = true;
                 }
             }
 
-            subtotal += finalPrice * item.quantity;
+            subtotal += Math.round((finalPrice * item.quantity) * 100) / 100;
 
             return {
                 _id: product._id,
@@ -118,7 +118,12 @@ exports.addToCart = async (req, res) => {
         const cartItemIndex = user.cart.findIndex(item => item.product.toString() === id);
 
         if (cartItemIndex > -1) {
-            return res.status(400).json({ message: "Product already in cart" });
+            // Check stock for total new quantity
+            if (qty > product.stockQty) {
+                return res.status(400).json({ message: `Cannot update. Only ${product.stockQty} available.` });
+            }
+            // Update to the new quantity (Synchronization logic)
+            user.cart[cartItemIndex].quantity = qty;
         } else {
             // Check stock for new item
             if (qty > product.stockQty) {
@@ -129,7 +134,7 @@ exports.addToCart = async (req, res) => {
         }
 
         await user.save();
-        res.json({ message: "Added to cart", cart: user.cart });
+        res.json({ message: cartItemIndex > -1 ? "Cart updated" : "Added to cart", cart: user.cart });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });

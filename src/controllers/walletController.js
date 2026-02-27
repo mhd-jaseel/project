@@ -129,16 +129,25 @@ exports.getMyWallet = async (req, res) => {
         let wallet = await Wallet.findOne({ user: userId });
 
         if (!wallet) {
-            // Self-healing: Create wallet if missing
             wallet = await Wallet.create({ user: userId });
         }
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const totalTransactions = await Transaction.countDocuments({ wallet: wallet._id });
         const transactions = await Transaction.find({ wallet: wallet._id })
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
         res.json({
             wallet: { balance: wallet.balance },
-            transactions
+            transactions,
+            currentPage: page,
+            totalPages: Math.ceil(totalTransactions / limit),
+            totalTransactions
         });
     } catch (error) {
         console.error("Error fetching wallet:", error);

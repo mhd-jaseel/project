@@ -666,7 +666,7 @@
                         </div>
     
                         <div class="text-success fw-semibold">
-                            ₹${p.price}
+                            ₹${parseFloat(p.price).toFixed(2)}
                         </div>
                     </a>
                 `).join("");
@@ -945,7 +945,7 @@
                     } else if (productOffer && productOffer.discountValue > 0) {
                         // Calculate Offer Price
                         let discountAmount = (originalPrice * productOffer.discountValue) / 100;
-                        finalPrice = Math.round(originalPrice - discountAmount);
+                        finalPrice = (originalPrice - discountAmount);
 
                         priceHtml = `
               <span class="product-price text-danger">₹${finalPrice}</span>

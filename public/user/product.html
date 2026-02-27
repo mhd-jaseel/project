@@ -705,7 +705,7 @@
                         </div>
     
                         <div class="text-success fw-semibold">
-                            ₹${p.price}
+                            ₹${parseFloat(p.price).toFixed(2)}
                         </div>
                     </a>
                 `).join("");
@@ -1122,17 +1122,17 @@
                     let discountBadge = '';
                     let finalPrice = p.discount > 0 ? p.discount : p.price;
                     let originalPrice = p.price;
-                    let priceHtml = `<span class="product-price">₹${p.price}</span>`;
+                    let priceHtml = `<span class="product-price">₹${parseFloat(p.price).toFixed(2)}</span>`;
 
                     if (p.discount && p.discount > 0) {
                         priceHtml = `
                                 <span class="product-price text-danger">₹${p.discount}</span>
-                                <span class="product-price-old">₹${p.price}</span>
+                                <span class="product-price-old">₹${parseFloat(p.price).toFixed(2)}</span>
                             `;
                     }
                     else if (productOffer && productOffer.discountValue > 0) {
                         let discountAmount = (originalPrice * productOffer.discountValue) / 100;
-                        finalPrice = Math.round(originalPrice - discountAmount);
+                        finalPrice = (originalPrice - discountAmount);
 
                         discountBadge = `
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-2">

@@ -606,7 +606,6 @@ exports.downloadSalesReportExcel = async (req, res) => {
     res.status(500).json({ message: "Error generating report" });
   }
 };
-//search
 // Perform a global search across products, categories, and orders
 exports.globalSearchAPI = async (req, res) => {
   try {

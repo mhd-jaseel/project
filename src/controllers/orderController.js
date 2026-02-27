@@ -134,8 +134,8 @@ exports.placeOrder = async (req, res) => {
             }
         }
 
-        totalAmount = Math.max(0, Math.round(totalAmount));
-        discountAmount = Math.round(discountAmount);
+        totalAmount = Math.max(0, totalAmount);
+        discountAmount = discountAmount;
         // --- Coupon Logic End ---
 
         // 4. Payment Logic
@@ -289,10 +289,23 @@ exports.placeOrder = async (req, res) => {
 // Retrieve all orders placed by the currently logged-in user
 exports.getMyOrders = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const totalOrders = await Order.countDocuments({ user: req.user.id });
         const orders = await Order.find({ user: req.user.id })
             .populate('items.product')
-            .sort({ createdAt: -1 });
-        res.json(orders);
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            orders,
+            currentPage: page,
+            totalPages: Math.ceil(totalOrders / limit),
+            totalOrders
+        });
     } catch (error) {
         console.error("Error fetching my orders:", error);
         res.status(500).json({ message: "Server Error" });
@@ -408,8 +421,27 @@ exports.updateOrderStatus = async (req, res) => {
             if (order.paymentMethod === 'COD') {
                 order.paymentStatus = 'Completed';
             }
-        } else if (order.paymentMethod === 'COD' && status !== 'Reported') {
-            // Reset payment if moved back from delivered? (Optional, implies unsafe operation usually)
+        } else if (status === 'Cancelled') {
+            // Refund for Admin Cancellation of Prepaid Orders
+            if (order.paymentStatus === 'Completed' && ['Wallet', 'Razorpay'].includes(order.paymentMethod)) {
+                let wallet = await Wallet.findOne({ user: order.user });
+                if (!wallet) wallet = await Wallet.create({ user: order.user, balance: 0 });
+
+                if (wallet) {
+                    wallet.balance += order.totalAmount;
+                    await wallet.save();
+
+                    await Transaction.create({
+                        wallet: wallet._id,
+                        user: order.user,
+                        amount: order.totalAmount,
+                        reason: 'Admin Cancel Refund',
+                        orderId: order._id
+                    });
+                    order.paymentStatus = 'Refunded';
+                }
+            }
+            order.cancelledAt = new Date();
         }
 
         // Sync item status if not already Cancelled or Returned
@@ -418,6 +450,7 @@ exports.updateOrderStatus = async (req, res) => {
                 const finalStatuses = ['Cancelled', 'Returned', 'Return Requested'];
                 if (!finalStatuses.includes(item.itemStatus)) {
                     item.itemStatus = status;
+                    if (status === 'Cancelled') item.cancellationReason = 'Cancelled by Admin';
                 }
             });
         }
@@ -472,6 +505,16 @@ exports.cancelOrder = async (req, res) => {
         order.cancellationReason = reason || 'No reason provided';
         order.cancelledAt = new Date();
         order.viewedByAdmin = false; // Notify admin
+
+        // Mark all items as cancelled
+        if (order.items && order.items.length > 0) {
+            order.items.forEach(item => {
+                if (item.itemStatus !== 'Returned') {
+                    item.itemStatus = 'Cancelled';
+                    item.cancellationReason = order.cancellationReason;
+                }
+            });
+        }
 
         // Restore Stock
         for (const item of order.items) {
@@ -543,14 +586,31 @@ exports.cancelOrder = async (req, res) => {
 // Retrieve all orders that have been cancelled by the user
 exports.getMyCancellations = async (req, res) => {
     try {
-        const cancellations = await Order.find({
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const filter = {
             user: req.user.id,
             $or: [
                 { orderStatus: 'Cancelled' },
                 { 'items.itemStatus': 'Cancelled' }
             ]
-        }).populate('items.product').sort({ updatedAt: -1 });
-        res.json(cancellations);
+        };
+
+        const totalCancellations = await Order.countDocuments(filter);
+        const cancellations = await Order.find(filter)
+            .populate('items.product')
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            cancellations,
+            currentPage: page,
+            totalPages: Math.ceil(totalCancellations / limit),
+            totalCancellations
+        });
     } catch (error) {
         console.error("Error fetching my cancellations:", error);
         res.status(500).json({ message: "Server Error" });
@@ -661,10 +721,13 @@ exports.cancelOrderItem = async (req, res) => {
 
         const hadCoupon = !!order.couponCode;
 
-        if (order.items.length === 1) {
-            // Full Refund for single product order cancellation
+        const activeItemsCount = order.items.filter(i => i.itemStatus !== 'Cancelled' && i.itemStatus !== 'Returned').length;
+
+        if (activeItemsCount === 0) {
+            // Full Refund for the last remaining product (Entire order becomes cancelled)
+            // This ensures delivery/handling fees are refunded when the last item is gone.
             expectedRefund = order.paymentMethod === 'COD' ? 0 : currentTotal;
-            order.totalAmount = 0; // entire order cancelled
+            order.totalAmount = 0;
             if (hadCoupon) {
                 isCouponRemoved = true;
                 order.couponCode = null;
@@ -681,33 +744,33 @@ exports.cancelOrderItem = async (req, res) => {
                     if (order.paymentMethod === 'COD') {
                         order.couponCode = null;
                         order.discountAmount = 0;
-                        order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
+                        order.totalAmount = Math.max(0, newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0));
                         expectedRefund = 0;
                     } else {
                         order.couponCode = null;
-                        expectedRefund = itemTotal - itemShare;
-                        order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
+                        expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                        order.totalAmount = Math.max(0, currentTotal - expectedRefund);
                     }
                 } else {
                     if (order.paymentMethod === 'COD') {
-                        expectedRefund = itemTotal;
-                        order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
+                        expectedRefund = Math.round(itemTotal * 100) / 100;
+                        order.totalAmount = Math.max(0, currentTotal - itemTotal);
                     } else {
-                        expectedRefund = itemTotal - itemShare;
-                        order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
+                        expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                        order.totalAmount = Math.max(0, currentTotal - expectedRefund);
                     }
                 }
             } else if (originalDiscount > 0) {
                 if (order.paymentMethod !== 'COD') {
-                    expectedRefund = itemTotal - itemShare;
-                    order.totalAmount = Math.max(0, currentTotal - Math.round(expectedRefund));
+                    expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                    order.totalAmount = Math.max(0, currentTotal - expectedRefund);
                 } else {
-                    expectedRefund = itemTotal;
-                    order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
+                    expectedRefund = Math.round(itemTotal * 100) / 100;
+                    order.totalAmount = Math.max(0, currentTotal - itemTotal);
                 }
             } else {
-                expectedRefund = itemTotal;
-                order.totalAmount = Math.max(0, currentTotal - Math.round(itemTotal));
+                expectedRefund = Math.round(itemTotal * 100) / 100;
+                order.totalAmount = Math.max(0, currentTotal - itemTotal);
             }
         }
 
@@ -717,10 +780,10 @@ exports.cancelOrderItem = async (req, res) => {
             if (!wallet) wallet = await Wallet.create({ user: userId, balance: 0 });
 
             if (wallet) {
-                wallet.balance += Math.round(expectedRefund);
+                wallet.balance += expectedRefund;
                 await wallet.save();
                 await Transaction.create({
-                    wallet: wallet._id, user: userId, amount: Math.round(expectedRefund),
+                    wallet: wallet._id, user: userId, amount: expectedRefund,
                     reason: 'Item Cancellation Refund', orderId: order._id
                 });
             }
@@ -740,7 +803,7 @@ exports.cancelOrderItem = async (req, res) => {
         res.json({
             message: 'Item cancelled successfully',
             order,
-            expectedRefund: Math.round(expectedRefund),
+            expectedRefund: expectedRefund,
             couponCancelled: hadCoupon && !order.couponCode
         });
 
@@ -959,8 +1022,8 @@ exports.updateItemReturnStatus = async (req, res) => {
 
             // 2. Recalculate Discount
             if (order.items.length === 1) {
-                expectedRefund = itemTotal - originalDiscount;
-                order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                expectedRefund = Math.round((itemTotal - originalDiscount) * 100) / 100;
+                order.totalAmount = Math.round(Math.max(0, oldTotalAmount - expectedRefund) * 100) / 100;
                 if (order.couponCode) {
                     order.couponCode = null;
                     order.discountAmount = 0;
@@ -973,33 +1036,33 @@ exports.updateItemReturnStatus = async (req, res) => {
                         if (order.paymentMethod === 'COD') {
                             order.couponCode = null;
                             order.discountAmount = 0;
-                            order.totalAmount = Math.max(0, Math.round(newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0)));
+                            order.totalAmount = Math.round(Math.max(0, (newSubtotal + (order.deliveryCharge || 0) + (order.handlingFee || 0))) * 100) / 100;
                             expectedRefund = 0;
                         } else {
                             order.couponCode = null;
-                            expectedRefund = itemTotal - itemShare;
-                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                            expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                            order.totalAmount = Math.round(Math.max(0, oldTotalAmount - expectedRefund) * 100) / 100;
                         }
                     } else {
                         if (order.paymentMethod === 'COD') {
-                            expectedRefund = itemTotal;
-                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
+                            expectedRefund = Math.round(itemTotal * 100) / 100;
+                            order.totalAmount = Math.round(Math.max(0, oldTotalAmount - itemTotal) * 100) / 100;
                         } else {
-                            expectedRefund = itemTotal - itemShare;
-                            order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                            expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                            order.totalAmount = Math.round(Math.max(0, oldTotalAmount - expectedRefund) * 100) / 100;
                         }
                     }
                 } else if (originalDiscount > 0) {
                     if (order.paymentMethod !== 'COD') {
-                        expectedRefund = itemTotal - itemShare;
-                        order.totalAmount = Math.max(0, oldTotalAmount - Math.round(expectedRefund));
+                        expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                        order.totalAmount = Math.round(Math.max(0, oldTotalAmount - expectedRefund) * 100) / 100;
                     } else {
-                        expectedRefund = itemTotal;
-                        order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
+                        expectedRefund = Math.round(itemTotal * 100) / 100;
+                        order.totalAmount = Math.round(Math.max(0, oldTotalAmount - itemTotal) * 100) / 100;
                     }
                 } else {
-                    expectedRefund = itemTotal;
-                    order.totalAmount = Math.max(0, oldTotalAmount - Math.round(itemTotal));
+                    expectedRefund = Math.round(itemTotal * 100) / 100;
+                    order.totalAmount = Math.round(Math.max(0, oldTotalAmount - itemTotal) * 100) / 100;
                 }
             }
 
@@ -1019,7 +1082,7 @@ exports.updateItemReturnStatus = async (req, res) => {
                         await Transaction.create({
                             wallet: wallet._id,
                             user: order.user,
-                            amount: Math.round(refundAmount),
+                            amount: refundAmount,
                             reason: 'Item Return Refund',
                             orderId: order._id
                         });
@@ -1065,14 +1128,31 @@ exports.updateItemReturnStatus = async (req, res) => {
 // Get a list of all products that the user has requested to return
 exports.getMyReturns = async (req, res) => {
     try {
-        const returns = await Order.find({
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
+        const filter = {
             user: req.user.id,
             $or: [
                 { returnStatus: { $ne: 'None' } },
                 { 'items.returnStatus': { $ne: 'None' } }
             ]
-        }).populate('items.product').sort({ updatedAt: -1 });
-        res.json(returns);
+        };
+
+        const totalReturns = await Order.countDocuments(filter);
+        const returns = await Order.find(filter)
+            .populate('items.product')
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            returns,
+            currentPage: page,
+            totalPages: Math.ceil(totalReturns / limit),
+            totalReturns
+        });
     } catch (error) {
         console.error("Error fetching my returns:", error);
         res.status(500).json({ message: "Server Error" });
@@ -1306,10 +1386,10 @@ exports.calculateItemRefundInfo = async (req, res) => {
             couponAdjustmentMessage = "";
         } else if (order.items.length === 1 && action === 'return') {
             const originalDiscount = order.discountAmount || 0;
-            expectedRefund = itemTotal - originalDiscount;
-            newTotal = currentTotalAmount - Math.round(expectedRefund);
+            expectedRefund = Math.round((itemTotal - originalDiscount) * 100) / 100;
+            newTotal = currentTotalAmount - expectedRefund;
             isCouponRemoved = !!order.couponCode;
-            couponAdjustmentMessage = `For single-item returns, delivery and handling fees are non-refundable. You will be refunded ₹${Math.round(expectedRefund)} for the product.`;
+            couponAdjustmentMessage = `For single-item returns, delivery and handling fees are non-refundable. You will be refunded ₹${expectedRefund} for the product.`;
         } else {
             if (order.couponCode) {
                 const Coupon = require('../models/Coupon');
@@ -1325,22 +1405,22 @@ exports.calculateItemRefundInfo = async (req, res) => {
                         expectedRefund = 0;
                         couponAdjustmentMessage = "Cancelling this item invalidates the coupon. The total payable amount will be updated without the coupon discount.";
                     } else {
-                        expectedRefund = itemTotal - itemShare;
-                        couponAdjustmentMessage = `The coupon condition fails, so it will be removed. You will be refunded ₹${Math.max(0, Math.round(expectedRefund))} after deducting the coupon share assigned to this item.`;
-                        newTotal = currentTotalAmount - Math.round(expectedRefund);
+                        expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
+                        couponAdjustmentMessage = `The coupon condition fails, so it will be removed. You will be refunded ₹${Math.max(0, expectedRefund)} after deducting the coupon share assigned to this item.`;
+                        newTotal = currentTotalAmount - expectedRefund;
                     }
                 } else {
                     if (order.paymentMethod === 'COD') {
                         expectedRefund = 0;
-                        newTotal = currentTotalAmount - Math.round(itemTotal);
+                        newTotal = currentTotalAmount - itemTotal;
                     } else {
-                        expectedRefund = itemTotal - itemShare;
+                        expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
                         if (expectedRefund > 0) {
-                            couponAdjustmentMessage = `You will be refunded ₹${Math.round(expectedRefund)} after deducting the proportional coupon share assigned to this item.`;
+                            couponAdjustmentMessage = `You will be refunded ₹${expectedRefund} after deducting the proportional coupon share assigned to this item.`;
                         } else {
-                            couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${Math.round(expectedRefund)}).`;
+                            couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${expectedRefund}).`;
                         }
-                        newTotal = currentTotalAmount - Math.round(expectedRefund);
+                        newTotal = currentTotalAmount - expectedRefund;
                     }
                 }
             } else if ((order.discountAmount || 0) > 0) {
@@ -1348,27 +1428,27 @@ exports.calculateItemRefundInfo = async (req, res) => {
                 const itemShare = (itemTotal / originalSubtotal) * originalDiscount;
                 if (order.paymentMethod === 'COD') {
                     expectedRefund = 0;
-                    newTotal = currentTotalAmount - Math.round(itemTotal);
+                    newTotal = currentTotalAmount - itemTotal;
                 } else {
-                    expectedRefund = itemTotal - itemShare;
+                    expectedRefund = Math.round((itemTotal - itemShare) * 100) / 100;
                     if (expectedRefund > 0) {
-                        couponAdjustmentMessage = `You will be refunded ₹${Math.round(expectedRefund)} after deducting the proportional coupon share assigned to this item.`;
+                        couponAdjustmentMessage = `You will be refunded ₹${expectedRefund} after deducting the proportional coupon share assigned to this item.`;
                     } else {
-                        couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${Math.round(expectedRefund)}).`;
+                        couponAdjustmentMessage = `No refund is applicable due to the coupon discount (or negative net: ₹${expectedRefund}).`;
                     }
-                    newTotal = currentTotalAmount - Math.round(expectedRefund);
+                    newTotal = currentTotalAmount - expectedRefund;
                 }
             } else {
-                expectedRefund = itemTotal;
-                newTotal = currentTotalAmount - Math.round(itemTotal);
+                expectedRefund = Math.round(itemTotal * 100) / 100;
+                newTotal = currentTotalAmount - itemTotal;
             }
         }
 
         res.json({
-            expectedRefund: Math.round(expectedRefund),
+            expectedRefund: expectedRefund,
             itemPrice: itemTotal,
             isCouponRemoved,
-            newTotal: Math.round(newTotal),
+            newTotal: newTotal,
             currentTotalAmount,
             paymentMethod: order.paymentMethod,
             couponAdjustmentMessage,

@@ -14,6 +14,45 @@
         rel="stylesheet">
     <!-- Custom CSS -->
     <style>
+        /* Modern Pagination Styling */
+        .pagination {
+            gap: 5px;
+        }
+
+        .pagination .page-item .page-link {
+            border: none;
+            border-radius: 8px !important;
+            padding: 8px 16px;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background: #f3f4f6;
+            color: #9ca3af;
+            box-shadow: none;
+        }
+
+        .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+            background-color: #ecfdf5;
+            color: #059669;
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            outline: none;
+        }
+    </style>
+    <style>
         :root {
             --primary-green: #2ecc71;
             /* Adjust to match image */
@@ -650,7 +689,7 @@
                         </div>
     
                         <div class="text-success fw-semibold">
-                            ₹${p.price}
+                            ₹${parseFloat(p.price).toFixed(2)}
                         </div>
                     </a>
                 `).join("");
@@ -843,6 +882,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center" id="transactionsPagination">
+                            <!-- Pagination will be populated dynamically -->
+                        </ul>
+                    </nav>
                 </div>
 
                 <!-- Saved Cards Removed -->
@@ -953,9 +999,9 @@
 
         document.addEventListener('DOMContentLoaded', function () {
 
-            async function fetchWalletData() {
+            async function fetchWalletData(page = 1) {
                 try {
-                    const res = await fetch('/api/wallet/my-wallet', {
+                    const res = await fetch(`/api/wallet/my-wallet?page=${page}&limit=10`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!res.ok) throw new Error('API request failed');
@@ -984,7 +1030,7 @@
                         tr.innerHTML = `
                             <td>${date}</td>
                             <td class="small fw-medium">${tx.reason}</td>
-                            <td class="${amountClass} fw-bold">${amountSign}₹${Math.abs(tx.amount)}</td>
+                            <td class="${amountClass} fw-bold">${amountSign}₹${Math.abs(tx.amount).toFixed(2)}</td>
                             <td>
                                 <button onclick="showTransactionDetails('${tx._id}')" class="btn btn-sm btn-outline-success rounded-pill px-3">
                                     View
@@ -993,6 +1039,10 @@
                         `;
                         tbody.appendChild(tr);
                     });
+
+                    // Update Pagination
+                    renderPagination(data.totalPages, data.currentPage, 'transactionsPagination', fetchWalletData);
+
                 } catch (err) {
                     console.error("fetchWalletData Failed:", err);
                     const balanceEl = document.getElementById('wallet-balance');
@@ -1000,6 +1050,72 @@
                     const tbody = document.getElementById('transaction-list');
                     if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Failed to load</td></tr>';
                 }
+            }
+
+            function renderPagination(totalPages, currentPage, elementId, fetchFunction) {
+                const paginationEl = document.getElementById(elementId);
+                if (!paginationEl) return;
+                paginationEl.innerHTML = '';
+
+                if (totalPages <= 1) return;
+
+                const createPageLink = (page, text, isDisabled = false, isActive = false) => {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.innerHTML = text;
+                    if (!isDisabled && !isActive) {
+                        a.onclick = (e) => {
+                            e.preventDefault();
+                            fetchFunction(page);
+                        };
+                    } else {
+                        a.onclick = (e) => e.preventDefault();
+                    }
+                    li.appendChild(a);
+                    return li;
+                };
+
+                // Prev Button
+                paginationEl.appendChild(createPageLink(currentPage - 1, '<i class="fas fa-chevron-left"></i>', currentPage === 1));
+
+                // Page Numbers with Ellipsis logic
+                const maxVisible = 5;
+                let start = Math.max(1, currentPage - 2);
+                let end = Math.min(totalPages, start + maxVisible - 1);
+
+                if (end === totalPages) {
+                    start = Math.max(1, end - maxVisible + 1);
+                }
+
+                if (start > 1) {
+                    paginationEl.appendChild(createPageLink(1, '1'));
+                    if (start > 2) {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link">...</span>';
+                        paginationEl.appendChild(li);
+                    }
+                }
+
+                for (let i = start; i <= end; i++) {
+                    paginationEl.appendChild(createPageLink(i, i, false, i === currentPage));
+                }
+
+                if (end < totalPages) {
+                    if (end < totalPages - 1) {
+                        const li = document.createElement('li');
+                        li.className = 'page-item disabled';
+                        li.innerHTML = '<span class="page-link">...</span>';
+                        paginationEl.appendChild(li);
+                    }
+                    paginationEl.appendChild(createPageLink(totalPages, totalPages));
+                }
+
+                // Next Button
+                paginationEl.appendChild(createPageLink(currentPage + 1, '<i class="fas fa-chevron-right"></i>', currentPage === totalPages));
             }
 
             async function showTransactionDetails(id) {
@@ -1010,7 +1126,7 @@
                     const tx = await res.json();
                     const isDeduction = tx.reason === 'Order Payment';
                     const amountSign = isDeduction ? '-' : '+';
-                    document.getElementById('tx-amount').innerText = `${amountSign}₹${Math.abs(tx.amount)}`;
+                    document.getElementById('tx-amount').innerText = `${amountSign}₹${Math.abs(tx.amount).toFixed(2)}`;
                     document.getElementById('tx-amount').className = `fw-bold mb-1 ${isDeduction ? 'text-danger' : 'text-success'}`;
                     const iconContainer = document.getElementById('tx-icon-container');
                     if (!isDeduction) {

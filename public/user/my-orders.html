@@ -398,6 +398,45 @@
             color: var(--primary-green) !important;
         }
     </style>
+    <style>
+        /* Modern Pagination Styling */
+        .pagination {
+            gap: 5px;
+        }
+
+        .pagination .page-item .page-link {
+            border: none;
+            border-radius: 8px !important;
+            padding: 8px 16px;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background: #f3f4f6;
+            color: #9ca3af;
+            box-shadow: none;
+        }
+
+        .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+            background-color: #ecfdf5;
+            color: #059669;
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            outline: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -656,7 +695,7 @@
                         </div>
     
                         <div class="text-success fw-semibold">
-                            ₹${p.price}
+                            ₹${parseFloat(p.price).toFixed(2)}
                         </div>
                     </a>
                 `).join("");
@@ -832,6 +871,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center" id="ordersPagination">
+                            <!-- Pagination will be populated dynamically -->
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -962,12 +1008,17 @@
 
 
         // Fetch Orders
-        async function fetchMyOrders() {
+        let currentOrdersPage = 1;
+
+        async function fetchMyOrders(page = 1) {
+            currentOrdersPage = page;
+            const limit = 10;
             try {
-                const res = await fetch('/api/orders/myorders', {
+                const res = await fetch(`/api/orders/myorders?page=${page}&limit=${limit}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const orders = await res.json();
+                const data = await res.json();
+                const orders = data.orders;
 
                 // Get the tbody inside the table inside .table-responsive
                 const tbody = document.querySelector('.table-responsive table tbody');
@@ -1076,11 +1127,90 @@
                     tbody.appendChild(tr);
                 });
 
+                // Update Pagination
+                renderPagination(data.totalPages, data.currentPage, 'ordersPagination', fetchMyOrders);
+
+                // Check for orderId in URL to auto-open details
+                const urlParams = new URLSearchParams(window.location.search);
+                const orderIdParam = urlParams.get('orderId');
+                if (orderIdParam) {
+                    const detailLink = document.querySelector(`a[data-order-id="${orderIdParam}"]`);
+                    if (detailLink) {
+                        detailLink.click();
+                    }
+                }
+
             } catch (error) {
                 console.error(error);
                 const tbody = document.querySelector('.table-responsive table tbody');
                 if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load orders</td></tr>';
             }
+        }
+
+        function renderPagination(totalPages, currentPage, elementId, fetchFunction) {
+            const paginationEl = document.getElementById(elementId);
+            if (!paginationEl) return;
+            paginationEl.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            const createPageLink = (page, text, isDisabled = false, isActive = false) => {
+                const li = document.createElement('li');
+                li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.innerHTML = text;
+                if (!isDisabled && !isActive) {
+                    a.onclick = (e) => {
+                        e.preventDefault();
+                        fetchFunction(page);
+                    };
+                } else {
+                    a.onclick = (e) => e.preventDefault();
+                }
+                li.appendChild(a);
+                return li;
+            };
+
+            // Prev Button
+            paginationEl.appendChild(createPageLink(currentPage - 1, '<i class="fas fa-chevron-left"></i>', currentPage === 1));
+
+            // Page Numbers with Ellipsis logic
+            const maxVisible = 5;
+            let start = Math.max(1, currentPage - 2);
+            let end = Math.min(totalPages, start + maxVisible - 1);
+
+            if (end === totalPages) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+
+            if (start > 1) {
+                paginationEl.appendChild(createPageLink(1, '1'));
+                if (start > 2) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = '<span class="page-link">...</span>';
+                    paginationEl.appendChild(li);
+                }
+            }
+
+            for (let i = start; i <= end; i++) {
+                paginationEl.appendChild(createPageLink(i, i, false, i === currentPage));
+            }
+
+            if (end < totalPages) {
+                if (end < totalPages - 1) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = '<span class="page-link">...</span>';
+                    paginationEl.appendChild(li);
+                }
+                paginationEl.appendChild(createPageLink(totalPages, totalPages));
+            }
+
+            // Next Button
+            paginationEl.appendChild(createPageLink(currentPage + 1, '<i class="fas fa-chevron-right"></i>', currentPage === totalPages));
         }
 
         window.handleViewDetailsClick = (element) => {
@@ -1192,7 +1322,7 @@
                              style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'opacity-50' : ''}">
                         <div>
                             ${nameHtml}
-                            <small class="text-muted">Qty: ${item.quantity} x ₹${item.price}</small>
+                            <small class="text-muted">Qty: ${item.quantity} x ₹${parseFloat(item.price).toFixed(2)}</small>
                             ${statusBadge}
                         </div>
                     </div>
@@ -1253,17 +1383,17 @@
                 }
                 <div class="d-flex justify-content-between small mb-2">
                     <span class="text-muted">Delivery Charge</span>
-                    <span>+₹${delivery}</span>
+                    <span>+₹${parseFloat(delivery).toFixed(2)}</span>
                 </div>
                 <div class="d-flex justify-content-between small mb-2">
                     <span class="text-muted">Handling Fee</span>
-                    <span>+₹${handling}</span>
+                    <span>+₹${parseFloat(handling).toFixed(2)}</span>
                 </div>
                 <div class="d-flex justify-content-between small fw-bold mb-3 pb-3 border-bottom text-muted">
                     <span>Amount After Charges</span>
                     <span>₹${amountAfterCharges.toFixed(2)}</span>
                 </div>
-                ${cancelledTotal > 0 ? `
+                ${(cancelledTotal > 0 && orderStatus !== 'Cancelled') ? `
                 <div class="d-flex justify-content-between small mb-2 text-danger">
                     <span>Cancelled Item<br><small class="text-muted">(Original: ₹${cancelledTotal.toFixed(2)})</small></span>
                     <span class="d-flex flex-column align-items-end"><span class="text-muted small">Actual Refund</span>-₹${cancelledRefund.toFixed(2)}</span>
@@ -1277,8 +1407,15 @@
                 }
             `;
             // The backend mathematically enforces the total amount based on the payment specific cancellation rules.
-            document.getElementById('modalOrderTotal').parentElement.querySelector('h5').innerText = "Final Amount Paid by User";
+            document.getElementById('modalOrderTotal').parentElement.querySelector('h5').innerText = "Final Amount ";
             document.getElementById('modalOrderTotal').innerText = '₹' + finalDisplayTotal.toFixed(2);
+
+            // Show invoice button only if delivered
+            const invoiceBtn = document.getElementById('btnDownloadInvoice');
+            if (invoiceBtn) {
+                invoiceBtn.style.display = (orderStatus === 'Delivered') ? 'inline-block' : 'none';
+            }
+
             new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
         };
 
@@ -1297,9 +1434,9 @@
                 if (refundInfo.couponAdjustmentMessage) {
                     refundMsg = `<br><br><span class="text-warning fw-bold" style="font-size:0.95rem;">${refundInfo.couponAdjustmentMessage}</span>`;
                 } else if (refundInfo.paymentMethod === 'COD') {
-                    refundMsg = `<br><br><span class="text-success fw-bold">New Payable Amount: ₹${refundInfo.newTotal}</span>`;
+                    refundMsg = `<br><br><span class="text-success fw-bold">New Payable Amount: ₹${parseFloat(refundInfo.newTotal).toFixed(2)}</span>`;
                 } else {
-                    refundMsg = `<br><br><span class="text-success fw-bold">Estimated Refund: ₹${refundInfo.expectedRefund}</span>`;
+                    refundMsg = `<br><br><span class="text-success fw-bold">Estimated Refund: ₹${parseFloat(refundInfo.expectedRefund).toFixed(2)}</span>`;
                 }
             }
 
@@ -1365,7 +1502,7 @@
                 if (refundInfo.couponAdjustmentMessage) {
                     refundMsg = `<br><br><span class="text-warning fw-bold" style="font-size:0.95rem;">${refundInfo.couponAdjustmentMessage}</span>`;
                 } else {
-                    refundMsg = `<br><br><span class="text-success fw-bold" style="font-size:0.95rem;">Estimated Refund: ₹${refundInfo.expectedRefund}</span>`;
+                    refundMsg = `<br><br><span class="text-success fw-bold" style="font-size:0.95rem;">Estimated Refund: ₹${parseFloat(refundInfo.expectedRefund).toFixed(2)}</span>`;
                 }
             }
 

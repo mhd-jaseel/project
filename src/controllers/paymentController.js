@@ -85,7 +85,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    totalAmount = Math.max(1, Math.round(totalAmount)); // Ensure at least 1 for Razorpay
+    totalAmount = Math.round(Math.max(1, totalAmount) * 100) / 100; // Ensure at least 1 for Razorpay
 
     const options = {
       amount: totalAmount * 100,
@@ -193,8 +193,8 @@ exports.verifyPayment = async (req, res) => {
       }
     }
 
-    totalAmount = Math.max(0, Math.round(totalAmount));
-    discountAmount = Math.round(discountAmount);
+    totalAmount = Math.round(Math.max(0, totalAmount) * 100) / 100;
+    discountAmount = Math.round(discountAmount * 100) / 100;
 
     // C. Save Order
     const newOrder = new Order({

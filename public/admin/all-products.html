@@ -541,18 +541,18 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Price</label>
+                                        <label class="form-label">Product Price</label>
                                         <input type="number" class="form-control" id="editProductPrice" required>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Discount</label>
+                                        <label class="form-label">Discount Price</label>
                                         <input type="number" class="form-control" id="editProductDiscount"
                                             placeholder="Optional">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Weight/Unit</label>
+                                        <label class="form-label">Unit</label>
                                         <div class="input-group">
                                             <input type="number" class="form-control" id="editProductWeightValue"
                                                 placeholder="Weight" required>
@@ -768,8 +768,7 @@
             // Check for empty/missing weight
             if (!p.weight || p.weight.trim() === "") {
                 if (p.totalStock > 0) {
-                    if (p.totalStock >= 1000) return Math.floor(p.totalStock / 1000);
-                    return p.totalStock;
+                    return formatStockWithUnit(p);
                 }
                 return 0;
             }
@@ -978,6 +977,38 @@
             return 'unknown';
         };
 
+        // Helper to format stock for display (Global Scope)
+        const formatStockWithUnit = (p) => {
+            if (p.totalStock === undefined || p.totalStock === null) return "0";
+
+            // Extract unit from weight
+            const weightStr = p.weight ? String(p.weight) : "";
+            const wMatch = weightStr.match(/^(\d+(\.\d+)?)\s*([a-zA-Z]+)?$/);
+            let unit = "pcs"; // Default fallback
+            if (wMatch && wMatch[3]) {
+                const rawUnit = wMatch[3].toLowerCase();
+                if (['kg', 'kilogram', 'kgs'].includes(rawUnit)) unit = 'kg';
+                else if (['g', 'gm', 'gms', 'gram', 'grams'].includes(rawUnit)) unit = 'g';
+                else if (['l', 'ltr', 'liter', 'liters'].includes(rawUnit)) unit = 'l';
+                else if (['ml', 'milli', 'milliliter'].includes(rawUnit)) unit = 'ml';
+                else if (['pc', 'pcs', 'piece', 'pieces', 'unit', 'units', 'item', 'items'].includes(rawUnit)) unit = 'pcs';
+                else if (['pkt', 'pkts', 'pack', 'packs', 'packet', 'packets'].includes(rawUnit)) unit = 'pkt';
+                else unit = rawUnit;
+            }
+
+            const type = getUnitType(unit);
+
+            if (type === 'mass') {
+                if (p.totalStock >= 1000) return `${(p.totalStock / 1000).toFixed(2).replace(/\.00$/, "").replace(/\.(\d)0$/, ".$1")} kg`;
+                return `${p.totalStock} g`;
+            } else if (type === 'volume') {
+                if (p.totalStock >= 1000) return `${(p.totalStock / 1000).toFixed(2).replace(/\.00$/, "").replace(/\.(\d)0$/, ".$1")} l`;
+                return `${p.totalStock} ml`;
+            } else {
+                return `${p.totalStock} ${unit}`;
+            }
+        };
+
         // Helper to populate select based on type (Global Scope)
         const populateUnitSelect = (selectId, type) => {
             const select = document.getElementById(selectId);
@@ -1142,7 +1173,7 @@
                 const stockHelp = document.getElementById('editProductCurrentStockHelp');
                 if (stockHelp) {
                     stockHelp.textContent = product.totalStock !== undefined
-                        ? `Current Stock Level: ${product.totalStock}`
+                        ? `Current Stock Level: ${formatStockWithUnit(product)}`
                         : "";
                 }
 

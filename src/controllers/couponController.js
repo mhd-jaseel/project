@@ -136,8 +136,8 @@ exports.applyCoupon = async (req, res) => {
         res.json({
             success: true,
             code: coupon.code,
-            discountAmount: Math.round(discount),
-            newTotal: Math.round(orderAmount - discount),
+            discountAmount: Math.round(discount * 100) / 100,
+            newTotal: Math.round((orderAmount - discount) * 100) / 100,
             message: 'Coupon applied successfully'
         });
 

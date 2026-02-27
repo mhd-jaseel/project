@@ -558,7 +558,7 @@
                         </div>
     
                         <div class="text-success fw-semibold">
-                            ₹${p.price}
+                            ₹${parseFloat(p.price).toFixed(2)}
                         </div>
                     </a>
                 `).join("");
@@ -887,13 +887,13 @@
                     hasDiscount = true;
                 } else if (productOffer && productOffer.discountValue > 0) {
                     let discountAmount = (basePrice * productOffer.discountValue) / 100;
-                    finalBasePrice = Math.round(basePrice - discountAmount);
+                    finalBasePrice = (basePrice - discountAmount);
                     hasDiscount = true;
                 }
 
                 function updatePriceDisplay(qty) {
-                    const currentTotal = finalBasePrice * qty;
-                    const originalTotal = basePrice * qty;
+                    const currentTotal = (finalBasePrice * qty).toFixed(2);
+                    const originalTotal = (basePrice * qty).toFixed(2);
 
                     if (hasDiscount) {
                         priceEl.innerHTML = `
@@ -911,9 +911,31 @@
                 // Quantity Selector Logic
                 // Quantity Selector Logic
                 const qtySelector = document.querySelector('.quantity-selector');
+                const qtyInput = qtySelector?.querySelector('input');
+                let isInCartGlobal = false; // To track state for immediate updates
+
+                async function syncCartQuantity(newQty) {
+                    const token = getToken();
+                    if (!token || !isInCartGlobal) return;
+
+                    try {
+                        const res = await fetch('/api/cart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + token
+                            },
+                            body: JSON.stringify({ id: product._id, quantity: newQty })
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            if (typeof updateCartCount === 'function') updateCartCount(data);
+                        }
+                    } catch (e) { console.error("Sync error", e); }
+                }
+
                 if (qtySelector) {
-                    const qtyInput = qtySelector.querySelector('input');
-                    qtySelector.addEventListener('click', (e) => {
+                    qtySelector.addEventListener('click', async (e) => {
                         e.preventDefault();
                         if (e.target.matches('button')) {
                             const btn = e.target;
@@ -931,11 +953,12 @@
 
                             qtyInput.value = val;
                             updatePriceDisplay(val);
+                            if (isInCartGlobal) await syncCartQuantity(val);
                         }
                     });
 
                     // Also update price if input is changed directly
-                    qtyInput.addEventListener('change', () => {
+                    qtyInput.addEventListener('change', async () => {
                         let val = parseInt(qtyInput.value) || 1;
                         if (val < 1) val = 1;
                         if (product.stockQty !== undefined && val > product.stockQty) {
@@ -944,6 +967,7 @@
                         }
                         qtyInput.value = val;
                         updatePriceDisplay(val);
+                        if (isInCartGlobal) await syncCartQuantity(val);
                     });
                 }
 
@@ -1048,7 +1072,6 @@
                 }
 
                 // Add to Cart Logic
-                // Add to Cart Logic (API Based)
                 if (addToCartBtn) {
                     // Check Cart Status
                     try {
@@ -1060,12 +1083,17 @@
                             });
                             if (cartRes.ok) {
                                 const cart = await cartRes.json();
-                                const isInCart = (cart.items || []).some(item =>
+                                const cartItem = (cart.items || []).find(item =>
                                     (item._id && item._id === product._id) ||
                                     (item.product && (item.product._id || item.product) === product._id)
                                 );
-                                if (isInCart) {
-                                    addToCartBtn.textContent = 'Added';
+                                if (cartItem) {
+                                    isInCartGlobal = true;
+                                    addToCartBtn.textContent = 'Go to Cart';
+                                    if (qtyInput) {
+                                        qtyInput.value = cartItem.quantity;
+                                        updatePriceDisplay(cartItem.quantity);
+                                    }
                                 }
                             }
                         }
@@ -1074,7 +1102,12 @@
                     addToCartBtn.addEventListener('click', async (e) => {
                         e.preventDefault();
                         if (addToCartBtn.disabled || addToCartBtn.textContent === "Out of Stock") return;
-                        if (addToCartBtn.innerText === "Added") return;
+
+                        // Redirection logic
+                        if (addToCartBtn.textContent === "Go to Cart") {
+                            window.location.href = 'cart.html';
+                            return;
+                        }
 
                         if (!checkLogin(e)) return;
 
@@ -1105,14 +1138,15 @@
                             if (!res.ok) throw new Error(data.message || "Failed to add to cart");
 
                             Swal.fire({
-                                title: 'Added!',
-                                text: 'Product added to cart successfully',
+                                title: isInCartGlobal ? 'Updated!' : 'Added!',
+                                text: isInCartGlobal ? 'Cart quantity updated' : 'Product added to cart successfully',
                                 icon: 'success',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
 
-                            addToCartBtn.textContent = 'Added';
+                            isInCartGlobal = true;
+                            addToCartBtn.textContent = 'Go to Cart';
                             if (typeof updateCartCount === 'function') updateCartCount(data);
 
                         } catch (err) {
