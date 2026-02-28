@@ -51,6 +51,53 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
             outline: none;
         }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            text-transform: capitalize;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background-color: currentColor;
+        }
+
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-secondary {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
     </style>
     <style>
         :root {
@@ -951,10 +998,10 @@
                 }
 
                 returns.forEach(order => {
-                    let badgeClass = 'bg-secondary';
-                    if (order.returnStatus === 'Requested') badgeClass = 'bg-warning text-dark';
-                    if (order.returnStatus === 'Approved') badgeClass = 'bg-success';
-                    if (order.returnStatus === 'Rejected') badgeClass = 'bg-danger';
+                    let badgeClass = 'status-badge status-secondary';
+                    if (order.returnStatus === 'Requested') badgeClass = 'status-badge status-warning';
+                    if (order.returnStatus === 'Approved') badgeClass = 'status-badge status-success';
+                    if (order.returnStatus === 'Rejected') badgeClass = 'status-badge status-danger';
 
                     // Calculate Refund Amount based on Returned items
                     // If the whole order is returned (order.returnStatus === 'Approved' and order.orderStatus === 'Returned'), 
@@ -1025,7 +1072,7 @@
                         <td>#${order._id.substring(0, 8).toUpperCase()}</td>
                          <td>${order.returnReason || 'N/A'}</td>
                          <td>${order.returnRequestedAt ? new Date(order.returnRequestedAt).toLocaleDateString() : 'N/A'}</td>
-                         <td><span class="badge ${badgeClass}">${order.returnStatus}</span></td>
+                         <td><span class="${badgeClass}">${order.returnStatus}</span></td>
                          <td>₹${displayAmount.toFixed(2)}</td>
                      `;
                     tbody.appendChild(tr);

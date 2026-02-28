@@ -436,6 +436,53 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
             outline: none;
         }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            text-transform: capitalize;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background-color: currentColor;
+        }
+
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-secondary {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
     </style>
 </head>
 
@@ -1030,13 +1077,14 @@
                 }
 
                 orders.forEach(order => {
-                    let badgeClass = 'bg-secondary';
-                    if (order.orderStatus === 'Pending') badgeClass = 'bg-warning text-dark';
-                    if (order.orderStatus === 'Confirmed') badgeClass = 'bg-info text-dark';
-                    if (order.orderStatus === 'Packed') badgeClass = 'bg-primary';
-                    if (order.orderStatus === 'Out For Delivery') badgeClass = 'bg-primary';
-                    if (order.orderStatus === 'Delivered') badgeClass = 'bg-success';
-                    if (order.orderStatus === 'Cancelled') badgeClass = 'bg-danger';
+                    let badgeClass = 'status-badge status-secondary';
+                    if (order.orderStatus === 'Pending') badgeClass = 'status-badge status-warning';
+                    if (order.orderStatus === 'Confirmed') badgeClass = 'status-badge status-info';
+                    if (order.orderStatus === 'Packed') badgeClass = 'status-badge status-info';
+                    if (order.orderStatus === 'Out For Delivery') badgeClass = 'status-badge status-info';
+                    if (order.orderStatus === 'Delivered') badgeClass = 'status-badge status-success';
+                    if (order.orderStatus === 'Cancelled') badgeClass = 'status-badge status-danger';
+                    if (order.orderStatus === 'Returned') badgeClass = 'status-badge status-secondary';
 
                     const itemsJson = encodeURIComponent(JSON.stringify(order.items)).replace(/'/g, "%27");//This line converts the order items into text and makes sure the text is safe to send in a URL or link by escaping special characters.
 
@@ -1082,7 +1130,7 @@
                     tr.innerHTML = `
                         <td>#${order._id.substring(0, 8).toUpperCase()}</td>
                         <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td><span class="badge ${badgeClass}">${order.orderStatus}</span> 
+                        <td><span class="${badgeClass}">${order.orderStatus}</span> 
                             ${(order.returnStatus && order.returnStatus !== 'None') ? `<br><small class="text-secondary">Return: ${order.returnStatus}</small>` : ''
                         }
                         </td>
@@ -1117,7 +1165,11 @@
                             `<li><a class="dropdown-item small text-danger" href="#" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2"></i>Cancel Order</a></li>` : ''
                         }
 
-                                ${(order.orderStatus === 'Delivered' && (!order.returnStatus || order.returnStatus === 'None')) ?
+                                ${(order.orderStatus === 'Delivered' && (!order.returnStatus || order.returnStatus === 'None') && (() => {
+                            if (!order.deliveredAt) return false;
+                            const diffHours = (new Date().getTime() - new Date(order.deliveredAt).getTime()) / (1000 * 60 * 60);
+                            return diffHours <= 1;
+                        })()) ?
                             `<li><a class="dropdown-item small text-warning" href="#" onclick="requestReturn('${order._id}')"><i class="fas fa-undo me-2"></i>Request Return</a></li>` : ''
                         }
                             </ul>
@@ -1271,14 +1323,14 @@
 
                 // Item Status Badge
                 if (item.itemStatus === 'Cancelled') {
-                    statusBadge = '<span class="badge bg-danger ms-2">Cancelled</span>';
+                    statusBadge = '<span class="status-badge status-danger ms-2">Cancelled</span>';
                     rowClass += ' bg-light';
                     priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
                     nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
                 } else if (item.itemStatus === 'Return Requested') {
-                    statusBadge = '<span class="badge bg-warning text-dark ms-2">Return Requested</span>';
+                    statusBadge = '<span class="status-badge status-warning ms-2">Return Requested</span>';
                 } else if (item.itemStatus === 'Returned') {
-                    statusBadge = '<span class="badge bg-secondary ms-2">Returned</span>';
+                    statusBadge = '<span class="status-badge status-secondary ms-2">Returned</span>';
                     priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
                     nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
                 }
@@ -1297,8 +1349,6 @@
                         if (orderStatus === 'Delivered') {
                             if (!isReturnWindowExpired) {
                                 actionBtn = `<button class="btn btn-sm btn-outline-warning ms-auto" onclick="requestItemReturn('${id}', '${item._id}')">Return</button>`;
-                            } else {
-                                statusBadge += `<br><small class="text-danger">Return window expired</small>`;
                             }
                         }
                     } else {

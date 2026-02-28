@@ -51,8 +51,54 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
             outline: none;
         }
-    </style>
-    <style>
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.5;
+            text-transform: capitalize;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background-color: currentColor;
+        }
+
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-secondary {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
         :root {
             --primary-green: #2ecc71;
             /* Adjust to match image */
@@ -994,7 +1040,7 @@
                             </td>
                             <td>${cancelDate.toLocaleDateString()}</td>
                             <td class="small">${order.cancellationReason || 'No reason'}</td>
-                            <td><span class="badge bg-danger">Full Cancellation</span></td>
+                            <td><span class="status-badge status-danger">Full Cancellation</span></td>
                         `;
                         tbody.appendChild(tr);
                     } else {
@@ -1036,7 +1082,7 @@
                                 </td>
                                 <td>${cancelDate.toLocaleDateString()}</td>
                                 <td class="small">${reason}</td>
-                                <td><span class="badge bg-secondary">Item Cancelled</span></td>
+                                <td><span class="status-badge status-secondary">Item Cancelled</span></td>
                             `;
                             tbody.appendChild(tr);
                         });
