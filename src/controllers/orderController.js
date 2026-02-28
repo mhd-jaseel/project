@@ -38,8 +38,8 @@ const parseWeight = (str) => {
 // Process and save a new order after validating items and stock
 exports.placeOrder = async (req, res) => {
     try {
-        const { shippingAddress, paymentMethod, saveAddressInfo, couponCode } = req.body;
-        const userId = req.user.id; // Fixed: accessing id from decoded token
+    const { shippingAddress, paymentMethod, saveAddressInfo, couponCode, isFailedPayment } = req.body;
+    const userId = req.user.id;
 
         // 1. Fetch User Cart
         const user = await User.findById(userId).populate('cart.product');
@@ -152,7 +152,7 @@ exports.placeOrder = async (req, res) => {
         } else if (paymentMethod === 'COD') {
             paymentStatus = 'Pending';
         } else if (paymentMethod === 'Razorpay') {
-            paymentStatus = 'Pending';
+            paymentStatus = isFailedPayment ? 'Failed' : 'Pending';
         }
 
         // Update coupon usage if used
@@ -1162,7 +1162,7 @@ exports.getMyReturns = async (req, res) => {
 
 // Generate and download a PDF invoice for a specific order
 exports.downloadInvoice = async (req, res) => {
-    console.log("NEW PROFESSIONAL INVOICE VERSION RUNNING");
+    
     try {
         const orderId = req.params.orderId;
 
@@ -1246,8 +1246,8 @@ exports.downloadInvoice = async (req, res) => {
                 .fillColor("black")
                 .text(item.name, 50, position)
                 .text(item.quantity, 330, position, { width: 50, align: "center" })
-                .text(`₹${item.price}`, 390, position, { width: 70, align: "right" })
-                .text(`₹${total}`, 470, position, { width: 70, align: "right" });
+                .text(`${item.price}`, 390, position, { width: 70, align: "right" })
+                .text(`${total}`, 470, position, { width: 70, align: "right" });
 
             if (item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned') {
                 doc.fillColor('red').fontSize(9).text(`[${item.itemStatus}]`, 50, position + 12).fillColor('black');
@@ -1292,27 +1292,27 @@ exports.downloadInvoice = async (req, res) => {
             .font("Helvetica")
             .fontSize(11)
             .text("Subtotal (Gross):", 340, position + 25)
-            .text(`₹${grossTotal.toFixed(2)}`, 470, position + 25, { width: 70, align: "right" });
+            .text(`${grossTotal.toFixed(2)}`, 470, position + 25, { width: 70, align: "right" });
 
         let currentPos = position + 45;
 
         if (actualDiscount > 0) {
-            doc.fillColor("green").text("Coupon Discount:", 340, currentPos).text(`-₹${actualDiscount.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            doc.fillColor("green").text("Coupon Discount:", 340, currentPos).text(`-${actualDiscount.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
             currentPos += 20;
         }
 
         if (delivery > 0 || handling > 0) {
-            doc.text("Shipping & Handling:", 340, currentPos).text(`+₹${(delivery + handling).toFixed(2)}`, 470, currentPos, { width: 70, align: "right" });
+            doc.text("Shipping & Handling:", 340, currentPos).text(`+${(delivery + handling).toFixed(2)}`, 470, currentPos, { width: 70, align: "right" });
             currentPos += 20;
         }
 
         if (cancelledRefund > 0) {
-            doc.fillColor("red").text(`Cancelled Refund:`, 340, currentPos).text(`-₹${cancelledRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            doc.fillColor("red").text(`Cancelled Refund:`, 340, currentPos).text(`-${cancelledRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
             currentPos += 20;
         }
 
         if (returnedRefund > 0) {
-            doc.fillColor("gray").text(`Returned Refund:`, 340, currentPos).text(`-₹${returnedRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
+            doc.fillColor("gray").text(`Returned Refund:`, 340, currentPos).text(`-${returnedRefund.toFixed(2)}`, 470, currentPos, { width: 70, align: "right" }).fillColor("black");
             currentPos += 20;
         }
 
@@ -1320,7 +1320,7 @@ exports.downloadInvoice = async (req, res) => {
             .font("Helvetica-Bold")
             .fontSize(14)
             .text("Final Paid Amount:", 320, currentPos + 10)
-            .text(`₹${calculatedTotal.toFixed(2)}`, 470, currentPos + 10, { width: 70, align: "right" });
+            .text(`${calculatedTotal.toFixed(2)}`, 470, currentPos + 10, { width: 70, align: "right" });
 
         /* ================= FOOTER ================= */
 

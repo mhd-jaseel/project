@@ -1005,17 +1005,16 @@
                     <p class="small text-muted">Best products at your doorstep. Fresh and organic directly from farmers
                         to your kitchen.</p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-secondary"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="#" class="text-secondary"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-secondary"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr"
+                            class="text-secondary" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
                     </div>
                 </div>
                 <div class="col-md-2 mb-4">
                     <h6 class="fw-bold">Account</h6>
                     <ul class="list-unstyled small text-muted">
-                        <li><a href="#" class="text-decoration-none text-muted">Profile</a></li>
-                        <li><a href="#" class="text-decoration-none text-muted">Orders</a></li>
-                        <li><a href="#" class="text-decoration-none text-muted">Addresses</a></li>
+                        <li><a href="account.html" class="text-decoration-none text-muted">Profile</a></li>
+                        <li><a href="my-orders.html" class="text-decoration-none text-muted">Orders</a></li>
+                        <li><a href="address-book.html" class="text-decoration-none text-muted">Addresses</a></li>
                     </ul>
                 </div>
                 <div class="col-md-2 mb-4">
@@ -1023,7 +1022,8 @@
                     <ul class="list-unstyled small text-muted">
                         <li><a href="about.html" class="text-decoration-none text-muted">About Us</a></li>
                         <li><a href="contact.html" class="text-decoration-none text-muted">Contact</a></li>
-                        <li><a href="#" class="text-decoration-none text-muted">FAQ</a></li>
+
+
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
@@ -1043,6 +1043,7 @@
     <!-- Custom JS -->
 
 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1078,6 +1079,7 @@
 
                 orders.forEach(order => {
                     let badgeClass = 'status-badge status-secondary';
+                    let displayStatus = order.orderStatus;
                     if (order.orderStatus === 'Pending') badgeClass = 'status-badge status-warning';
                     if (order.orderStatus === 'Confirmed') badgeClass = 'status-badge status-info';
                     if (order.orderStatus === 'Packed') badgeClass = 'status-badge status-info';
@@ -1085,6 +1087,11 @@
                     if (order.orderStatus === 'Delivered') badgeClass = 'status-badge status-success';
                     if (order.orderStatus === 'Cancelled') badgeClass = 'status-badge status-danger';
                     if (order.orderStatus === 'Returned') badgeClass = 'status-badge status-secondary';
+
+                    if (order.paymentStatus === 'Failed') {
+                        badgeClass = 'status-badge status-danger';
+                        displayStatus = 'Payment Failed';
+                    }
 
                     const itemsJson = encodeURIComponent(JSON.stringify(order.items)).replace(/'/g, "%27");//This line converts the order items into text and makes sure the text is safe to send in a URL or link by escaping special characters.
 
@@ -1130,7 +1137,7 @@
                     tr.innerHTML = `
                         <td>#${order._id.substring(0, 8).toUpperCase()}</td>
                         <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td><span class="${badgeClass}">${order.orderStatus}</span> 
+                        <td><span class="${badgeClass}">${displayStatus}</span> 
                             ${(order.returnStatus && order.returnStatus !== 'None') ? `<br><small class="text-secondary">Return: ${order.returnStatus}</small>` : ''
                         }
                         </td>
@@ -1163,6 +1170,9 @@
                                 
                                 ${(order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') ?
                             `<li><a class="dropdown-item small text-danger" href="#" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2"></i>Cancel Order</a></li>` : ''
+                        }
+                                ${(order.paymentStatus === 'Failed') ?
+                            `<li><a class="dropdown-item small text-success fw-bold" href="#" onclick="retryPayment('${order._id}')"><i class="fas fa-redo-alt me-2"></i>Retry Payment</a></li>` : ''
                         }
 
                                 ${(order.orderStatus === 'Delivered' && (!order.returnStatus || order.returnStatus === 'None') && (() => {
@@ -1702,6 +1712,183 @@
                     console.error(error);
                     Swal.fire('Error', 'Server error', 'error');
                 }
+            }
+        };
+
+        window.retryPayment = async (orderId) => {
+            try {
+                // Fetch wallet balance to show it
+                let walletBalance = 0;
+                try {
+                    const wRes = await fetch('/api/auth/wallet', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (wRes.ok) {
+                        const wData = await wRes.json();
+                        walletBalance = wData.balance || 0;
+                    }
+                } catch (e) { }
+
+                const { value: paymentMethod } = await Swal.fire({
+                    title: '<h4 class="fw-bold mb-3">Select Payment Method</h4>',
+                    html: `
+                        <div class="payment-method-options d-flex flex-column gap-3 text-start mt-2">
+                            <label class="payment-card border rounded-3 p-3 d-flex align-items-center cursor-pointer mb-0" style="cursor: pointer; transition: all 0.2s; background: white;">
+                                <input type="radio" name="swal-payment-method" value="Razorpay" class="form-check-input me-3 mt-0 border-secondary" style="width: 1.5em; height: 1.5em;">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark" style="font-size: 1.05rem;">Pay Online</div>
+                                    <small class="text-muted">Credit/Debit Card, UPI, NetBanking</small>
+                                </div>
+                                <i class="fas fa-credit-card text-primary fa-lg ms-2"></i>
+                            </label>
+
+                            <label class="payment-card border rounded-3 p-3 d-flex align-items-center cursor-pointer mb-0" style="cursor: pointer; transition: all 0.2s; background: white;">
+                                <input type="radio" name="swal-payment-method" value="COD" class="form-check-input me-3 mt-0 border-secondary" style="width: 1.5em; height: 1.5em;">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark" style="font-size: 1.05rem;">Cash on Delivery</div>
+                                    <small class="text-muted">Pay when your order arrives</small>
+                                </div>
+                                <i class="fas fa-money-bill-wave text-success fa-lg ms-2"></i>
+                            </label>
+
+                            <label class="payment-card border rounded-3 p-3 d-flex align-items-center cursor-pointer mb-0" style="cursor: pointer; transition: all 0.2s; background: white;">
+                                <input type="radio" name="swal-payment-method" value="Wallet" class="form-check-input me-3 mt-0 border-secondary" style="width: 1.5em; height: 1.5em;">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                                        Wallet
+                                        <span class="badge bg-secondary rounded-pill px-2 py-1 fs-6">₹${walletBalance}</span>
+                                    </div>
+                                    <small class="text-muted">Use your KM Store Wallet balance</small>
+                                </div>
+                                <i class="fas fa-wallet text-info fa-lg ms-2"></i>
+                            </label>
+                        </div>
+                        <style>
+                            .payment-card:hover { 
+                                background-color: #f8f9fa !important; 
+                                border-color: #b1b5ba !important; 
+                            }
+                            .payment-card:has(input:checked) { 
+                                background-color: #f0fdf4 !important; 
+                                border-color: #28a745 !important; 
+                                border-width: 2px !important;
+                                padding: calc(1rem - 1px) !important;
+                            }
+                            .payment-card input:checked {
+                                background-color: #28a745;
+                                border-color: #28a745;
+                            }
+                        </style>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-check-circle me-1"></i> Proceed to Pay',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border-0',
+                        title: 'border-bottom pb-3 mb-0 w-100 text-start px-2 text-dark',
+                        htmlContainer: 'mx-1',
+                        actions: 'mt-4 w-100 px-3',
+                        confirmButton: 'rounded-pill px-4 py-2 w-50 fw-bold shadow-sm',
+                        cancelButton: 'rounded-pill px-4 py-2 w-50 fw-bold bg-light text-dark border shadow-sm'
+                    },
+                    buttonsStyling: true,
+                    preConfirm: () => {
+                        const selectedOption = document.querySelector('input[name="swal-payment-method"]:checked');
+                        if (!selectedOption) {
+                            Swal.showValidationMessage('Please select a payment method to proceed');
+                            return false;
+                        }
+                        return selectedOption.value;
+                    }
+                });
+
+                if (paymentMethod) {
+                    Swal.showLoading();
+                    const response = await fetch("/api/payment/process-retry-order", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ orderId, paymentMethod }),
+                    });
+
+                    const responseData = await response.json();
+
+                    if (!response.ok) {
+                        Swal.fire("Error", responseData.message || "Failed to initiate payment", "error");
+                        return;
+                    }
+
+                    if (paymentMethod === "Razorpay") {
+                        const options = {
+                            key: "rzp_test_S7FltY4zobyZOs", // Ensure this matches your Razorpay key
+                            amount: responseData.amount,
+                            currency: "INR",
+                            name: "KM Store",
+                            description: "Retry Order Payment",
+                            order_id: responseData.id,
+                            handler: async function (vz_response) {
+                                try {
+                                    Swal.showLoading();
+                                    const verifyRes = await fetch("/api/payment/verify-retry", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Authorization": `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify({
+                                            razorpay_order_id: vz_response.razorpay_order_id,
+                                            razorpay_payment_id: vz_response.razorpay_payment_id,
+                                            razorpay_signature: vz_response.razorpay_signature,
+                                            orderId: orderId
+                                        }),
+                                    });
+
+                                    const verifyData = await verifyRes.json();
+                                    if (verifyRes.ok) {
+                                        Swal.fire("Success", "Payment verified and order confirmed!", "success").then(() => {
+                                            fetchMyOrders(currentOrdersPage);
+                                        });
+                                    } else {
+                                        Swal.fire("Error", verifyData.message || "Payment verification failed", "error");
+                                    }
+                                } catch (e) {
+                                    Swal.fire("Error", "Failed to verify payment on server", "error");
+                                }
+                            },
+                            theme: { color: "#2ecc71" },
+                            prefill: {
+                                name: responseData.orderDetails?.shippingAddress?.firstName || responseData.orderDetails?.shippingAddress?.fullName || "",
+                                email: responseData.orderDetails?.shippingAddress?.email || "support@kmstore.com",
+                                contact: responseData.orderDetails?.shippingAddress?.mobileNumber || responseData.orderDetails?.shippingAddress?.phoneNumber || ""
+                            },
+                            modal: {
+                                ondismiss: function () {
+                                    Swal.fire({
+                                        title: "Payment Cancelled",
+                                        text: "The payment window was closed before completion.",
+                                        icon: "info"
+                                    });
+                                }
+                            }
+                        };
+                        const rzp = new window.Razorpay(options);
+                        rzp.on('payment.failed', function (response) {
+                            Swal.fire("Error", "Payment has failed across the Razorpay network. You may try again.", "error");
+                        });
+                        rzp.open();
+                    } else {
+                        Swal.fire("Success", "Order payment method updated and order confirmed!", "success").then(() => {
+                            fetchMyOrders(currentOrdersPage);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire("Error", "Could not start payment process", "error");
             }
         };
 

@@ -1365,6 +1365,37 @@
         }
 
         async function handleRazorpayPayment(orderData) {
+            let paymentHandled = false;
+
+            async function markAsFailed() {
+                if (paymentHandled) return;
+                paymentHandled = true;
+
+                // Show info to user
+                Swal.fire({
+                    title: 'Payment Incomplete',
+                    text: 'Your payment was not completed. Your order has been saved and is currently pending payment. You can retry from the My Orders page.',
+                    icon: 'warning',
+                    confirmButtonText: 'View Orders'
+                }).then(() => {
+                    window.location.href = "my-orders.html";
+                });
+
+                // Call place order with failed flag
+                try {
+                    await fetch('/api/orders/place', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ ...orderData, paymentMethod: 'Razorpay', isFailedPayment: true })
+                    });
+                } catch (e) {
+                    console.error("Failed to save pending order", e);
+                }
+            }
+
             try {
                 const response = await fetch("/api/payment/create-order", {
                     method: "POST",
@@ -1391,6 +1422,7 @@
                     description: "Order Payment",
                     order_id: order.id,
                     handler: async function (response) {
+                        paymentHandled = true;
                         // Verify
                         try {
                             Swal.showLoading();
@@ -1422,15 +1454,25 @@
                             Swal.fire("Error", "Also failed to verify payment on server", "error");
                         }
                     },
+                    modal: {
+                        ondismiss: function () {
+                            markAsFailed();
+                        }
+                    },
                     theme: { color: "#2ecc71" },
                     prefill: {
-                        name: orderData.shippingAddress.firstName,
-                        email: orderData.shippingAddress.email,
-                        contact: orderData.shippingAddress.phoneNumber
+                        name: orderData.shippingAddress.firstName || orderData.shippingAddress.fullName,
+                        email: orderData.shippingAddress.email || "support@kmstore.com",
+                        contact: orderData.shippingAddress.mobileNumber || orderData.shippingAddress.phoneNumber
                     }
                 };
 
                 const rzp = new window.Razorpay(options);
+
+                rzp.on('payment.failed', function (response) {
+                    markAsFailed();
+                });
+
                 rzp.open();
 
             } catch (error) {

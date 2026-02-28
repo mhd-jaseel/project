@@ -5,6 +5,8 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const Address = require("../models/Address");
 const Coupon = require("../models/Coupon");
+const Wallet = require("../models/Wallet");
+const Transaction = require("../models/Transaction");
 
 // Helper from orderController (to ensure consistent stock logic)
 // Helper function to extract base units from a weight string like "500g"
@@ -278,5 +280,152 @@ exports.verifyPayment = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Verification & Order Creation failed" });
+  }
+};
+
+// 3. Create Retry Razorpay Order for existing Failed order
+exports.createRetryOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const order = await Order.findById(orderId);
+
+    if (!order || order.user.toString() !== req.user.id) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.paymentStatus === 'Completed') {
+      return res.status(400).json({ message: "Order is already paid" });
+    }
+
+    let totalAmount = Math.round(Math.max(1, order.totalAmount) * 100) / 100;
+
+    const options = {
+      amount: totalAmount * 100,
+      currency: "INR",
+      receipt: "retry_receipt_" + Date.now(),
+    };
+
+    const razorpayOrder = await razorpay.orders.create(options);
+    res.json({ ...razorpayOrder, verifiedAmount: totalAmount, orderDetails: order });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Failed to initiate payment retry" });
+  }
+};
+
+// 3.5 Process multi-method retry order
+exports.processRetryOrder = async (req, res) => {
+  try {
+    const { orderId, paymentMethod } = req.body;
+    const order = await Order.findById(orderId);
+
+    if (!order || order.user.toString() !== req.user.id) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.paymentStatus === 'Completed') {
+      return res.status(400).json({ message: "Order is already paid" });
+    }
+
+    if (paymentMethod === 'Razorpay') {
+      let totalAmount = Math.round(Math.max(1, order.totalAmount) * 100) / 100;
+
+      const options = {
+        amount: totalAmount * 100,
+        currency: "INR",
+        receipt: "retry_receipt_" + Date.now(),
+      };
+
+      const razorpayOrder = await razorpay.orders.create(options);
+      return res.json({ ...razorpayOrder, verifiedAmount: totalAmount, orderDetails: order, method: 'Razorpay' });
+
+    } else if (paymentMethod === 'Wallet') {
+      let wallet = await Wallet.findOne({ user: req.user.id });
+      if (!wallet || wallet.balance < order.totalAmount) {
+        return res.status(400).json({ message: 'Insufficient wallet balance' });
+      }
+
+      wallet.balance -= order.totalAmount;
+      await wallet.save();
+
+      await Transaction.create({
+        wallet: wallet._id,
+        user: req.user.id,
+        amount: order.totalAmount,
+        reason: 'Order Payment (Retry)',
+        orderId: order._id
+      });
+
+      order.paymentMethod = 'Wallet';
+      order.paymentStatus = 'Completed';
+      if (order.orderStatus === 'Pending') order.orderStatus = 'Confirmed';
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          if (item.itemStatus === 'Pending') item.itemStatus = 'Confirmed';
+        });
+      }
+      await order.save();
+      return res.json({ success: true, method: 'Wallet' });
+
+    } else if (paymentMethod === 'COD') {
+      order.paymentMethod = 'COD';
+      order.paymentStatus = 'Pending';
+      if (order.orderStatus === 'Pending') order.orderStatus = 'Confirmed';
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          if (item.itemStatus === 'Pending') item.itemStatus = 'Confirmed';
+        });
+      }
+      await order.save();
+      return res.json({ success: true, method: 'COD' });
+    } else {
+      return res.status(400).json({ message: "Invalid payment method" });
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Failed to process payment retry" });
+  }
+};
+
+// 4. Verify Retry Payment
+exports.verifyRetryPayment = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
+
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    if (generatedSignature !== razorpay_signature) {
+      return res.status(400).json({ message: "Payment verification failed" });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order || order.user.toString() !== req.user.id) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.paymentStatus = 'Completed';
+    // optionally move orderStatus from Pending back to Confirmed
+    if (order.orderStatus === 'Pending') {
+      order.orderStatus = 'Confirmed';
+    }
+    // Also update order item status to match order
+    if (order.items && order.items.length > 0) {
+      order.items.forEach(item => {
+        if (item.itemStatus === 'Pending') item.itemStatus = 'Confirmed';
+      });
+    }
+
+    await order.save();
+    res.json({ message: "Payment successful" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Verification failed" });
   }
 };

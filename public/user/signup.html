@@ -474,10 +474,102 @@
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="terms">
                     <label class="form-check-label small text-muted" for="terms">
-                        I agree to the <a href="#" class="text-primary-custom text-decoration-none">Terms &
+                        I agree to the <a href="#" class="text-primary-custom text-decoration-none"
+                            data-bs-toggle="modal" data-bs-target="#termsModal">Terms &
                             Conditions</a>
                     </label>
                     <div class="invalid-feedback">You must agree before submitting.</div>
+                </div>
+
+                <!-- Terms Modal -->
+                <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-light">
+                                <h5 class="modal-title fw-bold" id="termsModalLabel">Terms and Conditions</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-start" style="font-size: 0.9rem;">
+                                <p>By accessing and using this Website , you agree to comply with and be legally bound
+                                    by the following Terms and Conditions.</p>
+
+                                <h6 class="fw-bold mt-4">1. Products & Pricing</h6>
+                                <ul>
+                                    <li>All products are subject to availability.</li>
+                                    <li>Prices are listed in INR (₹) and may change without prior notice.</li>
+                                    <li>We reserve the right to cancel orders due to stock unavailability, pricing
+                                        errors, or suspected fraud.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">2. Orders & Cancellation</h6>
+                                <ul>
+                                    <li>Orders are confirmed only after successful payment (except Cash on Delivery).
+                                    </li>
+                                    <li>Orders cannot be cancelled once packed or dispatched.</li>
+                                    <li>Cancellation is allowed only while the order is in processing status.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">3. Return Policy</h6>
+                                <ul>
+                                    <li>Products cannot be returned after 1 hour from delivery time.</li>
+                                    <li>Perishable items (vegetables, fruits, dairy, meat, frozen goods, bakery items)
+                                        are non-returnable.</li>
+                                    <li>Damaged or incorrect items must be reported within 1 hour of delivery with
+                                        proof.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">4. Refund Policy</h6>
+                                <ul>
+                                    <li>Refunds are processed after verification.</li>
+                                    <li>Refunds will be credited to the original payment method or store wallet.</li>
+                                    <li>Processing time: 3–7 business days.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">5. Coupons & Offers</h6>
+                                <ul>
+                                    <li>Coupons are subject to minimum order value and other conditions.</li>
+                                    <li>If an order is partially cancelled and conditions are not met, the discount may
+                                        be removed.</li>
+                                    <li>Coupons cannot be exchanged for cash.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">6. Payments</h6>
+                                <ul>
+                                    <li>Online payments are processed securely via third-party gateways (e.g.,
+                                        Razorpay).</li>
+                                    <li>We do not store sensitive card information.</li>
+                                    <li>Payment disputes must be reported within 24 hours.</li>
+                                </ul>
+
+                                <h6 class="fw-bold mt-4">7. User Responsibilities</h6>
+                                <p class="mb-1">Users must not:</p>
+                                <ul>
+                                    <li>Provide false information</li>
+                                    <li>Misuse coupons or refund policies</li>
+                                    <li>Attempt unauthorized access or disrupt the Website</li>
+                                </ul>
+                                <p>Violation may result in account suspension or legal action.</p>
+
+                                <h6 class="fw-bold mt-4">8. Limitation of Liability</h6>
+                                <p>We are not liable for indirect losses, delivery delays due to external factors, or
+                                    product misuse after delivery.</p>
+
+                                <h6 class="fw-bold mt-4">9. Governing Law</h6>
+                                <p>These Terms are governed by the laws of India.<br>
+                                    Any disputes shall be subject to the jurisdiction of courts in [Your
+                                    District/State].</p>
+
+                                <h6 class="fw-bold mt-4">10. Contact</h6>
+                                <p>Email: kmstore@gmail.com<br>
+                                    Phone: 0000000000</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary-custom w-100 py-2 rounded-3 fw-bold mb-3">Sign Up</button>
