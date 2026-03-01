@@ -15,12 +15,12 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-green: #419b91;
+            --primary-green: #2ecc71;
             /* Adjust to match image */
-            --dark-green: #125B50;
-            --light-green-bg: #d4efdf;
+            --dark-green: #27ae60;
+            --light-green-bg: #eafaf1;
             --yellow-accent: #f1c40f;
-            --text-dark: #333;
+            --text-dark: #2c3e50;
         }
 
         body {
@@ -31,7 +31,7 @@
 
         /* Custom Colors */
         .bg-primary-custom {
-            background: linear-gradient(180deg, var(--primary-green) 0%, var(--dark-green) 100%) !important;
+            background-color: var(--primary-green) !important;
         }
 
         .text-primary-custom {
@@ -74,16 +74,16 @@
         }
 
         /* Hero Section */
-        .bg-light-green {
-            background-color: #a8e6cf;
+        .bg-light-accent {
+            background-color: #ECF0F1;
             /* Lighter mint green */
         }
 
-        .yellow-circle {
+        .accent-circle {
             position: absolute;
             width: 250px;
             height: 250px;
-            background-color: #f7dc6f;
+            background-color: #3498DB;
             border-radius: 50%;
             bottom: -50px;
             right: -50px;
@@ -101,7 +101,7 @@
             height: 100px;
             border-radius: 50%;
             overflow: hidden;
-            border: 3px solid #fff;
+            border: 3px solid #ECF0F1;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
@@ -223,7 +223,7 @@
 
         /* Badges */
         .badge-best-deal {
-            background-color: #a8e6cf;
+            background-color: #ECF0F1;
             /* Light green from image */
             color: #2c3e50;
             font-weight: 500;
@@ -249,7 +249,7 @@
         }
 
         .btn-wishlist:hover {
-            background-color: #f0fff4;
+            background-color: #F0F8FF;
         }
 
         .btn-add-cart {
@@ -307,7 +307,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #e8f5e9 !important;
+            background-color: #f8f9fa !important;
             /* Very light green */
             color: var(--dark-green) !important;
         }
@@ -396,7 +396,7 @@
     <style>
 /* Exact Image Matches */
 .custom-exact-footer {
-    background-color: #125B50; /* Match dark teal from image */
+            background-color: #27ae60;
     position: relative;
     color: white;
     font-family: 'Poppins', sans-serif;
@@ -442,7 +442,7 @@
     text-decoration: none;
     transition: color 0.3s;
 }
-.custom-exact-footer .footer-link:hover { color: #A8E6CF; }
+.custom-exact-footer .footer-link:hover { color: #3498DB; }
 .custom-exact-footer .social-icon {
     width: 36px; height: 36px;
     background: rgba(255,255,255,0.1);
@@ -767,7 +767,7 @@
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonText: "Login",
-                    confirmButtonColor: "#2ecc71"
+                    confirmButtonColor: '#2ecc71'
                 }).then(res => {
                     if (res.isConfirmed) window.location.href = "login.html";
                 });
@@ -1040,7 +1040,7 @@
     <div class="container footer-content">
         <div class="row">
             <div class="col-md-4 mb-4">
-                <h5 class="fw-bold mb-3" style="color: #A8E6CF;">KM Store</h5>
+                <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
                 <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly from farmers to your kitchen.</p>
                 <div class="d-flex gap-3 mt-4">
                     <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr" class="social-icon" target="_blank">
