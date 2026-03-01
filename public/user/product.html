@@ -15,9 +15,9 @@
     <!-- Custom CSS -->
     <style>
         :root {
-            --primary-green: #2ecc71;
+            --primary-green: #419b91;
             /* Adjust to match image */
-            --dark-green: #27ae60;
+            --dark-green: #125B50;
             --light-green-bg: #d4efdf;
             --yellow-accent: #f1c40f;
             --text-dark: #333;
@@ -31,7 +31,7 @@
 
         /* Custom Colors */
         .bg-primary-custom {
-            background-color: var(--primary-green) !important;
+            background: linear-gradient(180deg, var(--primary-green) 0%, var(--dark-green) 100%) !important;
         }
 
         .text-primary-custom {
@@ -446,6 +446,70 @@
             object-fit: contain;
         }
     </style>
+
+    <style>
+/* Exact Image Matches */
+.custom-exact-footer {
+    background-color: #125B50; /* Match dark teal from image */
+    position: relative;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 100px;
+    overflow: hidden;
+}
+.custom-exact-footer .footer-top-wave {
+    position: absolute;
+    top: -1px; left: 0; width: 100%;
+    z-index: 2;
+}
+.custom-exact-footer .footer-top-wave svg {
+    display: block;
+    width: 100%;
+    height: 12vw;
+    min-height: 100px;
+    max-height: 180px;
+}
+.custom-exact-footer .footer-bottom-wave {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    z-index: 1;
+}
+.custom-exact-footer .footer-bottom-wave svg {
+    display: block;
+    width: 100%;
+    height: 5vw;
+    min-height: 40px;
+    max-height: 70px;
+}
+.custom-exact-footer .footer-content {
+    position: relative;
+    z-index: 3;
+    padding-top: 12%; /* Based on wave height */
+    padding-bottom: 50px;
+}
+@media (max-width: 768px) {
+    .custom-exact-footer .footer-content { padding-top: 120px; }
+}
+.custom-exact-footer h5, .custom-exact-footer h6 { font-weight: 600; color: #ffffff; }
+.custom-exact-footer .footer-link {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.custom-exact-footer .footer-link:hover { color: #A8E6CF; }
+.custom-exact-footer .social-icon {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+.custom-exact-footer .social-icon:hover {
+    background: rgba(255,255,255,0.2);
+}
+</style>
 </head>
 
 <body>
@@ -894,47 +958,125 @@
     </div>
 
 
-    <!-- Footer -->
-    <footer class="bg-light pt-5 pb-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold text-primary-custom mb-3">KM Store</h5>
-                    <p class="small text-muted">Best products at your doorstep. Fresh and organic directly from farmers
-                        to your kitchen.</p>
-                    <div class="d-flex gap-3">
-                        <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr"
-                            class="text-secondary" target="_blank"><i class="fab fa-instagram fa-lg"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h6 class="fw-bold">Account</h6>
-                    <ul class="list-unstyled small text-muted">
-                        <li><a href="account.html" class="text-decoration-none text-muted">Profile</a></li>
-                        <li><a href="my-orders.html" class="text-decoration-none text-muted">Orders</a></li>
-                        <li><a href="address-book.html" class="text-decoration-none text-muted">Addresses</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h6 class="fw-bold">Useful Links</h6>
-                    <ul class="list-unstyled small text-muted">
-                        <li><a href="about.html" class="text-decoration-none text-muted">About Us</a></li>
-                        <li><a href="contact.html" class="text-decoration-none text-muted">Contact</a></li>
+        <!-- Footer -->
 
 
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h6 class="fw-bold">Help Center</h6>
-                    <p class="small text-muted">Email: support@kmstore.com<br>Phone: +1 234 567 890</p>
+<footer class="custom-exact-footer">
+    <div class="footer-top-wave">
+        <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
+            <!-- Light shadow/green stroke -->
+            <path fill="none" stroke="#E2F2EB" stroke-width="6" d="M0,77 C100,107 150,117 250,117 C350,117 500,47 650,47 C800,47 900,107 1050,107 C1200,107 1350,57 1440,57" />
+            
+            <!-- Main White Wave -->
+            <path fill="#ffffff" d="M0,70 C100,100 150,110 250,110 C350,110 500,40 650,40 C800,40 900,100 1050,100 C1200,100 1350,50 1440,50 L1440,0 L0,0 Z" />
+            
+            <!-- Vines left -->
+            <path fill="none" stroke="#8DC052" stroke-width="2" d="M220,110 C180,120 150,100 100,80 C70,70 40,80 0,70" />
+            <!-- Curly vine left -->
+            <path fill="none" stroke="#8DC052" stroke-width="2" d="M300,110 C290,90 270,70 300,50 C320,40 330,60 310,70 C290,80 300,100 320,110" />
+
+            <!-- Leaves left -->
+            <path fill="#85bc4a" d="M250,110 C230,120 220,95 240,95 C250,95 260,100 250,110 Z" />
+
+            <!-- Left Flower -->
+            <g transform="translate(300, 100)">
+               <circle cx="-5" cy="-8" r="9" fill="#FDFDFB" />
+               <circle cx="8" cy="-5" r="9" fill="#FDFDFB" />
+               <circle cx="-5" cy="8" r="9" fill="#FDFDFB" />
+               <circle cx="5" cy="8" r="9" fill="#FDFDFB" />
+               <circle cx="0" cy="0" r="4.5" fill="#F3D75D" />
+            </g>
+            
+            <!-- Middle Sub-elements -->
+            <g transform="translate(630, 45)">
+               <path fill="#85bc4a" d="M10,-10 C5,-25 20,-30 25,-15 C30,0 15,5 10,-10 Z" transform="rotate(45 10 -10)"/>
+               <path fill="#A3D169" d="M-5,5 C-15,-5 -20,10 -10,15 C0,20 5,10 -5,5 Z" />
+               <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+               <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+               <circle cx="-5" cy="7" r="8" fill="#FDFDFB" />
+               <circle cx="5" cy="7" r="8" fill="#FDFDFB" />
+               <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+            </g>
+
+            <!-- Vines right -->
+            <path fill="none" stroke="#8DC052" stroke-width="2" d="M1160,80 C1220,100 1280,100 1350,90 C1380,85 1410,95 1440,90" />
+            <path fill="none" stroke="#8DC052" stroke-width="2" d="M1350,90 C1360,110 1380,115 1400,100 C1410,90 1390,85 1370,95" />
+
+            <!-- Right Leaves -->
+            <path fill="#85bc4a" d="M1310,75 C1320,55 1345,60 1335,80 C1325,100 1300,95 1310,75 Z" />
+            <path fill="#97c95c" d="M1355,80 C1375,75 1380,90 1365,95 C1350,100 1335,85 1355,80 Z" />
+
+            <!-- Right Flowers -->
+            <g transform="translate(1160, 65)">
+               <!-- Small Left Leaf under petal -->
+               <path fill="#85bc4a" d="M-10,20 C-30,20 -30,0 -15,-5 C-5,-10 0,5 -10,20 Z" />
+               
+               <!-- Large Flower -->
+               <g transform="translate(5, 15) scale(1.6)">
+                   <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                   <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                   <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                   <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                   <circle cx="0" cy="0" r="4" fill="#F3D75D" />
+               </g>
+               
+               <!-- Small Flower -->
+               <g transform="translate(50, 25) scale(0.9)">
+                   <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                   <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                   <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                   <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                   <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+               </g>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Bottom Wave -->
+    <div class="footer-bottom-wave">
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+            <path fill="#0A433A" d="M0,30 C300,60 500,10 750,40 C1000,70 1200,20 1440,30 L1440,60 L0,60 Z" />
+        </svg>
+    </div>
+
+    <div class="container footer-content">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3" style="color: #A8E6CF;">KM Store</h5>
+                <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly from farmers to your kitchen.</p>
+                <div class="d-flex gap-3 mt-4">
+                    <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr" class="social-icon" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
                 </div>
             </div>
-            <hr>
-            <div class="text-center small text-muted">
-                &copy; 2024 KM Store. All rights reserved.
+            <div class="col-md-2 mb-4">
+                <h6 class="fw-bold mb-3">Account</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="account.html" class="footer-link">Profile</a></li>
+                    <li class="mb-2"><a href="my-orders.html" class="footer-link">Orders</a></li>
+                    <li class="mb-2"><a href="address-book.html" class="footer-link">Addresses</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h6 class="fw-bold mb-3">Useful Links</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="about.html" class="footer-link">About Us</a></li>
+                    <li class="mb-2"><a href="contact.html" class="footer-link">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold mb-3">Help Center</h6>
+                <p class="small mb-1" style="color: #b0d8d0;"><i class="fas fa-envelope me-2"></i> support@kmstore.com</p>
+                <p class="small" style="color: #b0d8d0;"><i class="fas fa-phone-alt me-2"></i> +1 234 567 890</p>
             </div>
         </div>
-    </footer>
+        <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
+        <div class="text-center small" style="color: #6ebcae;">
+            &copy; 2024 KM Store. All rights reserved.
+        </div>
+    </div>
+</footer>
 
 
 
