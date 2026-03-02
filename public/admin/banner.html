@@ -345,6 +345,39 @@
                             <label class="form-label fw-bold">Subtitle (Optional)</label>
                             <input type="text" class="form-control" name="subtitle" placeholder="e.g. Up to 50% Off">
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Button Text</label>
+                            <input type="text" class="form-control" name="buttonText" value="Shop Now">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Link (Optional)</label>
+                            <input type="text" class="form-control" name="link" placeholder="e.g. product.html">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Bg Color</label>
+                                <input type="color" class="form-control form-control-color w-100" name="bgColor"
+                                    value="#004d40" title="Choose background color">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Text Color</label>
+                                <input type="color" class="form-control form-control-color w-100" name="textColor"
+                                    value="#ffffff" title="Choose text color">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Btn Color</label>
+                                <input type="color" class="form-control form-control-color w-100" name="buttonColor"
+                                    value="#bef67a" title="Choose button color">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Image Size (%)</label>
+                                <input type="range" class="form-range" name="imageSize" min="20" max="150" value="100"
+                                    id="imageSizeRange">
+                                <div class="text-center small" id="imageSizeValue">100%</div>
+                            </div>
+                        </div>
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" id="isActiveCheck" name="isActive" checked>
                             <label class="form-check-label" for="isActiveCheck">Active Immediately</label>
@@ -407,8 +440,12 @@
                                 <img src="${banner.imageUrl}" 
                                      class="w-100 h-100 object-fit-cover" alt="Banner">
                                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center bg-dark bg-opacity-25 text-white">
-                                     ${banner.title ? `<h3 class="fw-bold">${banner.title}</h3>` : ''}
-                                     ${banner.subtitle ? `<p class="lead">${banner.subtitle}</p>` : ''}
+                                     ${banner.title ? `<h3 class="fw-bold m-0">${banner.title}</h3>` : ''}
+                                     ${banner.subtitle ? `<p class="lead m-0">${banner.subtitle}</p>` : ''}
+                                     <div class="mt-2">
+                                        <span class="badge bg-light text-dark small">Btn: ${banner.buttonText || 'Shop Now'}</span>
+                                        <span class="badge bg-light text-dark small">Link: ${banner.link || '#'}</span>
+                                     </div>
                                 </div>
                             </div>
                             <div class="p-3">
@@ -436,6 +473,10 @@
             }
         }
 
+        document.getElementById('imageSizeRange')?.addEventListener('input', function (e) {
+            document.getElementById('imageSizeValue').textContent = e.target.value + '%';
+        });
+
         document.getElementById('bannerImageInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
             const previewContainer = document.getElementById('imagePreviewContainer');
@@ -457,6 +498,7 @@
         document.getElementById('addBannerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
+            // Append isActive as a boolean string
             formData.set('isActive', document.getElementById('isActiveCheck').checked);
 
             try {

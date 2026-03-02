@@ -12,13 +12,19 @@ exports.addBanner = async (req, res) => {
             return res.status(400).json({ message: 'Image is required' });
         }
 
-        const { title, subtitle, isActive } = req.body;
+        const { title, subtitle, isActive, link, buttonText, textColor, buttonColor, bgColor, imageSize } = req.body;
 
         const newBanner = new Banner({
             title,
             subtitle,
             imageUrl: `/uploads/banners/${req.file.filename}`,
-            isActive: isActive === 'true' // Handle string boolean from form-data
+            isActive: isActive === 'true', // Handle string boolean from form-data
+            link,
+            buttonText,
+            textColor,
+            buttonColor,
+            bgColor,
+            imageSize: imageSize ? parseInt(imageSize) : 100
         });
 
         await newBanner.save();

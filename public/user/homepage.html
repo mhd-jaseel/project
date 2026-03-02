@@ -16,12 +16,12 @@
 
     <style>
         :root {
-            --primary-green: #419b91;
+            --primary-green: #2ecc71;
             /* Adjust to match image */
-            --dark-green: #125B50;
-            --light-green-bg: #d4efdf;
+            --dark-green: #27ae60;
+            --light-green-bg: #eafaf1;
             --yellow-accent: #f1c40f;
-            --text-dark: #333;
+            --text-dark: #2c3e50;
         }
 
         body {
@@ -32,8 +32,10 @@
 
         /* Custom Colors */
         .bg-primary-custom {
-            background: linear-gradient(180deg, var(--primary-green) 0%, var(--dark-green) 100%) !important;
+            background-color: var(--dark-green) !important;
         }
+
+
 
         .text-primary-custom {
             color: var(--primary-green) !important;
@@ -49,42 +51,149 @@
             border-color: var(--dark-green);
         }
 
-        /* Header */
-        header {
-            position: relative;
-            padding-bottom: 50px;
-            /* Space for the curve */
+        /* Improved Header - Minimalist Style */
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .header-curve {
-            position: absolute;
-            bottom: -1px;
-            width: 100%;
+        .header-top {
+            background-color: #f8f9fa;
+            /* Light grey like reference */
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-bottom {
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo i {
+            color: var(--primary-green);
+        }
+
+        /* Search styling from reference 2 */
+        .header-search-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header-search-form {
+            display: flex;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             overflow: hidden;
-            line-height: 0;
         }
 
-        .header-curve svg {
-            display: block;
-            width: calc(100% + 1.3px);
-            height: 60px;
+        .header-search-input {
+            border: none !important;
+            padding: 8px 15px;
+            flex-grow: 1;
+            font-size: 14px;
+            outline: none !important;
+            box-shadow: none !important;
         }
 
-        .header-curve path {
-            fill: #ffffff;
+        .header-search-btn {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 20px !important;
+            font-size: 16px !important;
+            transition: background 0.2s;
+        }
+
+        .header-search-btn:hover {
+            background-color: var(--dark-green) !important;
+        }
+
+        /* Nav links styling */
+        .header-nav-link {
+            color: #444;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        /* Action icons styling */
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 5px;
+            background-color: var(--primary-green) !important;
+        }
+
+        @media (max-width: 991px) {
+
+            .header-top .col-md-4,
+            .header-top .col-md-5 {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+            .header-bottom .d-flex {
+                flex-wrap: wrap;
+                justify-content: center !important;
+                gap: 15px;
+            }
         }
 
         /* Hero Section */
-        .bg-light-green {
-            background-color: #a8e6cf;
+        .bg-light-accent {
+            background-color: #ECF0F1;
             /* Lighter mint green */
         }
 
-        .yellow-circle {
+        .accent-circle {
             position: absolute;
             width: 250px;
             height: 250px;
-            background-color: #f7dc6f;
+            background-color: #3498DB;
             border-radius: 50%;
             bottom: -50px;
             right: -50px;
@@ -102,7 +211,7 @@
             height: 100px;
             border-radius: 50%;
             overflow: hidden;
-            border: 3px solid #fff;
+            border: 3px solid #ECF0F1;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
@@ -244,7 +353,7 @@
 
         /* Badges */
         .badge-best-deal {
-            background-color: #a8e6cf;
+            background-color: #ECF0F1;
             /* Light green from image */
             color: #2c3e50;
             font-weight: 500;
@@ -270,7 +379,7 @@
         }
 
         .btn-wishlist:hover {
-            background-color: #f0fff4;
+            background-color: #F0F8FF;
         }
 
         .btn-wishlist.active {
@@ -338,7 +447,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #e8f5e9 !important;
+            background-color: #f8f9fa !important;
             /* Very light green */
             color: var(--dark-green) !important;
         }
@@ -511,68 +620,255 @@
     </style>
 
     <style>
-/* Exact Image Matches */
-.custom-exact-footer {
-    background-color: #125B50; /* Match dark teal from image */
-    position: relative;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    margin-top: 100px;
-    overflow: hidden;
-}
-.custom-exact-footer .footer-top-wave {
-    position: absolute;
-    top: -1px; left: 0; width: 100%;
-    z-index: 2;
-}
-.custom-exact-footer .footer-top-wave svg {
-    display: block;
-    width: 100%;
-    height: 12vw;
-    min-height: 100px;
-    max-height: 180px;
-}
-.custom-exact-footer .footer-bottom-wave {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%;
-    z-index: 1;
-}
-.custom-exact-footer .footer-bottom-wave svg {
-    display: block;
-    width: 100%;
-    height: 5vw;
-    min-height: 40px;
-    max-height: 70px;
-}
-.custom-exact-footer .footer-content {
-    position: relative;
-    z-index: 3;
-    padding-top: 12%; /* Based on wave height */
-    padding-bottom: 50px;
-}
-@media (max-width: 768px) {
-    .custom-exact-footer .footer-content { padding-top: 120px; }
-}
-.custom-exact-footer h5, .custom-exact-footer h6 { font-weight: 600; color: #ffffff; }
-.custom-exact-footer .footer-link {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-.custom-exact-footer .footer-link:hover { color: #A8E6CF; }
-.custom-exact-footer .social-icon {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: background 0.3s;
-    text-decoration: none;
-}
-.custom-exact-footer .social-icon:hover {
-    background: rgba(255,255,255,0.2);
-}
-</style>
+        /* --- New Exact Banner Design --- */
+        .hero-section {
+            transition: all 0.5s ease;
+        }
+
+        @media (min-width: 992px) {
+            .hero-section.container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            #heroCarousel {
+                border-radius: 0 !important;
+            }
+        }
+
+        .custom-banner-slide {
+            background-color: #004d40;
+            /* Dark Teal from image */
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            padding-bottom: 60px;
+            /* Space for the wave */
+        }
+
+        /* Subtle background illustrations (simplified pattern) */
+        .custom-banner-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+            background-size: 30px 30px;
+            pointer-events: none;
+        }
+
+        .banner-content-inner {
+            position: relative;
+            z-index: 5;
+            padding: 4rem 10%;
+        }
+
+        .banner-title {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            color: #ffffff;
+        }
+
+        .banner-subtitle {
+            font-size: 1.15rem;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            color: #e0f2f1;
+            line-height: 1.6;
+        }
+
+        .btn-banner-shop {
+            background-color: #bef67a;
+            /* Light Lime/Green from image */
+            color: #004d40;
+            font-weight: 700;
+            padding: 14px 40px;
+            border-radius: 12px;
+            text-decoration: none !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-banner-shop:hover {
+            transform: scale(1.05) translateY(-3px);
+            background-color: #d4f9a1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            color: #004d40;
+        }
+
+        .banner-img-container {
+            position: absolute;
+            right: 8%;
+            bottom: 30px;
+            height: 90%;
+            z-index: 10;
+        }
+
+        .banner-img-container img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(20px 10px 30px rgba(0, 0, 0, 0.2));
+        }
+
+        .banner-wave-bottom {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            line-height: 0;
+            z-index: 15;
+        }
+
+        .banner-wave-bottom svg {
+            display: block;
+            width: 100%;
+            height: 80px;
+            fill: #ffffff;
+        }
+
+        .banner-wave-top {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            line-height: 0;
+            z-index: 15;
+            transform: scale(-1, -1);
+        }
+
+        .banner-wave-top svg {
+            display: block;
+            width: 100%;
+            height: 80px;
+            fill: #ffffff;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 991px) {
+            .custom-banner-slide {
+                min-height: auto;
+                padding-top: 3rem;
+                padding-bottom: 100px;
+                /* More room for wave over content */
+            }
+
+            .banner-content-inner {
+                padding: 1rem 1.5rem;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .banner-img-container {
+                position: relative;
+                right: auto;
+                bottom: auto;
+                height: 250px;
+                margin-top: 2rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .banner-title {
+                font-size: 2rem;
+            }
+
+            .banner-wave-bottom svg,
+            .banner-wave-top svg {
+                height: 40px;
+            }
+        }
+    </style>
+
+    <style>
+        /* Exact Image Matches */
+        .custom-exact-footer {
+            background-color: #27ae60;
+            position: relative;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 100px;
+            overflow: hidden;
+        }
+
+        .custom-exact-footer .footer-top-wave {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .custom-exact-footer .footer-top-wave svg {
+            display: block;
+            width: 100%;
+            height: 12vw;
+            min-height: 100px;
+            max-height: 180px;
+        }
+
+
+
+        .custom-exact-footer .footer-content {
+            position: relative;
+            z-index: 3;
+            padding-top: 12%;
+            /* Based on wave height */
+            padding-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .custom-exact-footer .footer-content {
+                padding-top: 120px;
+            }
+        }
+
+        .custom-exact-footer h5,
+        .custom-exact-footer h6 {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .custom-exact-footer .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .custom-exact-footer .footer-link:hover {
+            color: #3498DB;
+        }
+
+        .custom-exact-footer .social-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .custom-exact-footer .social-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
 </head>
 
 <body>
@@ -580,88 +876,84 @@
 
 
     <!-- Header Section -->
-    <header class="bg-primary-custom text-white">
-        <div class="container py-2">
-            <div class="row align-items-center">
-                <!-- Logo -->
-                <div class="col-md-3">
-                    <a href="/user/homepage.html" class="navbar-brand fw-bold fs-3 text-white">
-                        <i class="fas fa-leaf me-2"></i>KM Store
-                    </a>
-                </div>
-
-                <!--search bar-->
-                <div class="col-md-5">
-                    <form id="globalSearchForm" class="position-relative">
-
-                        <div class="input-group">
-                            <input type="text" id="globalSearchInput" class="form-control border-0"
-                                placeholder="Search for products..." autocomplete="off">
-
-                            <button class="btn btn-light text-primary-custom" type="submit">
-                                <i class="fas fa-search"></i>
+    <header class="header-minimal">
+        <!-- Navigation, Search, and Actions -->
+        <div class="header-bottom py-2">
+            <div class="container-fluid px-lg-5">
+                <div class="row align-items-center">
+                    <!-- Logo and Nav Links (Left) -->
+                    <div
+                        class="col-lg-5 col-12 d-flex justify-content-between justify-content-lg-start align-items-center order-1 order-lg-1 gap-lg-4">
+                        <a href="/user/homepage.html" class="header-logo text-nowrap"
+                            style="font-size: 20px; letter-spacing: 0.5px;">
+                            <i class="fas fa-leaf me-2"></i>KM Store
+                        </a>
+                        <nav class="navbar navbar-expand-lg p-0">
+                            <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarNav">
+                                <span class="navbar-toggler-icon" style="width: 1.2em; height: 1.2em;"></span>
                             </button>
-                        </div>
+                            <div class="collapse navbar-collapse" id="navbarNav">
+                                <ul class="navbar-nav gap-2 gap-lg-3">
+                                    <li class="nav-item"><a class="header-nav-link active"
+                                            href="/user/homepage.html">Home</a></li>
+                                    <li class="nav-item"><a class="header-nav-link" href="/user/about.html">About</a>
+                                    </li>
+                                    <li class="nav-item"><a class="header-nav-link"
+                                            href="/user/contact.html">Contact</a></li>
+                                    <li class="nav-item"><a class="header-nav-link"
+                                            href="/user/product.html">Products</a></li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
 
-                        <!--  Suggestions Dropdown -->
-                        <div id="searchSuggestions" class="list-group position-absolute w-100 shadow"
-                            style="top: 100%; left: 0; z-index: 1000; display: none; border-radius: 8px;">
-                        </div>
+                    <!-- Center Search Bar -->
+                    <div class="col-lg-4 col-12 d-flex justify-content-center order-3 order-lg-2 px-3 mt-3 mt-lg-0">
+                        <form id="globalSearchForm" class="header-search-container w-100 position-relative"
+                            style="max-width: 500px; margin: 0;">
+                            <div class="header-search-form"
+                                style="display: flex; background: #fff; border: 1px solid #ddd; border-radius: 25px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                <input type="text" id="globalSearchInput" class="header-search-input"
+                                    placeholder="search here..." autocomplete="off"
+                                    style="border: none !important; padding: 8px 20px; flex-grow: 1; font-size: 14px; outline: none !important; box-shadow: none !important;">
+                                <button class="header-search-btn" type="submit"
+                                    style="background-color: var(--primary-green) !important; color: white !important; border: none !important; padding: 8px 20px !important; font-size: 13px !important; transition: background 0.2s;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <!-- Suggestions Dropdown -->
+                            <div id="searchSuggestions" class="list-group position-absolute w-100 shadow"
+                                style="top: 100%; left: 0; z-index: 1000; display: none; border-radius: 8px; margin-top: 5px;">
+                            </div>
+                        </form>
+                    </div>
 
-                    </form>
-                </div>
-                <!-- User Actions -->
-                <div class="col-md-4 text-end">
-                    <a href="/user/wishlist.html" class="text-white text-decoration-none me-3 position-relative"
-                        id="headerWishlistBtn">
-                        <i class="fas fa-heart me-1"></i>
-                        Wishlist
-                        <span id="wishlist-count-badge"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="display: none; font-size: 0.7rem;">0</span>
-                    </a>
-                    <a href="/user/cart.html" class="text-white text-decoration-none me-3 position-relative"
-                        id="headerCartBtn">
-                        <i class="fas fa-shopping-cart me-1"></i>
-                        Cart
-                        <span id="cart-count-badge"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="display: none; font-size: 0.7rem;">0</span>
-                    </a>
-
-                    <!-- Dynamic Auth Section -->
-                    <span id="auth-actions">
-                        <!-- Default to Login -->
-                        <a href="/user/login.html" class="text-white text-decoration-none me-3" id="headerLoginBtn"><i
-                                class="fas fa-sign-in-alt me-1"></i>
-                            Login</a>
-                    </span>
-                </div>
-            </div>
-            <!-- Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-dark p-0 mt-2">
-                <div class="container-fluid p-0">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="/user/homepage.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/user/about.html">About</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/user/contact.html">Contact</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/user/product.html">Products</a></li>
-                        </ul>
+                    <!-- User Actions -->
+                    <div
+                        class="col-lg-3 col-12 d-flex align-items-center justify-content-center justify-content-lg-end gap-3 order-2 order-lg-3 mt-3 mt-lg-0">
+                        <a href="/user/wishlist.html" class="header-action-btn" id="headerWishlistBtn">
+                            <i class="fas fa-heart"></i>
+                            <span class="header-action-label d-none d-xl-inline">Wishlist</span>
+                            <span id="wishlist-count-badge" class="badge rounded-pill header-badge"
+                                style="display: none;">0</span>
+                        </a>
+                        <a href="/user/cart.html" class="header-action-btn" id="headerCartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="header-action-label d-none d-xl-inline">Cart</span>
+                            <span id="cart-count-badge" class="badge rounded-pill header-badge"
+                                style="display: none;">0</span>
+                        </a>
+                        <!-- Dynamic Auth Section -->
+                        <span id="auth-actions">
+                            <a href="/user/login.html" class="header-action-btn" id="headerLoginBtn">
+                                <i class="fas fa-user-circle"></i>
+                                <span class="header-action-label d-none d-xl-inline">Login</span>
+                            </a>
+                        </span>
                     </div>
                 </div>
-            </nav>
-        </div>
-        <!-- Curve SVG at the bottom -->
-        <div class="header-curve">
-            <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#ffffff"
-                    d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320L0,320Z">
-                </path>
-            </svg>
+            </div>
         </div>
     </header>
 
@@ -887,7 +1179,7 @@
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonText: "Login",
-                    confirmButtonColor: "#2ecc71"
+                    confirmButtonColor: '#2ecc71'
                 }).then(res => {
                     if (res.isConfirmed) window.location.href = "login.html";
                 });
@@ -902,19 +1194,19 @@
 
             if (getToken()) {
                 authContainer.innerHTML = `
-    <div class="dropdown d-inline-block">
-    <a href="#" class="text-white text-decoration-none dropdown-toggle"
-       data-bs-toggle="dropdown">
-      <i class="fas fa-user me-1"></i> Account
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="account.html">My Account</a></li>
-        <li><a class="dropdown-item" href="my-orders.html">My Orders</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item text-danger" href="#" id="headerLogoutBtn">Logout</a></li>
-    </ul>
-    </div>
-    `;
+                <div class="dropdown d-inline-block">
+                    <a href="#" class="header-action-btn dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="header-action-label d-none d-sm-inline">Account</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item py-2" href="account.html"><i class="fas fa-user me-2"></i>My Account</a></li>
+                        <li><a class="dropdown-item py-2" href="my-orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="#" id="headerLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                `;
 
                 setTimeout(() => {
                     const logoutBtn = document.getElementById("headerLogoutBtn");
@@ -933,10 +1225,11 @@
 
             } else {
                 authContainer.innerHTML = `
-    <a href="login.html" class="text-white text-decoration-none">
-    <i class="fas fa-sign-in-alt me-1"></i> Login
-    </a>
-    `;
+                <a href="login.html" class="header-action-btn" id="headerLoginBtn">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="header-action-label d-none d-sm-inline">Login</span>
+                </a>
+                `;
             }
         }
 
@@ -947,7 +1240,7 @@
 
 
     <!-- Hero Section -->
-    <section class="hero-section container my-4">
+    <section class="hero-section container mb-5 mt-0">
         <div id="heroCarousel" class="carousel slide rounded-4 overflow-hidden" data-bs-ride="carousel">
             <div class="carousel-indicators" id="hero-indicators">
                 <!-- Dynamic indicators -->
@@ -1112,125 +1405,130 @@
 
 
 
-        <!-- Footer -->
+    <!-- Footer -->
 
 
-<footer class="custom-exact-footer">
-    <div class="footer-top-wave">
-        <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
-            <!-- Light shadow/green stroke -->
-            <path fill="none" stroke="#E2F2EB" stroke-width="6" d="M0,77 C100,107 150,117 250,117 C350,117 500,47 650,47 C800,47 900,107 1050,107 C1200,107 1350,57 1440,57" />
-            
-            <!-- Main White Wave -->
-            <path fill="#ffffff" d="M0,70 C100,100 150,110 250,110 C350,110 500,40 650,40 C800,40 900,100 1050,100 C1200,100 1350,50 1440,50 L1440,0 L0,0 Z" />
-            
-            <!-- Vines left -->
-            <path fill="none" stroke="#8DC052" stroke-width="2" d="M220,110 C180,120 150,100 100,80 C70,70 40,80 0,70" />
-            <!-- Curly vine left -->
-            <path fill="none" stroke="#8DC052" stroke-width="2" d="M300,110 C290,90 270,70 300,50 C320,40 330,60 310,70 C290,80 300,100 320,110" />
+    <footer class="custom-exact-footer">
+        <div class="footer-top-wave">
+            <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
+                <!-- Light shadow/green stroke -->
+                <path fill="none" stroke="#E2F2EB" stroke-width="6"
+                    d="M0,77 C100,107 150,117 250,117 C350,117 500,47 650,47 C800,47 900,107 1050,107 C1200,107 1350,57 1440,57" />
 
-            <!-- Leaves left -->
-            <path fill="#85bc4a" d="M250,110 C230,120 220,95 240,95 C250,95 260,100 250,110 Z" />
+                <!-- Main White Wave -->
+                <path fill="#ffffff"
+                    d="M0,70 C100,100 150,110 250,110 C350,110 500,40 650,40 C800,40 900,100 1050,100 C1200,100 1350,50 1440,50 L1440,0 L0,0 Z" />
 
-            <!-- Left Flower -->
-            <g transform="translate(300, 100)">
-               <circle cx="-5" cy="-8" r="9" fill="#FDFDFB" />
-               <circle cx="8" cy="-5" r="9" fill="#FDFDFB" />
-               <circle cx="-5" cy="8" r="9" fill="#FDFDFB" />
-               <circle cx="5" cy="8" r="9" fill="#FDFDFB" />
-               <circle cx="0" cy="0" r="4.5" fill="#F3D75D" />
-            </g>
-            
-            <!-- Middle Sub-elements -->
-            <g transform="translate(630, 45)">
-               <path fill="#85bc4a" d="M10,-10 C5,-25 20,-30 25,-15 C30,0 15,5 10,-10 Z" transform="rotate(45 10 -10)"/>
-               <path fill="#A3D169" d="M-5,5 C-15,-5 -20,10 -10,15 C0,20 5,10 -5,5 Z" />
-               <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-               <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-               <circle cx="-5" cy="7" r="8" fill="#FDFDFB" />
-               <circle cx="5" cy="7" r="8" fill="#FDFDFB" />
-               <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
-            </g>
+                <!-- Vines left -->
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M220,110 C180,120 150,100 100,80 C70,70 40,80 0,70" />
+                <!-- Curly vine left -->
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M300,110 C290,90 270,70 300,50 C320,40 330,60 310,70 C290,80 300,100 320,110" />
 
-            <!-- Vines right -->
-            <path fill="none" stroke="#8DC052" stroke-width="2" d="M1160,80 C1220,100 1280,100 1350,90 C1380,85 1410,95 1440,90" />
-            <path fill="none" stroke="#8DC052" stroke-width="2" d="M1350,90 C1360,110 1380,115 1400,100 C1410,90 1390,85 1370,95" />
+                <!-- Leaves left -->
+                <path fill="#85bc4a" d="M250,110 C230,120 220,95 240,95 C250,95 260,100 250,110 Z" />
 
-            <!-- Right Leaves -->
-            <path fill="#85bc4a" d="M1310,75 C1320,55 1345,60 1335,80 C1325,100 1300,95 1310,75 Z" />
-            <path fill="#97c95c" d="M1355,80 C1375,75 1380,90 1365,95 C1350,100 1335,85 1355,80 Z" />
+                <!-- Left Flower -->
+                <g transform="translate(300, 100)">
+                    <circle cx="-5" cy="-8" r="9" fill="#FDFDFB" />
+                    <circle cx="8" cy="-5" r="9" fill="#FDFDFB" />
+                    <circle cx="-5" cy="8" r="9" fill="#FDFDFB" />
+                    <circle cx="5" cy="8" r="9" fill="#FDFDFB" />
+                    <circle cx="0" cy="0" r="4.5" fill="#F3D75D" />
+                </g>
 
-            <!-- Right Flowers -->
-            <g transform="translate(1160, 65)">
-               <!-- Small Left Leaf under petal -->
-               <path fill="#85bc4a" d="M-10,20 C-30,20 -30,0 -15,-5 C-5,-10 0,5 -10,20 Z" />
-               
-               <!-- Large Flower -->
-               <g transform="translate(5, 15) scale(1.6)">
-                   <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-                   <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-                   <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
-                   <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
-                   <circle cx="0" cy="0" r="4" fill="#F3D75D" />
-               </g>
-               
-               <!-- Small Flower -->
-               <g transform="translate(50, 25) scale(0.9)">
-                   <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-                   <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-                   <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
-                   <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
-                   <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
-               </g>
-            </g>
-        </svg>
-    </div>
+                <!-- Middle Sub-elements -->
+                <g transform="translate(630, 45)">
+                    <path fill="#85bc4a" d="M10,-10 C5,-25 20,-30 25,-15 C30,0 15,5 10,-10 Z"
+                        transform="rotate(45 10 -10)" />
+                    <path fill="#A3D169" d="M-5,5 C-15,-5 -20,10 -10,15 C0,20 5,10 -5,5 Z" />
+                    <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                    <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                    <circle cx="-5" cy="7" r="8" fill="#FDFDFB" />
+                    <circle cx="5" cy="7" r="8" fill="#FDFDFB" />
+                    <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+                </g>
 
-    <!-- Bottom Wave -->
-    <div class="footer-bottom-wave">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
-            <path fill="#0A433A" d="M0,30 C300,60 500,10 750,40 C1000,70 1200,20 1440,30 L1440,60 L0,60 Z" />
-        </svg>
-    </div>
+                <!-- Vines right -->
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M1160,80 C1220,100 1280,100 1350,90 C1380,85 1410,95 1440,90" />
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M1350,90 C1360,110 1380,115 1400,100 C1410,90 1390,85 1370,95" />
 
-    <div class="container footer-content">
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <h5 class="fw-bold mb-3" style="color: #A8E6CF;">KM Store</h5>
-                <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly from farmers to your kitchen.</p>
-                <div class="d-flex gap-3 mt-4">
-                    <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr" class="social-icon" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
+                <!-- Right Leaves -->
+                <path fill="#85bc4a" d="M1310,75 C1320,55 1345,60 1335,80 C1325,100 1300,95 1310,75 Z" />
+                <path fill="#97c95c" d="M1355,80 C1375,75 1380,90 1365,95 C1350,100 1335,85 1355,80 Z" />
+
+                <!-- Right Flowers -->
+                <g transform="translate(1160, 65)">
+                    <!-- Small Left Leaf under petal -->
+                    <path fill="#85bc4a" d="M-10,20 C-30,20 -30,0 -15,-5 C-5,-10 0,5 -10,20 Z" />
+
+                    <!-- Large Flower -->
+                    <g transform="translate(5, 15) scale(1.6)">
+                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                        <circle cx="0" cy="0" r="4" fill="#F3D75D" />
+                    </g>
+
+                    <!-- Small Flower -->
+                    <g transform="translate(50, 25) scale(0.9)">
+                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                        <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+
+
+        <div class="container footer-content">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
+                    <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly
+                        from farmers to your kitchen.</p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr"
+                            class="social-icon" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Account</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="account.html" class="footer-link">Profile</a></li>
+                        <li class="mb-2"><a href="my-orders.html" class="footer-link">Orders</a></li>
+                        <li class="mb-2"><a href="address-book.html" class="footer-link">Addresses</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Useful Links</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="about.html" class="footer-link">About Us</a></li>
+                        <li class="mb-2"><a href="contact.html" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Help Center</h6>
+                    <p class="small mb-1" style="color: #b0d8d0;"><i class="fas fa-envelope me-2"></i>
+                        support@kmstore.com</p>
+                    <p class="small" style="color: #b0d8d0;"><i class="fas fa-phone-alt me-2"></i> +1 234 567 890</p>
                 </div>
             </div>
-            <div class="col-md-2 mb-4">
-                <h6 class="fw-bold mb-3">Account</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="account.html" class="footer-link">Profile</a></li>
-                    <li class="mb-2"><a href="my-orders.html" class="footer-link">Orders</a></li>
-                    <li class="mb-2"><a href="address-book.html" class="footer-link">Addresses</a></li>
-                </ul>
-            </div>
-            <div class="col-md-2 mb-4">
-                <h6 class="fw-bold mb-3">Useful Links</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="about.html" class="footer-link">About Us</a></li>
-                    <li class="mb-2"><a href="contact.html" class="footer-link">Contact</a></li>
-                </ul>
-            </div>
-            <div class="col-md-4 mb-4">
-                <h6 class="fw-bold mb-3">Help Center</h6>
-                <p class="small mb-1" style="color: #b0d8d0;"><i class="fas fa-envelope me-2"></i> support@kmstore.com</p>
-                <p class="small" style="color: #b0d8d0;"><i class="fas fa-phone-alt me-2"></i> +1 234 567 890</p>
+            <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center small" style="color: #6ebcae;">
+                &copy; 2024 KM Store. All rights reserved.
             </div>
         </div>
-        <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
-        <div class="text-center small" style="color: #6ebcae;">
-            &copy; 2024 KM Store. All rights reserved.
-        </div>
-    </div>
-</footer>
+    </footer>
     <script>
 
         //search bar
@@ -1266,19 +1564,36 @@
                         // Slide
                         const item = document.createElement('div');
                         item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-                        item.dataset.bsInterval = 4000;
+                        item.dataset.bsInterval = 5000;
 
                         item.innerHTML = `
-                            <div class="row align-items-center bg-light bg-opacity-10 p-4 p-md-5 position-relative h-100 banner-container" 
-                                 style="min-height: 400px; background: url('${banner.imageUrl}') no-repeat center center / cover;">
-                                
-                                <div class="col-md-7 col-lg-6 z-1 text-white p-4 rounded-3" 
-                                     style="background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);">
-                                    ${banner.subtitle ? `<span class="badge bg-warning text-dark mb-2">${banner.subtitle}</span>` : ''}
-                                    ${banner.title ? `<h1 class="display-5 fw-bold">${banner.title}</h1>` : ''}
-                                    <div class="mt-3">
-                                         <a href="product.html" class="btn btn-primary-custom ms-2 border-white">Shop Now</a>
+                            <div class="custom-banner-slide" style="background-color: ${banner.bgColor || '#004d40'}; color: ${banner.textColor || '#ffffff'};">
+                                <div class="container h-100 px-0">
+                                    <div class="banner-content-inner">
+                                        ${banner.title ? `<h1 class="banner-title" style="color: ${banner.textColor || '#ffffff'};">${banner.title}</h1>` : ''}
+                                        ${banner.subtitle ? `<p class="banner-subtitle" style="color: ${banner.textColor || '#ffffff'}; opacity: 0.9;">${banner.subtitle}</p>` : ''}
+                                        <a href="${banner.link || 'product.html'}" class="btn-banner-shop" 
+                                           style="background-color: ${banner.buttonColor || '#bef67a'}; color: ${banner.bgColor || '#004d40'};"
+                                           onclick="return checkLogin(event)">
+                                            ${banner.buttonText || 'Shop now'}
+                                        </a>
                                     </div>
+                                </div>
+                                
+                                <div class="banner-img-container" style="height: ${banner.imageSize || 90}%;">
+                                    <img src="${banner.imageUrl}" alt="${banner.title || 'Banner'}">
+                                </div>
+
+                                <div class="banner-wave-top">
+                                    <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                                        <path d="M0,60 C360,100 720,20 1080,80 C1260,110 1440,60 1440,60 L1440,100 L0,100 Z" fill="#ffffff"></path>
+                                    </svg>
+                                </div>
+
+                                <div class="banner-wave-bottom">
+                                    <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                                        <path d="M0,60 C360,100 720,20 1080,80 C1260,110 1440,60 1440,60 L1440,100 L0,100 Z" fill="#ffffff"></path>
+                                    </svg>
                                 </div>
                             </div>
                         `;
@@ -1604,7 +1919,7 @@
         });
 
         function createOfferCard(offer, isUpcoming = false) {
-            const bgColor = (offer.themeColor && offer.themeColor.startsWith('#')) ? offer.themeColor : '#2ecc71';
+            const bgColor = (offer.themeColor && offer.themeColor.startsWith('#')) ? offer.themeColor : '#2C3E50';
             const txtColor = offer.textColor || '#ffffff';
             const isFullBg = offer.isFullBackground;
             const startDate = new Date(offer.startDate).toLocaleDateString();
@@ -1613,7 +1928,7 @@
 
             if (isFullBg && offer.image) {
                 // Full Background Image
-                cardStyle = `background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${offer.image}') no-repeat center center / cover; color: ${txtColor};`;
+                cardStyle = `background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.5)), url('${offer.image}') no-repeat center center / cover; color: ${txtColor};`;
             }
 
             const imgHtml = (!isFullBg && offer.image) ?
