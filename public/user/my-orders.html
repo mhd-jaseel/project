@@ -25,6 +25,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -123,16 +124,21 @@
         }
 
         .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
             
-            z-index: 1000;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            position: sticky;
-            top: 0;
+
+            
+            
+            
+            
         }
 
         .header-logo {
@@ -806,7 +812,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -1168,7 +1174,7 @@
     </script>
 
     <!-- Breadcrumb -->
-    <div class="container my-3">
+    <div class="container-fluid px-4 px-lg-5 my-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb small text-muted">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -1182,53 +1188,93 @@
     </div>
 
     <!-- Main Content -->
-    <section class="container my-5">
+    <section class="container-fluid px-4 px-lg-5 my-5">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 mb-4">
-                <div class="account-sidebar">
-                    <h6 class="fw-bold mb-3">Manage My Account</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="account.html" class="text-decoration-none text-muted">My Profile</a>
-                        </li>
-                        <li class="mb-2"><a href="address-book.html" class="text-decoration-none text-muted">Address
+                <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
+                    style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
+                            style="color: #10b981;"></i>Manage Account</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="account.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Profile</a></li>
+                        <li class="mb-3"><a href="address-book.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Address
                                 Book</a></li>
-                        <li class="mb-2"><a href="payment-options.html" class="text-decoration-none text-muted">My
-                                Payment Options</a></li>
+                        <li class="mb-3"><a href="payment-options.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Payment
+                                Options</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4">Orders</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="my-orders.html" class="text-decoration-none active-link">My Orders</a>
-                        </li>
-                        <li class="mb-2"><a href="my-returns.html" class="text-decoration-none text-muted">My
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
+                            style="color: #10b981;"></i>Orders History</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="my-orders.html"
+                                class="text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);">My Orders</a></li>
+                        <li class="mb-3"><a href="my-returns.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Returns</a></li>
-                        <li class="mb-2"><a href="my-cancellations.html" class="text-decoration-none text-muted">My
+                        <li class="mb-3"><a href="my-cancellations.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Cancellations</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4"><a href="wishlist.html" class="text-decoration-none text-dark">My
-                            WishList</a></h6>
+                    
                 </div>
             </div>
 
             <!-- Orders Content -->
             <div class="col-md-9">
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold text-primary-custom mb-4">My Orders</h5>
+                <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h4 class="fw-bold text-dark m-0">My Orders</h4>
+                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead class="table-light">
+                    <div class="table-responsive overflow-visible mt-2">
+                        <table class="table align-middle border-0"
+                            style="border-collapse: separate; border-spacing: 0 8px;">
+                            <thead class="bg-transparent border-0 d-none d-lg-table-header-group">
                                 <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Action</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Order #</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Date</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Status</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Total</th>
+                                    <th class="border-0 text-muted text-end"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="orders-list" style="border-top: none;">
                                 <!-- Orders will be populated dynamically -->
                             </tbody>
                         </table>
@@ -1392,7 +1438,7 @@
             </svg>
         </div>
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
@@ -1469,7 +1515,7 @@
                 tbody.innerHTML = '';
 
                 if (orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No orders found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted fw-semibold bg-light rounded-4 border">No orders found.</td></tr>';
                     return;
                 }
 
@@ -1530,24 +1576,43 @@
                     const listTotal = order.totalAmount || 0;
 
                     const tr = document.createElement('tr');
+                    tr.className = "bg-white shadow-sm";
+                    tr.style.transition = "all 0.3s ease";
+                    tr.onmouseenter = function () { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; this.style.position = 'relative'; this.style.zIndex = '10'; };
+                    tr.onmouseleave = function () { this.style.transform = 'none'; this.style.boxShadow = 'var(--bs-box-shadow-sm)'; this.style.position = ''; this.style.zIndex = ''; };
+                    tr.addEventListener('show.bs.dropdown', function () { this.style.position = 'relative'; this.style.zIndex = '9999'; });
+                    tr.addEventListener('hide.bs.dropdown', function () { this.style.position = ''; this.style.zIndex = ''; });
+
                     tr.innerHTML = `
-                        <td>#${order._id.substring(0, 8).toUpperCase()}</td>
-                        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td><span class="${badgeClass}">${displayStatus}</span> 
-                            ${(order.returnStatus && order.returnStatus !== 'None') ? `<br><small class="text-secondary">Return: ${order.returnStatus}</small>` : ''
-                        }
+                        <td class="px-3 py-3 border border-end-0 rounded-start-3 align-middle" style="border-color: #f8f9fa !important; width: 20%;">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-2 bg-light text-secondary" style="width: 34px; height: 34px; font-size: 0.85rem;">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <span class="fw-bold text-dark" style="font-size: 0.85rem; font-family: monospace;">#${order._id.substring(0, 8).toUpperCase()}</span>
+                            </div>
                         </td>
-                        <td class="fw-bold">₹${listTotal.toFixed(2)}</td>
-                        <td></td>`;
+                        <td class="px-3 py-3 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 25%; font-size: 0.85rem;">
+                            ${new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td class="px-3 py-3 border-top border-bottom align-middle" style="border-color: #f8f9fa !important; width: 25%;">
+                            <span class="${badgeClass} rounded-pill px-3 py-1" style="font-size: 0.70rem; border: none !important;">${displayStatus}</span> 
+                            ${(order.returnStatus && order.returnStatus !== 'None') ? `<br><small class="text-secondary mt-1 d-block fw-medium" style="font-size: 0.70rem;">Return: ${order.returnStatus}</small>` : ''}
+                        </td>
+                        <td class="px-3 py-3 border-top border-bottom align-middle" style="border-color: #f8f9fa !important; width: 15%;">
+                            <span class="text-dark fw-bold" style="font-size: 0.95rem;">₹${listTotal.toFixed(2)}</span>
+                        </td>
+                        <td class="px-3 py-3 border border-start-0 rounded-end-3 text-end align-middle" style="border-color: #f8f9fa !important; width: 15%;">
+                        </td>`;
 
                     const newDropdown = `
-                        <div class="dropdown">
-                            <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-ellipsis-v text-muted"></i>
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.classList.add('bg-dark', 'text-white'); this.classList.remove('btn-light', 'text-muted');" onmouseout="this.classList.remove('bg-dark', 'text-white'); this.classList.add('btn-light', 'text-muted');">
+                                <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; min-width: 160px; padding: 0.5rem 0;">
                                 <li>
-                                    <a class="dropdown-item small" href="#" 
+                                    <a class="dropdown-item fw-medium py-2 px-3" href="#" style="font-size: 0.85rem;"
                                         data-order-id="${order._id}" 
                                         data-order-date="${order.createdAt}" 
                                         data-order-total="${listTotal}" 
@@ -1560,24 +1625,19 @@
                                         data-order-payment="${order.paymentMethod || ''}"
                                         data-order-items="${itemsJson}"
                                         onclick="handleViewDetailsClick(this)">
-                                        <i class="fas fa-eye me-2 text-primary"></i>View Details
+                                        <i class="fas fa-eye me-2 text-primary" style="opacity: 0.8;"></i> View Details
                                     </a>
                                 </li>
-                                
                                 ${(order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed') ?
-                            `<li><a class="dropdown-item small text-danger" href="#" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2"></i>Cancel Order</a></li>` : ''
-                        }
+                            `<li><hr class="dropdown-divider my-1"></li><li><a class="dropdown-item fw-medium py-2 px-3 text-danger" href="#" style="font-size: 0.85rem;" onclick="cancelOrder('${order._id}')"><i class="fas fa-ban me-2" style="opacity: 0.8;"></i> Cancel Order</a></li>` : ''}
                                 ${(order.paymentStatus === 'Failed') ?
-                            `<li><a class="dropdown-item small text-success fw-bold" href="#" onclick="retryPayment('${order._id}')"><i class="fas fa-redo-alt me-2"></i>Retry Payment</a></li>` : ''
-                        }
-
+                            `<li><hr class="dropdown-divider my-1"></li><li><a class="dropdown-item fw-bold py-2 px-3 text-success" href="#" style="font-size: 0.85rem;" onclick="retryPayment('${order._id}')"><i class="fas fa-redo-alt me-2" style="opacity: 0.8;"></i> Retry Payment</a></li>` : ''}
                                 ${(order.orderStatus === 'Delivered' && (!order.returnStatus || order.returnStatus === 'None') && (() => {
                             if (!order.deliveredAt) return false;
                             const diffHours = (new Date().getTime() - new Date(order.deliveredAt).getTime()) / (1000 * 60 * 60);
                             return diffHours <= 1;
                         })()) ?
-                            `<li><a class="dropdown-item small text-warning" href="#" onclick="requestReturn('${order._id}')"><i class="fas fa-undo me-2"></i>Request Return</a></li>` : ''
-                        }
+                            `<li><hr class="dropdown-divider my-1"></li><li><a class="dropdown-item fw-medium py-2 px-3 text-warning" href="#" style="font-size: 0.85rem;" onclick="requestReturn('${order._id}')"><i class="fas fa-undo me-2" style="opacity: 0.8;"></i> Request Return</a></li>` : ''}
                             </ul>
                         </div>
                         `;

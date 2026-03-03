@@ -26,6 +26,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -274,8 +275,8 @@
             display: none;
             /* Removed for this specific design */
         }
-            /* Space for the curve */
-        }
+
+        /* Space for the curve */
 
         .header-curve {
             position: absolute;
@@ -694,22 +695,90 @@
 
     <style>
         /* Improved Header - Minimalist Style */
-        .header-minimal { background-color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .header-top { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .header-bottom { background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);  z-index: 1000;     border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header-top {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-bottom {
             position: sticky;
             top: 0;
+            z-index: 1000;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+
+            
+            
+            
+            
         }
-        .header-logo { font-size: 24px; font-weight: 700; color: #2c3e50; text-decoration: none !important; display: flex; align-items: center; }
-        .header-logo i { color: var(--primary-green); }
-        .header-nav-link { color: #444; font-weight: 500; text-decoration: none; padding: 5px 15px; transition: color 0.2s; font-size: 15px; }
-        .header-nav-link:hover, .header-nav-link.active { color: var(--primary-green); }
-        .header-action-btn { color: #2c3e50; font-size: 18px; text-decoration: none !important; padding: 5px 12px; transition: color 0.2s; position: relative; display: inline-flex; align-items: center; gap: 5px; }
-        .header-action-btn:hover { color: var(--primary-green); }
-        .header-action-label { font-size: 14px; font-weight: 500; }
-        .header-badge { position: absolute; top: -2px; right: 2px; font-size: 10px; padding: 2px 5px; background-color: var(--primary-green) !important; }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo i {
+            color: var(--primary-green);
+        }
+
+        .header-nav-link {
+            color: #444;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 5px;
+            background-color: var(--primary-green) !important;
+        }
     </style>
 </head>
 
@@ -719,7 +788,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -1081,7 +1150,7 @@
     </script>
 
     <!-- Breadcrumb -->
-    <div class="container my-3">
+    <div class="container-fluid px-4 px-lg-5 my-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb small text-muted">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -1095,33 +1164,60 @@
     </div>
 
     <!-- Main Content -->
-    <section class="container my-5">
+    <section class="container-fluid px-4 px-lg-5 my-5">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 mb-4">
-                <div class="account-sidebar">
-                    <h6 class="fw-bold mb-3">Manage My Account</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="account.html" class="text-decoration-none text-muted">My Profile</a>
-                        </li>
-                        <li class="mb-2"><a href="address-book.html" class="text-decoration-none active-link">Address
-                                Book</a></li>
-                        <li class="mb-2"><a href="payment-options.html" class="text-decoration-none text-muted">My
-                                Payment Options</a></li>
+                <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
+                    style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
+                            style="color: #10b981;"></i>Manage Account</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="account.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Profile</a></li>
+                        <li class="mb-3"><a href="address-book.html"
+                                class="text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);">Address Book</a></li>
+                        <li class="mb-3"><a href="payment-options.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Payment
+                                Options</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4">Orders</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="my-orders.html" class="text-decoration-none text-muted">My Orders</a>
-                        </li>
-                        <li class="mb-2"><a href="my-returns.html" class="text-decoration-none text-muted">My
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
+                            style="color: #10b981;"></i>Orders History</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="my-orders.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Orders</a></li>
+                        <li class="mb-3"><a href="my-returns.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Returns</a></li>
-                        <li class="mb-2"><a href="my-cancellations.html" class="text-decoration-none text-muted">My
+                        <li class="mb-3"><a href="my-cancellations.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Cancellations</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4"><a href="wishlist.html" class="text-decoration-none text-dark">My
-                            WishList</a></h6>
+                    
                 </div>
             </div>
 
@@ -1130,7 +1226,9 @@
                 <div class="card border-0 shadow-sm p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold text-primary-custom m-0">Address Book</h5>
-                        <button class="btn btn-primary-custom btn-sm">+ Add New Address</button>
+                        <button
+                            class="btn btn-primary-custom btn-sm rounded-pill px-4 py-2 shadow-sm fw-bold d-flex align-items-center"><i
+                                class="fas fa-plus me-2"></i>Add New Address</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table align-middle">
@@ -1156,10 +1254,10 @@
         </div>
     </section>
 
-        <!-- Footer -->
+    <!-- Footer -->
 
 
-<footer class="custom-exact-footer">
+    <footer class="custom-exact-footer">
         <div class="footer-top-wave">
             <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
                 <!-- Light shadow/green stroke -->
@@ -1239,7 +1337,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
@@ -1377,23 +1475,36 @@
 
                     allAddresses.forEach(addr => {
                         const row = document.createElement('tr');
+                        row.className = "bg-white shadow-sm position-relative";
+                        row.style.transition = "all 0.3s ease";
+                        row.onmouseover = function () { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.08)'; };
+                        row.onmouseout = function () { this.style.transform = 'none'; this.style.boxShadow = 'var(--bs-box-shadow-sm)'; };
+
                         // Format address string
-                        const fullAddr = `${addr.houseName}, ${addr.street}, ${addr.landmark ? addr.landmark + ', ' : ''}${addr.city} - ${addr.pincode}`;
+                        const fullAddr = `${addr.houseName}, ${addr.street}, ${addr.landmark ? addr.landmark + ', ' : ''}${addr.city} - <span class="fw-semibold text-dark">${addr.pincode}</span>`;
 
                         row.innerHTML = `
-                            <td>${addr.fullName}</td>
-                            <td><small>${fullAddr}</small></td>
-                            <td>${addr.mobileNumber}</td>
-                            <td>${addr.isDefault ? '<span class="badge bg-success">Default</span>' : ''}</td>
-                            <td>
+                            <td class="p-4 border border-end-0 rounded-start-4 align-middle" style="border-color: #f1f3f5 !important;">
+                                <span class="fw-bold text-dark fs-6 d-flex align-items-center"><i class="fas fa-user-circle text-success me-2 fs-5 opacity-75"></i>${addr.fullName}</span>
+                            </td>
+                            <td class="p-4 border-top border-bottom align-middle" style="max-width: 280px; border-color: #f1f3f5 !important;">
+                                <span class="text-muted small lh-base d-block text-wrap"><i class="fas fa-map-marker-alt text-secondary me-1 opacity-75"></i> ${fullAddr}</span>
+                            </td>
+                            <td class="p-4 border-top border-bottom align-middle" style="border-color: #f1f3f5 !important;">
+                                <span class="fw-semibold text-dark"><i class="fas fa-phone-alt text-secondary me-2 small opacity-75"></i>${addr.mobileNumber}</span>
+                            </td>
+                            <td class="p-4 border-top border-bottom align-middle" style="border-color: #f1f3f5 !important;">
+                                ${addr.isDefault ? '<span class="badge rounded-pill bg-success text-white px-3 py-2 fw-semibold shadow-sm">Default</span>' : '<span class="badge rounded-pill bg-light text-muted px-3 py-2 fw-semibold border">Standard</span>'}
+                            </td>
+                            <td class="p-4 border border-start-0 rounded-end-4 text-end align-middle" style="border-color: #f1f3f5 !important;">
                                 <div class="dropdown">
-                                    <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-ellipsis-v text-muted"></i>
+                                    <button class="btn btn-light rounded-circle shadow-sm border" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; background: #fff;">
+                                        <i class="fas fa-ellipsis-v text-dark"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
-                                        <li><a class="dropdown-item small" href="#" onclick="openEditModal('${addr._id}')"><i class="fas fa-edit me-2 text-primary"></i>Edit</a></li>
-                                        <li><a class="dropdown-item small" href="#" onclick="deleteAddress('${addr._id}')"><i class="fas fa-trash-alt me-2 text-danger"></i>Delete</a></li>
-                                        ${!addr.isDefault ? `<li><hr class="dropdown-divider"></li><li><a class="dropdown-item small" href="#" onclick="setDefault('${addr._id}')"><i class="fas fa-check me-2 text-success"></i>Set as Default</a></li>` : ''}
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 p-2 mt-2" style="min-width: 180px;">
+                                        <li><a class="dropdown-item rounded-3 py-2 fw-medium text-dark d-flex align-items-center" href="#" onclick="openEditModal('${addr._id}')"><i class="fas fa-pen text-success me-3 fs-6" style="width: 16px; text-align: center;"></i> Edit Address</a></li>
+                                        <li><a class="dropdown-item rounded-3 py-2 fw-medium text-danger d-flex align-items-center" href="#" onclick="deleteAddress('${addr._id}')"><i class="fas fa-trash-alt me-3 fs-6" style="width: 16px; text-align: center;"></i> Delete</a></li>
+                                        ${!addr.isDefault ? `<li><hr class="dropdown-divider my-2 opacity-50"></li><li><a class="dropdown-item rounded-3 py-2 fw-medium text-primary d-flex align-items-center" href="#" onclick="setDefault('${addr._id}')"><i class="fas fa-check-circle me-3 fs-6" style="width: 16px; text-align: center;"></i> Set Default</a></li>` : ''}
                                     </ul>
                                 </div>
                             </td>

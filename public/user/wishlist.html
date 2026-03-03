@@ -26,6 +26,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -64,16 +65,21 @@
         }
 
         .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            
-            z-index: 1000;
+
+
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            position: sticky;
-            top: 0;
+
+
+
+
+
         }
 
         .header-logo {
@@ -257,6 +263,7 @@
         }
 
         .product-card .card-body {
+            overflow-y: scroll;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -622,7 +629,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -987,18 +994,24 @@
 
 
     <!-- Main Content -->
-    <section class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold m-0">Wishlist (<span id="wishlist-count">0</span>)</h3>
-            <div class="d-flex gap-2">
-                <button id="btn-clear-wishlist" class="btn btn-outline-danger btn-sm"><i
-                        class="fas fa-trash me-2"></i>Clear All</button>
-                <button id="btn-add-all-cart" class="btn btn-dark btn-sm"><i class="fas fa-shopping-cart me-2"></i>Add
-                    All to Cart</button>
-            </div>
-        </div>
+    <section class="container-fluid px-4 px-lg-5 my-5">
+        <div class="row">
+            <!-- Wishlist Content -->
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold m-0 text-dark">My Wishlist (<span id="wishlist-count">0</span>)</h3>
+                    <div class="d-flex gap-2">
+                        <button id="btn-clear-wishlist"
+                            class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm"><i
+                                class="fas fa-trash me-2"></i>Clear All</button>
+                        <button id="btn-add-all-cart" class="btn btn-dark btn-sm rounded-pill px-3 shadow-sm"><i
+                                class="fas fa-shopping-cart me-2"></i>Add All to Cart</button>
+                    </div>
+                </div>
 
-        <div class="row row-cols-2 row-cols-md-2 row-cols-lg-4 g-4" id="wishlist-container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="wishlist-container">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1085,7 +1098,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>

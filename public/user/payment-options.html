@@ -63,6 +63,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -311,8 +312,9 @@
             display: none;
             /* Removed for this specific design */
         }
-            /* Space for the curve */
-        }
+
+        /* Space for the curve */
+
 
         .header-curve {
             position: absolute;
@@ -731,22 +733,90 @@
 
     <style>
         /* Improved Header - Minimalist Style */
-        .header-minimal { background-color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .header-top { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .header-bottom { background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);  z-index: 1000;     border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header-top {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header-bottom {
             position: sticky;
             top: 0;
+            z-index: 1000;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+
+            
+            
+            
+            
         }
-        .header-logo { font-size: 24px; font-weight: 700; color: #2c3e50; text-decoration: none !important; display: flex; align-items: center; }
-        .header-logo i { color: var(--primary-green); }
-        .header-nav-link { color: #444; font-weight: 500; text-decoration: none; padding: 5px 15px; transition: color 0.2s; font-size: 15px; }
-        .header-nav-link:hover, .header-nav-link.active { color: var(--primary-green); }
-        .header-action-btn { color: #2c3e50; font-size: 18px; text-decoration: none !important; padding: 5px 12px; transition: color 0.2s; position: relative; display: inline-flex; align-items: center; gap: 5px; }
-        .header-action-btn:hover { color: var(--primary-green); }
-        .header-action-label { font-size: 14px; font-weight: 500; }
-        .header-badge { position: absolute; top: -2px; right: 2px; font-size: 10px; padding: 2px 5px; background-color: var(--primary-green) !important; }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo i {
+            color: var(--primary-green);
+        }
+
+        .header-nav-link {
+            color: #444;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 5px;
+            background-color: var(--primary-green) !important;
+        }
     </style>
 </head>
 
@@ -756,7 +826,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -1118,7 +1188,7 @@
     </script>
 
     <!-- Breadcrumb -->
-    <div class="container my-3">
+    <div class="container-fluid px-4 px-lg-5 my-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb small text-muted">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -1132,70 +1202,129 @@
     </div>
 
     <!-- Main Content -->
-    <section class="container my-5">
+    <section class="container-fluid px-4 px-lg-5 my-5">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 mb-4">
-                <div class="account-sidebar">
-                    <h6 class="fw-bold mb-3">Manage My Account</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="account.html" class="text-decoration-none text-muted">My Profile</a>
-                        </li>
-                        <li class="mb-2"><a href="address-book.html" class="text-decoration-none text-muted">Address
+                <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
+                    style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
+                            style="color: #10b981;"></i>Manage Account</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="account.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Profile</a></li>
+                        <li class="mb-3"><a href="address-book.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Address
                                 Book</a></li>
-                        <li class="mb-2"><a href="payment-options.html" class="text-decoration-none active-link">My
-                                Payment Options</a></li>
+                        <li class="mb-3"><a href="payment-options.html"
+                                class="text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);">Payment Options</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4">Orders</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="my-orders.html" class="text-decoration-none text-muted">My Orders</a>
-                        </li>
-                        <li class="mb-2"><a href="my-returns.html" class="text-decoration-none text-muted">My
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
+                            style="color: #10b981;"></i>Orders History</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="my-orders.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Orders</a></li>
+                        <li class="mb-3"><a href="my-returns.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Returns</a></li>
-                        <li class="mb-2"><a href="my-cancellations.html" class="text-decoration-none text-muted">My
+                        <li class="mb-3"><a href="my-cancellations.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Cancellations</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4"><a href="wishlist.html" class="text-decoration-none text-dark">My
-                            WishList</a></h6>
+                    
                 </div>
             </div>
 
             <!-- Payment Content -->
             <div class="col-md-9">
                 <!-- Wallet Section -->
-                <div class="card border-0 shadow-sm p-4 mb-4"
-                    style="background-color: var(--primary-green); color: white;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-1 opacity-75">KM Wallet Balance</p>
-                            <h2 class="fw-bold mb-0" id="wallet-balance">Loading...</h2>
-                        </div>
-                        <button onclick="openWalletTopup()" class="btn btn-light text-primary-custom fw-bold">
-                            <i class="fas fa-plus-circle me-2"></i>
-                            Add Money
+                <div class="card border-0 mb-4 overflow-hidden shadow-sm"
+                    style="border-radius: 24px; background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
+                    <!-- Decorative Elements -->
+                    <div
+                        style="position: absolute; top: -100px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(0,0,0,0) 70%); border-radius: 50%;">
+                    </div>
+                    <div
+                        style="position: absolute; bottom: -80px; left: -20px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(0,0,0,0) 70%); border-radius: 50%;">
+                    </div>
 
+                    <div
+                        class="p-4 p-md-5 position-relative z-1 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                        <div class="mb-4 mb-md-0">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 42px; height: 42px; backdrop-filter: blur(5px);">
+                                    <i class="fas fa-wallet text-white text-opacity-75"></i>
+                                </div>
+                                <p class="mb-0 text-white-50 fw-semibold text-uppercase"
+                                    style="letter-spacing: 1.5px; font-size: 0.85rem;">Total Balance</p>
+                            </div>
+                            <h1 class="fw-bold mb-0 text-white display-5" id="wallet-balance"
+                                style="letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Loading...</h1>
+                        </div>
+                        <button onclick="openWalletTopup()"
+                            class="btn btn-light rounded-pill px-4 py-3 d-flex align-items-center fw-bold shadow-sm"
+                            style="color: #111827; transition: all 0.3s;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px rgba(255,255,255,0.1)'"
+                            onmouseout="this.style.transform='none'; this.style.boxShadow='var(--bs-box-shadow-sm)'">
+                            <i class="fas fa-plus-circle me-2 text-success" style="font-size: 1.1rem;"></i> Add Funds
                         </button>
                     </div>
                 </div>
 
                 <!-- Transaction History -->
-                <div class="card border-0 shadow-sm p-4 mb-4">
-                    <h5 class="fw-bold text-primary-custom mb-3">Transaction History</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
+                <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h5 class="fw-bold text-dark m-0">Recent Transactions</h5>
+                    </div>
+                    <div class="table-responsive overflow-visible mt-2">
+                        <table class="table align-middle border-0"
+                            style="border-collapse: separate; border-spacing: 0 8px;">
+                            <thead class="bg-transparent border-0 d-none d-lg-table-header-group">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Reason</th>
-                                    <th>Amount</th>
-                                    <th>Action</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Date</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Description</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Amount</th>
+                                    <th class="border-0 text-muted text-end"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="transaction-list">
+                            <tbody id="transaction-list" style="border-top: none;">
                                 <tr>
-                                    <td colspan="4" class="text-center">Loading...</td>
+                                    <td colspan="4"
+                                        class="text-center py-4 text-muted fw-semibold bg-light rounded-4 border">
+                                        Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1214,10 +1343,10 @@
         </div>
     </section>
 
-        <!-- Footer -->
+    <!-- Footer -->
 
 
-<footer class="custom-exact-footer">
+    <footer class="custom-exact-footer">
         <div class="footer-top-wave">
             <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
                 <!-- Light shadow/green stroke -->
@@ -1297,7 +1426,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
@@ -1341,40 +1470,54 @@
 
     <!-- Transaction Details Modal -->
     <div class="modal fade" id="transactionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-bottom-0 bg-light-accent">
-                    <h5 class="modal-title fw-bold">Transaction Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="text-center mb-4">
-                        <div id="tx-icon-container" class="mb-3">
-                            <i class="fas fa-wallet fa-3x text-primary-custom"></i>
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 24px; overflow: hidden;">
+                <!-- Header background accent -->
+                <div class="position-relative"
+                    style="height: 120px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                    <button type="button"
+                        class="btn-close position-absolute top-0 end-0 m-3 bg-white rounded-circle shadow-sm"
+                        style="padding: 0.5rem; opacity: 1; z-index: 10;" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <!-- Receipt Avatar -->
+                    <div class="position-absolute start-50 translate-middle-x" style="bottom: -35px;">
+                        <div id="tx-icon-container"
+                            class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                            style="width: 70px; height: 70px; background-color: #ffffff; border: 4px solid #ffffff;">
+                            <i class="fas fa-receipt text-secondary" style="font-size: 1.8rem;"></i>
                         </div>
-                        <h3 class="fw-bold mb-1" id="tx-amount">Loading...</h3>
+                    </div>
+                </div>
+
+                <div class="modal-body px-4 pt-5 pb-4">
+                    <div class="text-center mt-3 mb-4">
+                        <p class="text-muted text-uppercase fw-bold mb-1"
+                            style="font-size: 0.75rem; letter-spacing: 1px;">Transaction Amount</p>
+                        <h2 class="fw-bold mb-1" id="tx-amount"
+                            style="letter-spacing: -1px; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            Loading...</h2>
+                        <p class="text-muted fw-medium mb-0" id="tx-date" style="font-size: 0.85rem;">...</p>
                     </div>
 
-                    <ul class="list-group list-group-flush rounded-3">
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
-                            <span class="text-muted">Transaction ID</span>
-                            <span class="fw-bold" id="tx-id">...</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Date & Time</span>
-                            <span class="fw-bold" id="tx-date">...</span>
-                        </li>
-
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
-                            <span class="text-muted">Reason</span>
-                            <span class="fw-bold text-end" id="tx-reason">...</span>
-                        </li>
-
-
-                    </ul>
-                </div>
-                <div class="modal-footer border-top-0 justify-content-center">
-                    <button type="button" class="btn btn-primary-custom w-100" data-bs-dismiss="modal">Close</button>
+                    <div class="p-4 rounded-4" style="background-color: #f8f9fa; border: 1px dashed #dee2e6;">
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-medium" style="font-size: 0.85rem;">Status</span>
+                                <span
+                                    class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-bold">Completed</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-medium" style="font-size: 0.85rem;">Description</span>
+                                <span class="fw-bold text-dark text-end" id="tx-reason"
+                                    style="font-size: 0.9rem;">...</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-medium" style="font-size: 0.85rem;">Transaction ID</span>
+                                <span class="fw-bold text-secondary text-end" id="tx-id"
+                                    style="font-size: 0.85rem; font-family: monospace;">...</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1422,18 +1565,39 @@
                     }
 
                     transactions.forEach(tx => {
-                        const date = new Date(tx.createdAt).toLocaleDateString();
+                        const dateObj = new Date(tx.createdAt);
+                        const dateFormatted = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
                         const isDeduction = tx.reason === 'Order Payment';
                         const amountClass = isDeduction ? 'text-danger' : 'text-success';
                         const amountSign = isDeduction ? '-' : '+';
+                        const bgColorOverride = isDeduction ? 'background-color: rgba(239, 68, 68, 0.1);' : 'background-color: rgba(16, 185, 129, 0.1);';
+                        const textColorOverride = isDeduction ? 'color: #ef4444;' : 'color: #10b981;';
+                        const iconClass = isDeduction ? 'fa-arrow-up' : 'fa-arrow-down';
+
                         const tr = document.createElement('tr');
+                        tr.className = "bg-white shadow-sm position-relative";
+                        tr.style.transition = "all 0.3s ease";
+                        tr.onmouseover = function () { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; };
+                        tr.onmouseout = function () { this.style.transform = 'none'; this.style.boxShadow = 'var(--bs-box-shadow-sm)'; };
+
                         tr.innerHTML = `
-                            <td>${date}</td>
-                            <td class="small fw-medium">${tx.reason}</td>
-                            <td class="${amountClass} fw-bold">${amountSign}₹${Math.abs(tx.amount).toFixed(2)}</td>
-                            <td>
-                                <button onclick="showTransactionDetails('${tx._id}')" class="btn btn-sm btn-outline-success rounded-pill px-3">
-                                    View
+                            <td class="px-3 py-2 border border-end-0 rounded-start-3 align-middle" style="border-color: #f8f9fa !important; width: 25%;">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 34px; height: 34px; font-size: 0.85rem; ${bgColorOverride} ${textColorOverride}">
+                                        <i class="fas ${iconClass}"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">${dateFormatted}</span>
+                                </div>
+                            </td>
+                            <td class="px-3 py-2 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 35%; font-size: 0.85rem;">
+                                ${tx.reason}
+                            </td>
+                            <td class="px-3 py-2 border-top border-bottom align-middle" style="border-color: #f8f9fa !important; width: 20%;">
+                                <span class="${amountClass} fw-bold" style="font-size: 0.95rem;">${amountSign}₹${Math.abs(tx.amount).toFixed(2)}</span>
+                            </td>
+                            <td class="px-3 py-2 border border-start-0 rounded-end-3 text-end align-middle" style="border-color: #f8f9fa !important; width: 20%;">
+                                <button onclick="showTransactionDetails('${tx._id}')" class="btn btn-sm btn-light rounded-pill px-3 py-1 fw-bold text-dark d-inline-flex align-items-center shadow-sm" style="font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.classList.add('bg-dark', 'text-white'); this.classList.remove('btn-light', 'text-dark');" onmouseout="this.classList.remove('bg-dark', 'text-white'); this.classList.add('btn-light', 'text-dark');">
+                                    View Details
                                 </button>
                             </td>
                         `;
@@ -1526,13 +1690,17 @@
                     const tx = await res.json();
                     const isDeduction = tx.reason === 'Order Payment';
                     const amountSign = isDeduction ? '-' : '+';
-                    document.getElementById('tx-amount').innerText = `${amountSign}₹${Math.abs(tx.amount).toFixed(2)}`;
-                    document.getElementById('tx-amount').className = `fw-bold mb-1 ${isDeduction ? 'text-danger' : 'text-success'}`;
+                    const amountClass = isDeduction ? 'text-dark' : 'text-success';
+                    const amountHtml = `${amountSign}<span style="font-size: 1.5rem; margin-top: 4px;">₹</span>${Math.abs(tx.amount).toFixed(2)}`;
+
+                    document.getElementById('tx-amount').innerHTML = amountHtml;
+                    document.getElementById('tx-amount').className = `fw-bold mb-1 ${amountClass}`;
+
                     const iconContainer = document.getElementById('tx-icon-container');
                     if (!isDeduction) {
-                        iconContainer.innerHTML = '<i class="fas fa-arrow-down fa-3x text-success"></i>';
+                        iconContainer.innerHTML = '<div class="w-100 h-100 rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(16, 185, 129, 0.1);"><i class="fas fa-arrow-down" style="color: #10b981; font-size: 1.5rem;"></i></div>';
                     } else {
-                        iconContainer.innerHTML = '<i class="fas fa-arrow-up fa-3x text-danger"></i>';
+                        iconContainer.innerHTML = '<div class="w-100 h-100 rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(239, 68, 68, 0.1);"><i class="fas fa-shopping-bag" style="color: #ef4444; font-size: 1.5rem;"></i></div>';
                     }
                     document.getElementById('tx-id').innerText = tx._id;
                     document.getElementById('tx-date').innerText = new Date(tx.createdAt).toLocaleString();

@@ -29,6 +29,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
@@ -419,11 +420,16 @@
         /* Improved Header - Minimalist Style */
         .header-minimal { background-color: #ffffff; font-family: 'Poppins', sans-serif; }
         .header-top { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .header-bottom { background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);  z-index: 1000;     border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        
+        .header-bottom {
             position: sticky;
             top: 0;
+            z-index: 1000; background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);       border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        
+            
+            
+            
+            
         }
         .header-logo { font-size: 24px; font-weight: 700; color: #2c3e50; text-decoration: none !important; display: flex; align-items: center; }
         .header-logo i { color: var(--primary-green); }
@@ -442,7 +448,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -804,7 +810,7 @@
     </script>
 
 
-    <div class="container my-5">
+    <div class="container-fluid px-4 px-lg-5 my-5">
         <div class="row g-4">
 
             <!-- Left Column: Address & Payment -->

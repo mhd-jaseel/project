@@ -23,6 +23,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -121,16 +122,21 @@
         }
 
         .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
             
-            z-index: 1000;
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            position: sticky;
-            top: 0;
+
+            
+            
+            
+            
         }
 
         .header-logo {
@@ -345,7 +351,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -707,7 +713,7 @@
     </script>
 
     <!-- Breadcrumb -->
-    <div class="container my-3">
+    <div class="container-fluid px-4 px-lg-5 my-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb small text-muted">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -721,53 +727,93 @@
     </div>
 
     <!-- Main Content -->
-    <section class="container my-5">
+    <section class="container-fluid px-4 px-lg-5 my-5">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 mb-4">
-                <div class="account-sidebar">
-                    <h6 class="fw-bold mb-3">Manage My Account</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="account.html" class="text-decoration-none text-muted">My Profile</a>
-                        </li>
-                        <li class="mb-2"><a href="address-book.html" class="text-decoration-none text-muted">Address
+                <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
+                    style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
+                            style="color: #10b981;"></i>Manage Account</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="account.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Profile</a></li>
+                        <li class="mb-3"><a href="address-book.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Address
                                 Book</a></li>
-                        <li class="mb-2"><a href="payment-options.html" class="text-decoration-none text-muted">My
-                                Payment Options</a></li>
+                        <li class="mb-3"><a href="payment-options.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Payment
+                                Options</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4">Orders</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="my-orders.html" class="text-decoration-none text-muted">My Orders</a>
-                        </li>
-                        <li class="mb-2"><a href="my-returns.html" class="text-decoration-none text-muted">My
+                    <hr class="my-4 text-muted opacity-25">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
+                            style="color: #10b981;"></i>Orders History</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="my-orders.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Orders</a></li>
+                        <li class="mb-3"><a href="my-returns.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Returns</a></li>
-                        <li class="mb-2"><a href="my-cancellations.html" class="text-decoration-none active-link">My
-                                Cancellations</a></li>
+                        <li class="mb-3"><a href="my-cancellations.html"
+                                class="text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);">My Cancellations</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4"><a href="wishlist.html" class="text-decoration-none text-dark">My
-                            WishList</a></h6>
+                    
+
                 </div>
             </div>
 
             <!-- Cancellations Content -->
             <div class="col-md-9">
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold text-primary-custom mb-4">My Cancellations</h5>
+                <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h4 class="fw-bold text-dark m-0">My Cancellations</h4>
+                    </div>
 
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead class="table-light">
+                    <div class="table-responsive overflow-visible mt-2">
+                        <table class="table align-middle border-0"
+                            style="border-collapse: separate; border-spacing: 0 8px;">
+                            <thead class="bg-transparent border-0 d-none d-lg-table-header-group">
                                 <tr>
-                                    <th>Order #</th>
-                                    <th>Product</th>
-                                    <th>Date Cancelled</th>
-                                    <th>Reason</th>
-                                    <th>Status</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Order #</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Product</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Date Cancelled</th>
+                                    <th class="border-0 text-muted"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Reason</th>
+                                    <th class="border-0 text-muted text-end"
+                                        style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">
+                                        Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="cancellations-list" style="border-top: none;">
                             </tbody>
                         </table>
                     </div>
@@ -862,7 +908,7 @@
             </svg>
         </div>
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
@@ -931,7 +977,7 @@
                 tbody.innerHTML = '';
 
                 if (orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No cancelled orders found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted fw-semibold bg-light rounded-4 border">No cancelled orders found.</td></tr>';
                     return;
                 }
 
@@ -940,7 +986,10 @@
                     // Check if the entire order is cancelled
                     if (order.orderStatus === 'Cancelled') {
                         const tr = document.createElement('tr');
-                        tr.className = 'clickable-row';
+                        tr.className = "bg-white shadow-sm";
+                        tr.style.transition = "all 0.3s ease";
+                        tr.onmouseenter = function () { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; this.style.position = 'relative'; this.style.zIndex = '10'; };
+                        tr.onmouseleave = function () { this.style.transform = 'none'; this.style.boxShadow = 'var(--bs-box-shadow-sm)'; this.style.position = ''; this.style.zIndex = ''; };
                         tr.dataset.orderId = order._id;
                         tr.dataset.orderDate = order.createdAt;
                         tr.dataset.orderTotal = order.totalAmount;
@@ -952,26 +1001,37 @@
                         tr.dataset.orderDelivered = order.deliveredAt || '';
                         tr.dataset.orderPayment = order.paymentMethod || '';
                         tr.dataset.orderItems = itemsJson;
+                        tr.style.cursor = 'pointer';
                         tr.setAttribute('onclick', 'handleViewDetailsClick(this)');
 
                         const cancelDate = order.cancelledAt ? new Date(order.cancelledAt) : new Date(order.updatedAt);
 
                         tr.innerHTML = `
-                            <td><span class="fw-bold">#${order._id.substring(0, 8).toUpperCase()}</span></td>
-                            <td>
+                            <td class="px-3 py-3 border border-end-0 rounded-start-3 align-middle" style="border-color: #f8f9fa !important; width: 15%;">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded p-2 me-2 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                    <span class="fw-bold text-dark" style="font-size: 0.85rem; font-family: monospace;">#${order._id.substring(0, 8).toUpperCase()}</span>
+                                </div>
+                            </td>
+                            <td class="px-3 py-3 border-top border-bottom align-middle" style="border-color: #f8f9fa !important; width: 35%;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded p-2 me-3 d-flex align-items-center justify-content-center shadow-sm" style="width:40px; height:40px;">
                                         <i class="fas fa-boxes text-secondary"></i>
                                     </div>
                                     <div class="small">
-                                        <div class="fw-bold">Entire Order</div>
-                                        <div class="text-muted">${order.items.length} Products</div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.85rem;">Entire Order</div>
+                                        <div class="text-secondary fw-medium" style="font-size: 0.75rem;">${order.items.length} Products</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>${cancelDate.toLocaleDateString()}</td>
-                            <td class="small">${order.cancellationReason || 'No reason'}</td>
-                            <td><span class="status-badge status-danger">Full Cancellation</span></td>
+                            <td class="px-3 py-3 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 15%; font-size: 0.85rem;">
+                                ${cancelDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </td>
+                            <td class="px-3 py-3 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 20%; font-size: 0.85rem;">
+                                ${order.cancellationReason || 'No reason'}
+                            </td>
+                            <td class="px-3 py-3 border border-start-0 rounded-end-3 align-middle text-end" style="border-color: #f8f9fa !important; width: 15%;">
+                                <span class="status-badge status-danger rounded-pill px-3 py-1" style="font-size: 0.70rem; border: none !important;">Full Cancellation</span>
+                            </td>
                         `;
                         tbody.appendChild(tr);
                     } else {
@@ -980,7 +1040,10 @@
 
                         cancelledItems.forEach(item => {
                             const tr = document.createElement('tr');
-                            tr.className = 'clickable-row';
+                            tr.className = "bg-white shadow-sm";
+                            tr.style.transition = "all 0.3s ease";
+                            tr.onmouseenter = function () { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)'; this.style.position = 'relative'; this.style.zIndex = '10'; };
+                            tr.onmouseleave = function () { this.style.transform = 'none'; this.style.boxShadow = 'var(--bs-box-shadow-sm)'; this.style.position = ''; this.style.zIndex = ''; };
                             tr.dataset.orderId = order._id;
                             tr.dataset.orderDate = order.createdAt;
                             tr.dataset.orderTotal = order.totalAmount;
@@ -992,6 +1055,7 @@
                             tr.dataset.orderDelivered = order.deliveredAt || '';
                             tr.dataset.orderPayment = order.paymentMethod || '';
                             tr.dataset.orderItems = itemsJson;
+                            tr.style.cursor = 'pointer';
                             tr.setAttribute('onclick', 'handleViewDetailsClick(this)');
 
                             const itemTotal = (item.price * item.quantity).toFixed(2);
@@ -999,21 +1063,31 @@
                             const reason = item.cancellationReason || order.cancellationReason || 'No reason';
 
                             tr.innerHTML = `
-                                <td><span class="fw-bold">#${order._id.substring(0, 8).toUpperCase()}</span></td>
-                                <td>
+                                <td class="px-3 py-3 border border-end-0 rounded-start-3 align-middle" style="border-color: #f8f9fa !important; width: 15%;">
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold text-dark" style="font-size: 0.85rem; font-family: monospace;">#${order._id.substring(0, 8).toUpperCase()}</span>
+                                    </div>
+                                </td>
+                                <td class="px-3 py-3 border-top border-bottom align-middle" style="border-color: #f8f9fa !important; width: 35%;">
                                     <div class="d-flex align-items-center">
                                         <img src="${item.image && (item.image.startsWith('http') || item.image.startsWith('/')) ? item.image : (item.image ? '/' + item.image : 'https://placehold.co/40')}" 
-                                             width="40" height="40" class="me-2 rounded shadow-sm" style="object-fit: contain;"
+                                             width="40" height="40" class="me-3 rounded shadow-sm" style="object-fit: contain;"
                                              onerror="this.src='https://placehold.co/40'">
                                         <div class="small">
-                                            <div class="fw-bold">${item.name || 'Product'}</div>
-                                            <div class="text-muted">Qty: ${item.quantity}</div>
+                                            <div class="fw-bold text-dark" style="font-size: 0.85rem;">${item.name || 'Product'}</div>
+                                            <div class="text-secondary fw-medium" style="font-size: 0.75rem;">Qty: ${item.quantity}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>${cancelDate.toLocaleDateString()}</td>
-                                <td class="small">${reason}</td>
-                                <td><span class="status-badge status-secondary">Item Cancelled</span></td>
+                                <td class="px-3 py-3 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 15%; font-size: 0.85rem;">
+                                    ${cancelDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </td>
+                                <td class="px-3 py-3 border-top border-bottom align-middle text-secondary fw-medium" style="border-color: #f8f9fa !important; width: 20%; font-size: 0.85rem;">
+                                    ${reason}
+                                </td>
+                                <td class="px-3 py-3 border border-start-0 rounded-end-3 align-middle text-end" style="border-color: #f8f9fa !important; width: 15%;">
+                                    <span class="status-badge status-secondary rounded-pill px-3 py-1" style="font-size: 0.70rem; border: none !important;">Item Cancelled</span>
+                                </td>
                             `;
                             tbody.appendChild(tr);
                         });

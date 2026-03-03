@@ -24,6 +24,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -62,16 +63,21 @@
         }
 
         .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
-            z-index: 1000;
+            
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
 
-            position: sticky;
-            top: 0;
+            
+            
+            
+            
         }
 
         .header-logo {
@@ -630,7 +636,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -994,7 +1000,7 @@
 
 
     <!-- Breadcrumb -->
-    <div class="container my-3">
+    <div class="container-fluid px-4 px-lg-5 my-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb small text-muted">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -1005,33 +1011,60 @@
     </div>
 
     <!-- Main Content -->
-    <section class="container my-5">
+    <section class="container-fluid px-4 px-lg-5 my-5">
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 mb-4">
-                <div class="account-sidebar">
-                    <h6 class="fw-bold mb-3">Manage My Account</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="account.html" class="text-decoration-none active-link">My Profile</a>
-                        </li>
-                        <li class="mb-2"><a href="address-book.html" class="text-decoration-none text-muted">Address
+                <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
+                    style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
+                            style="color: #10b981;"></i>Manage Account</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="account.html"
+                                class="text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);">My Profile</a></li>
+                        <li class="mb-3"><a href="address-book.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Address
                                 Book</a></li>
-                        <li class="mb-2"><a href="payment-options.html" class="text-decoration-none text-muted">My
-                                Payment Options</a></li>
+                        <li class="mb-3"><a href="payment-options.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Payment
+                                Options</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4">Orders</h6>
-                    <ul class="list-unstyled ms-3">
-                        <li class="mb-2"><a href="my-orders.html" class="text-decoration-none text-muted">My Orders</a>
-                        </li>
-                        <li class="mb-2"><a href="my-returns.html" class="text-decoration-none text-muted">My
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
+                            style="color: #10b981;"></i>Orders History</h6>
+                    <ul class="list-unstyled ms-1 mb-4">
+                        <li class="mb-3"><a href="my-orders.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                Orders</a></li>
+                        <li class="mb-3"><a href="my-returns.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Returns</a></li>
-                        <li class="mb-2"><a href="my-cancellations.html" class="text-decoration-none text-muted">My
+                        <li class="mb-3"><a href="my-cancellations.html"
+                                class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
+                                style="transition: all 0.2s;"
+                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
+                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
                                 Cancellations</a></li>
                     </ul>
 
-                    <h6 class="fw-bold mb-3 mt-4"><a href="wishlist.html" class="text-decoration-none text-dark">My
-                            WishList</a></h6>
+                    
                 </div>
             </div>
 
@@ -1229,7 +1262,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>

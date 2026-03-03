@@ -24,6 +24,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -62,16 +63,21 @@
         }
 
         .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             
-            z-index: 1000;
+            
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
         
-            position: sticky;
-            top: 0;
+            
+            
+            
+            
         }
 
         .header-logo {
@@ -612,7 +618,7 @@
     <header class="header-minimal">
         <!-- Navigation, Search, and Actions -->
         <div class="header-bottom py-2">
-            <div class="container-fluid px-lg-5">
+            <div class="container-fluid px-4 px-lg-5 ">
                 <div class="row align-items-center">
                     <!-- Logo and Nav Links (Left) -->
                     <div
@@ -978,7 +984,7 @@
 
 
     <!-- Breadcrumb -->
-    <div class="container my-4">
+    <div class="container-fluid px-4 px-lg-5 my-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="homepage.html" class="text-decoration-none text-muted">Home</a>
@@ -989,7 +995,7 @@
     </div>
 
     <!-- About Section -->
-    <section class="container mb-5">
+    <section class="container-fluid px-4 px-lg-5 mb-5">
         <div class="row align-items-center mb-5">
             <div class="col-md-6 order-md-2">
                 <div class="position-relative">
@@ -1188,7 +1194,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>

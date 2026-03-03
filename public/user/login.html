@@ -24,6 +24,7 @@
         }
 
         body {
+            overflow-y: scroll;
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
@@ -50,7 +51,14 @@
 
         /* Header */
         header {
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: white;
+            
+            
+            
+            
         }
 
         /* New Luxury Header Styles (Matches Prompt Image) */
@@ -699,7 +707,7 @@
     <header>
         <!-- Top Row: Logo & Search -->
         <div class="bg-light-header header-top py-3 shadow-sm mb-4 bg-white">
-            <div class="container d-flex align-items-center justify-content-center">
+            <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-center">
                 <!-- Logo -->
                 <a href="/user/homepage.html" class="header-logo text-nowrap"
                     style="font-size: 20px; letter-spacing: 0.5px; font-weight: 700; text-decoration: none; color: #2c3e50; display: flex; align-items: center;">
@@ -723,7 +731,7 @@
 
         <!-- Bottom Row: Nav Links & Icons -->
         <div class="header-bottom d-none">
-            <div class="container d-flex align-items-center justify-content-between">
+            <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-between">
                 <nav class="navbar navbar-expand-lg p-0">
                     <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNav">
@@ -765,7 +773,7 @@
     </header>
 
     <!-- Main Content -->
-    <div class="container d-flex flex-grow-1 align-items-center justify-content-center py-5">
+    <div class="container-fluid px-4 px-lg-5 d-flex flex-grow-1 align-items-center justify-content-center py-5">
         <div class="card border-0 shadow-lg p-4" style="max-width: 450px; width: 100%; border-radius: 15px;">
             <div class="text-center mb-4">
                 <h3 class="fw-bold text-dark">Welcome Back</h3>
@@ -911,7 +919,7 @@
 
 
 
-        <div class="container footer-content">
+        <div class="container-fluid px-4 px-lg-5 footer-content">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
