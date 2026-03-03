@@ -272,8 +272,9 @@
             display: none;
             /* Removed for this specific design */
         }
-            /* Space for the curve */
-        }
+
+        /* Space for the curve */
+
 
         .header-curve {
             position: absolute;
@@ -696,15 +697,16 @@
     <!-- Header Section -->
     <header>
         <!-- Top Row: Logo & Search -->
-        <div class="bg-light-header header-top">
-            <div class="container d-flex align-items-center justify-content-between">
+        <div class="bg-light-header header-top py-3 shadow-sm mb-4 bg-white">
+            <div class="container d-flex align-items-center justify-content-center">
                 <!-- Logo -->
-                <a href="/user/homepage.html" class="navbar-brand-custom">
-                    <i class="fas fa-shopping-basket"></i>Groco
+                <a href="/user/homepage.html" class="header-logo text-nowrap"
+                    style="font-size: 20px; letter-spacing: 0.5px; font-weight: 700; text-decoration: none; color: #2c3e50; display: flex; align-items: center;">
+                    <i class="fas fa-leaf me-2" style="color: #2ecc71;"></i>KM Store
                 </a>
 
                 <!-- Search -->
-                <div class="flex-grow-1 px-4 d-none d-md-block">
+                <div class="flex-grow-1 px-4 d-none">
                     <form id="globalSearchForm" class="header-search-container d-flex">
                         <input type="text" id="globalSearchInput" class="form-control" placeholder="search here..."
                             autocomplete="off">
@@ -719,7 +721,7 @@
         </div>
 
         <!-- Bottom Row: Nav Links & Icons -->
-        <div class="header-bottom">
+        <div class="header-bottom d-none">
             <div class="container d-flex align-items-center justify-content-between">
                 <nav class="navbar navbar-expand-lg p-0">
                     <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse"
@@ -949,10 +951,10 @@
         </div>
     </div>
 
-        <!-- Footer -->
+    <!-- Footer -->
 
 
-<footer class="custom-exact-footer">
+    <footer class="custom-exact-footer d-none">
         <div class="footer-top-wave">
             <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
                 <!-- Light shadow/green stroke -->

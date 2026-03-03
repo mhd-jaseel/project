@@ -65,9 +65,13 @@
             background-color: #ffffff;
             padding: 10px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+            z-index: 1000;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+
             position: sticky;
             top: 0;
-            z-index: 1000;
         }
 
         .header-logo {
@@ -644,12 +648,12 @@
                                 <ul class="navbar-nav gap-2 gap-lg-3">
                                     <li class="nav-item"><a class="header-nav-link active"
                                             href="/user/homepage.html">Home</a></li>
-                                    <li class="nav-item"><a class="header-nav-link" href="/user/about.html">About</a>
-                                    </li>
-                                    <li class="nav-item"><a class="header-nav-link"
-                                            href="/user/contact.html">Contact</a></li>
                                     <li class="nav-item"><a class="header-nav-link"
                                             href="/user/product.html">Products</a></li>
+                                    <li class="nav-item"><a class="header-nav-link"
+                                            href="/user/contact.html">Contact</a></li>
+                                    <li class="nav-item"><a class="header-nav-link" href="/user/about.html">About</a>
+                                    </li>
                                 </ul>
                             </div>
                         </nav>
@@ -781,9 +785,12 @@
 
             // Highlight Active Link
             const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.nav-link');
+            const navLinks = document.querySelectorAll('.header-nav-link');
             navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/user/homepage.html')) {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                // Check if the current path matches the href, or if its the root and matches homepage
+                if (href === currentPath || (currentPath === '/' && href === '/user/homepage.html')) {
                     link.classList.add('active');
                 }
             });
@@ -1031,7 +1038,7 @@
             <!-- Profile Section -->
             <div class="col-md-9">
                 <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
-                    <h3 class="fw-bold mb-5">Profile</h3>
+                    <h4 class="fw-bold mb-4 pb-3 border-bottom text-dark">Profile Information</h4>
 
                     <!-- Profile Picture Section -->
                     <div class="d-flex justify-content-center mb-5 position-relative">
@@ -1039,8 +1046,8 @@
 
                             <!-- Image or Placeholder -->
                             <div id="profileDisplay"
-                                class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light shadow-sm"
-                                style="width: 120px; height: 120px; border: 4px solid white;">
+                                class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-light"
+                                style="width: 140px; height: 140px; border: 5px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                                 <img id="profilePreview" src="" alt="Profile"
                                     class="w-100 h-100 object-fit-cover d-none">
                                 <span id="profileLetter" class="fw-bold fs-1 text-secondary d-none"></span>
@@ -1051,69 +1058,84 @@
                     </div>
 
                     <!-- Details List -->
-                    <div class="profile-details px-md-4">
+                    <div class="profile-details px-md-4 mt-4">
                         <!-- Name Row -->
-                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                        <div class="row mb-3 align-items-center profile-row p-3 rounded-4 shadow-sm border"
+                            style="background: #ffffff; transition: 0.3s;">
                             <div class="col-md-3">
-                                <span class="text-muted small">Name</span>
+                                <span class="text-muted small fw-semibold"><i
+                                        class="fas fa-user-circle text-primary-custom me-2"
+                                        style="color: #2ecc71;"></i>Full Name</span>
                             </div>
                             <div class="col-md-7">
-                                <span id="displayName" class="fw-bold fs-5 text-dark">Loading...</span>
-                                <input type="text" id="inputName" class="form-control d-none"
-                                    placeholder="Enter your name">
+                                <span id="displayName" class="fw-bold fs-6 text-dark">Loading...</span>
+                                <input type="text" id="inputName" class="form-control d-none custom-input"
+                                    placeholder="Enter your name" style="border-radius: 8px;">
                             </div>
                             <div class="col-md-2 text-end">
-                                <button class="btn btn-sm fw-bold text-dark" id="editNameBtn"
-                                    onclick="toggleEdit('Name')">Edit</button>
+                                <button class="btn btn-sm btn-light text-primary-custom fw-bold px-3 rounded-pill"
+                                    id="editNameBtn" onclick="toggleEdit('Name')"
+                                    style="border: 1px solid #eee; color: #2ecc71 !important;"><i
+                                        class="fas fa-pen fa-sm me-1"></i> Edit</button>
                                 <div id="actionNameBtns" class="d-none gap-2 justify-content-end">
-                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Name')"><i
-                                            class="fas fa-check"></i></button>
-                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Name')"><i
-                                            class="fas fa-times"></i></button>
+                                    <button class="btn btn-sm btn-success text-white rounded-pill px-3 shadow-sm"
+                                        onclick="saveField('Name')"><i class="fas fa-check"></i> Save</button>
+                                    <button class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm"
+                                        onclick="cancelEdit('Name')"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Email Row -->
-                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                        <div class="row mb-3 align-items-center profile-row p-3 rounded-4 shadow-sm border"
+                            style="background: #ffffff; transition: 0.3s;">
                             <div class="col-md-3">
-                                <span class="text-muted small">Email</span>
+                                <span class="text-muted small fw-semibold"><i
+                                        class="fas fa-envelope text-primary-custom me-2"
+                                        style="color: #2ecc71;"></i>Email Address</span>
                             </div>
                             <div class="col-md-7">
-                                <span id="displayEmail" class="fw-bold fs-5 text-dark">Loading...</span>
-                                <input type="email" id="inputEmail" class="form-control d-none"
-                                    placeholder="Enter email">
+                                <span id="displayEmail" class="fw-bold fs-6 text-dark">Loading...</span>
+                                <input type="email" id="inputEmail" class="form-control d-none custom-input"
+                                    placeholder="Enter email" style="border-radius: 8px;">
                             </div>
                             <div class="col-md-2 text-end">
-                                <button class="btn btn-sm fw-bold text-dark" id="editEmailBtn"
-                                    onclick="toggleEdit('Email')">Edit</button>
+                                <button class="btn btn-sm btn-light text-primary-custom fw-bold px-3 rounded-pill"
+                                    id="editEmailBtn" onclick="toggleEdit('Email')"
+                                    style="border: 1px solid #eee; color: #2ecc71 !important;"><i
+                                        class="fas fa-pen fa-sm me-1"></i> Edit</button>
                                 <div id="actionEmailBtns" class="d-none gap-2 justify-content-end">
-                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Email')"><i
-                                            class="fas fa-check"></i></button>
-                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Email')"><i
-                                            class="fas fa-times"></i></button>
+                                    <button class="btn btn-sm btn-success text-white rounded-pill px-3 shadow-sm"
+                                        onclick="saveField('Email')"><i class="fas fa-check"></i> Save</button>
+                                    <button class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm"
+                                        onclick="cancelEdit('Email')"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Phone Row -->
-                        <div class="row mb-4 align-items-center border-bottom pb-3">
+                        <div class="row mb-3 align-items-center profile-row p-3 rounded-4 shadow-sm border"
+                            style="background: #ffffff; transition: 0.3s;">
                             <div class="col-md-3">
-                                <span class="text-muted small">Mobile Number</span>
+                                <span class="text-muted small fw-semibold"><i
+                                        class="fas fa-phone-alt text-primary-custom me-2"
+                                        style="color: #2ecc71;"></i>Mobile Number</span>
                             </div>
                             <div class="col-md-7">
-                                <span id="displayPhone" class="fw-bold fs-5 text-dark">Loading...</span>
-                                <input type="tel" id="inputPhone" class="form-control d-none"
-                                    placeholder="Enter phone number">
+                                <span id="displayPhone" class="fw-bold fs-6 text-dark">Loading...</span>
+                                <input type="tel" id="inputPhone" class="form-control d-none custom-input"
+                                    placeholder="Enter phone number" style="border-radius: 8px;">
                             </div>
                             <div class="col-md-2 text-end">
-                                <button class="btn btn-sm fw-bold text-dark" id="editPhoneBtn"
-                                    onclick="toggleEdit('Phone')">Edit</button>
+                                <button class="btn btn-sm btn-light text-primary-custom fw-bold px-3 rounded-pill"
+                                    id="editPhoneBtn" onclick="toggleEdit('Phone')"
+                                    style="border: 1px solid #eee; color: #2ecc71 !important;"><i
+                                        class="fas fa-pen fa-sm me-1"></i> Edit</button>
                                 <div id="actionPhoneBtns" class="d-none gap-2 justify-content-end">
-                                    <button class="btn btn-sm btn-success text-white" onclick="saveField('Phone')"><i
-                                            class="fas fa-check"></i></button>
-                                    <button class="btn btn-sm btn-secondary" onclick="cancelEdit('Phone')"><i
-                                            class="fas fa-times"></i></button>
+                                    <button class="btn btn-sm btn-success text-white rounded-pill px-3 shadow-sm"
+                                        onclick="saveField('Phone')"><i class="fas fa-check"></i> Save</button>
+                                    <button class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm"
+                                        onclick="cancelEdit('Phone')"><i class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
