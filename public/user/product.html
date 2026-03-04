@@ -68,16 +68,17 @@
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            
-            
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
+
+
+
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            
-            
-            
-            
+
+
+
+
+
         }
 
         .header-logo {
@@ -175,20 +176,545 @@
             background-color: var(--primary-green) !important;
         }
 
-        @media (max-width: 991px) {
+        @media (max-width: 768px) {
 
-            .header-top .col-md-4,
-            .header-top .col-md-5 {
-                text-align: center;
-                margin-bottom: 15px;
+            html,
+            body {
+                overflow-x: hidden !important;
+                width: 100% !important;
             }
 
-            .header-bottom .d-flex {
-                flex-wrap: wrap;
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
+
+            .header-bottom .row>div {
+                display: contents !important;
+            }
+
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
                 justify-content: center !important;
-                gap: 15px;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
+
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
+
+            /* --- Navigation Row Below Logo --- */
+
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
+
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
+
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
+
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
+
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
+
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
+            }
+
+            /* --- Mobile Filter UI Improvements --- */
+            .mobile-filter-bar {
+                background: #ffffff;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f1f5f9;
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                position: sticky;
+                top: 50px;
+                z-index: 999;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            }
+
+            .mobile-filter-btn {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #2c3e50;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+
+            .mobile-filter-btn:active {
+                background: #f8fafc;
+                transform: scale(0.96);
+            }
+
+            .mobile-sort-select {
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 20px;
+                background-color: #f8fafc !important;
+                padding: 4px 8px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                color: #2c3e50 !important;
+                outline: none !important;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .mobile-sort-select:focus {
+                border-color: var(--primary-green) !important;
+                background-color: #fff !important;
+            }
+
+            /* Bottom Sheet Filter Panel */
+            .filter-bottom-sheet {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                width: 100%;
+                height: 80vh;
+                background: #fff;
+                z-index: 2000;
+                border-top-left-radius: 24px;
+                border-top-right-radius: 24px;
+                transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .filter-bottom-sheet.show {
+                bottom: 0;
+            }
+
+            .filter-sheet-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1999;
+                display: none;
+                backdrop-filter: blur(2px);
+            }
+
+            .filter-sheet-header {
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .filter-sheet-body {
+                flex: 1;
+                overflow-y: auto;
+                padding: 20px;
+                padding-bottom: calc(30px + env(safe-area-inset-bottom));
+            }
+
+            .filter-group-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 15px;
+                color: #2c3e50;
+            }
+
+            .filter-option {
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 4px 0;
+            }
+
+            .filter-option input[type="radio"],
+            .filter-option input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                accent-color: var(--primary-green);
+            }
+
+            /* Filter Chips */
+            .filter-chips-container {
+                display: none !important;
+            }
+
+            .filter-chip {
+                background: #eafaf1;
+                color: var(--dark-green);
+                padding: 4px 12px;
+                border-radius: 16px;
+                font-size: 12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                border: 1px solid #d4efdf;
+            }
+
+            .filter-chip i {
+                cursor: pointer;
+                font-size: 10px;
+            }
+
+            /* Action Buttons */
+            /* Mobile Product Card UI Improvements */
+            #productGrid .col {
+                padding: 5px !important;
+            }
+
+            .product-card {
+                padding: 10px !important;
+                border-radius: 12px !important;
+                height: 100% !important;
+                min-height: 380px !important;
+                /* Minimum height for consistency */
+                border: 1px solid #f0f0f0 !important;
+                background: #ffffff !important;
+                display: flex !important;
+                flex-direction: column !important;
+                /* aspect-ratio removed to allow content growth */
+            }
+
+            .product-img-wrapper,
+            .product-card a {
+                height: 55% !important;
+                /* Image area takes ~55-60% */
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                position: relative !important;
+                overflow: visible !important;
+            }
+
+            .product-card .card-img-top {
+                max-height: 90% !important;
+                max-width: 90% !important;
+                object-fit: contain !important;
+                padding: 5px !important;
+                margin: 0 auto !important;
+            }
+
+            .product-card .card-body {
+                padding: 10px 8px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                text-align: center !important;
+                flex: 1 !important;
+                overflow: visible !important;
+            }
+
+            .company-name-mobile {
+                font-size: 11px !important;
+                color: #6c757d !important;
+                margin-bottom: 2px !important;
+                letter-spacing: 0.5px !important;
+                text-align: left !important;
+                width: 100% !important;
+            }
+
+            .product-title {
+                font-size: 13px !important;
+                font-weight: 700 !important;
+                margin-bottom: 2px !important;
+                line-height: 1.5 !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: visible !important;
+                color: #2c3e50 !important;
+            }
+
+            .product-weight {
+                font-size: 11px !important;
+                color: #777 !important;
+                margin-bottom: 5px !important;
+            }
+
+            .price-section-mobile {
+                margin: auto 0 8px 0 !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+
+            .product-price-old {
+                font-size: 11px !important;
+                margin-left: 5px !important;
+            }
+
+            .button-section-mobile {
+                display: flex !important;
+                gap: 6px !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+
+            .btn-wishlist {
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                padding: 0 !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+            }
+
+            .btn-add-cart {
+                flex: 1 !important;
+                height: 34px !important;
+                padding: 0 5px !important;
+                border-radius: 8px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                white-space: nowrap !important;
+            }
+
+            .badge.bg-secondary.position-absolute {
+                z-index: 10 !important;
+                font-size: 9px !important;
+                padding: 3px 6px !important;
+                top: 5px !important;
+                right: 5px !important;
+                border-radius: 4px !important;
+            }
+
+            .badge.bg-danger.position-absolute {
+                z-index: 15 !important;
+                font-size: 9px !important;
+                padding: 3px 6px !important;
+                top: 5px !important;
+                left: 5px !important;
+                border-radius: 4px !important;
+            }
+
+            /* Out of Stock mobile badge fix */
+            .product-card .badge {
+                z-index: 25 !important;
+                width: auto !important;
+                max-width: fit-content !important;
+                white-space: nowrap !important;
+                border-radius: 20px !important;
+                /* Pill shape */
+                padding: 5px 12px !important;
+                top: 8px !important;
+                right: 8px !important;
+                font-weight: 600 !important;
+                letter-spacing: 0.3px !important;
             }
         }
+
+        /* Modern Pagination Styling - Synced from My Returns */
+        .pagination {
+            gap: 5px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pagination .page-item .page-link {
+            border: none;
+            border-radius: 8px !important;
+            padding: 8px 16px;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            box-shadow: 0 4px 6px -1px rgba(46, 204, 113, 0.3);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background: #f3f4f6 !important;
+            color: #9ca3af !important;
+            box-shadow: none;
+        }
+
+        .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+            background-color: #eafaf1 !important;
+            color: var(--primary-green) !important;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .pagination .page-item .page-link {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+
 
 
         .header-curve {
@@ -255,30 +781,20 @@
             background: #fff;
             border: 1px solid #f0f0f0;
             /* Subtle border */
-            display: flex;
-            flex-direction: column;
-            height: 100%;
         }
 
         .product-card .card-body {
-            overflow-y: scroll;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .product-card .card-body>:last-child {
-            margin-top: auto;
+            padding: 0;
         }
 
         .product-card:hover {
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
         }
 
-        /* .product-card img.card-img-top {
-    height: 180px;
-    object-fit: contain;
-} */
+        .product-card img.card-img-top {
+            height: 180px;
+            object-fit: contain;
+        }
 
         .product-title {
             font-weight: 700;
@@ -490,19 +1006,67 @@
             border-radius: 4px;
         }
 
-        /* Sidebar Styles */
+        /* Sidebar Styles - Professional Card */
         .sidebar {
-            background-color: #f8f9fa;
-            border-radius: 12px;
+            background-color: #ffffff !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03) !important;
+            border: 1px solid #f1f5f9 !important;
+            padding: 30px !important;
+            transition: all 0.3s ease;
         }
 
-        .form-check-input:checked {
-            background-color: var(--primary-green);
-            border-color: var(--primary-green);
+        .sidebar h5 {
+            font-size: 1.4rem !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            padding-bottom: 15px !important;
+            margin-bottom: 25px !important;
         }
 
-        .form-check-label {
+        .sidebar h6 {
+            color: #334155 !important;
+            font-size: 1.1rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 18px !important;
+        }
+
+        .sidebar .form-check {
+            margin-bottom: 15px !important;
+            padding-left: 0 !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .form-check-input {
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #e2e8f0 !important;
             cursor: pointer;
+            margin-right: 12px !important;
+            float: none !important;
+            margin-top: 0 !important;
+            background-color: #fff;
+        }
+
+        .sidebar .form-check-label {
+            font-size: 15px !important;
+            color: #475569 !important;
+            font-weight: 500 !important;
+            display: inline-block;
+            margin: 0 !important;
+            line-height: 1.4;
+        }
+
+        .sidebar .form-check-input:checked {
+            background-color: #2ecc71 !important;
+            border-color: #2ecc71 !important;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1) !important;
+        }
+
+        .form-check-input:focus {
+            box-shadow: none !important;
         }
 
 
@@ -623,7 +1187,60 @@
 
         @media (max-width: 768px) {
             .custom-exact-footer .footer-content {
-                padding-top: 120px;
+                padding-top: 15vw;
+            }
+
+            .custom-exact-footer .footer-top-wave svg {
+                height: auto !important;
+                min-height: unset !important;
+                max-height: unset !important;
+                aspect-ratio: 1440 / 160 !important;
+            }
+
+            /* 1. Center the KM Store Section (First Column) */
+            .custom-exact-footer .footer-content .row>div:nth-child(1) {
+                text-align: center !important;
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-bottom: 30px !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(1) .d-flex {
+                justify-content: center !important;
+            }
+
+            /* 2. Place Account, Links, and Help Center on one row */
+            .custom-exact-footer .footer-content .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(2),
+            .custom-exact-footer .footer-content .row>div:nth-child(3),
+            .custom-exact-footer .footer-content .row>div:nth-child(4) {
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+                padding: 0 5px !important;
+                text-align: center !important;
+            }
+
+            /* Scale down text slightly so they fit cleanly side-by-side */
+            .custom-exact-footer .footer-content .row h6 {
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                margin-bottom: 10px !important;
+            }
+
+            .custom-exact-footer .footer-content .row .small,
+            .custom-exact-footer .footer-content .row .footer-link {
+                font-size: 0.7rem !important;
+            }
+
+            /* Format the email/phone text from wrapping too cleanly */
+            .custom-exact-footer .footer-content .row>div:nth-child(4) .small {
+                word-break: break-all !important;
             }
         }
 
@@ -1032,41 +1649,14 @@
 
 
     <!-- Main Content -->
-    <div class="container-fluid px-4 px-lg-5 my-5 pt-5">
+    <div class="container my-2 pt-2">
         <div class="row">
             <!-- Sidebar Filters -->
             <div class="col-md-3">
-                <!-- Mobile Filter Trigger -->
-                <button
-                    class="btn btn-outline-custom w-100 d-md-none mb-3 fw-bold justify-content-between d-flex align-items-center"
-                    type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileFilter"
-                    aria-controls="mobileFilter">
-                    Filters <i class="fas fa-filter"></i>
-                </button>
-
-                <!-- Mobile Offcanvas Filter -->
-                <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileFilter"
-                    aria-labelledby="mobileFilterLabel">
-                    <div class="offcanvas-header bg-light">
-                        <h5 class="offcanvas-title fw-bold" id="mobileFilterLabel">Filters</h5>
-                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        <!-- Content Copied from Sidebar -->
-                        <div id="mobile-sidebar-categories" class="mb-4"></div>
-
-                        <!-- Offers Filter -->
-                        <div id="mobile-sidebar-offers" class="mb-4"></div>
-                    </div>
-                </div>
-
                 <div class="sidebar p-3 mb-4 sticky-top d-none d-md-block" style="top: 20px;">
                     <h5 class="fw-bold mb-3 border-bottom pb-2">Filters</h5>
-
                     <!-- Category Filter -->
                     <div id="sidebar-categories" class="mb-4"></div>
-
                     <!-- Offers Filter -->
                     <div id="sidebar-offers" class="mb-4"></div>
                 </div>
@@ -1074,27 +1664,64 @@
 
             <!-- Product Grid -->
             <div class="col-md-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold m-0">All Products</h4>
-                    <style>
-                        .product-card .card-img-top {
-                            height: 200px;
-                            object-fit: contain;
-                            padding: 1rem;
-                        }
-                    </style>
+                <!-- Mobile Filter Trigger Row -->
+                <div class="mobile-filter-bar d-md-none">
+                    <button class="mobile-filter-btn" id="openMobileFilterSheet">
+                        <i class="fas fa-sliders-h"></i> Filters
+                    </button>
                     <div class="d-flex align-items-center">
-                        <span class="small me-2 text-muted">Sort by:</span>
-                        <select id="sortSelect" class="form-select form-select-sm w-auto border-0 bg-light fw-bold">
+                        <span class="small text-muted me-2">Sort by:</span>
+                        <select id="mobileSortSelect" class="mobile-sort-select">
                             <option value="relevance">Relevance</option>
                             <option value="lowToHigh">Price: Low to High</option>
                             <option value="highToLow">Price: High to Low</option>
                         </select>
                     </div>
-
                 </div>
 
-                <div class="row row-cols-2 row-cols-md-4 g-4" id="productGrid"> </div>
+                <!-- Active Filter Chips Removed -->
+
+                <!-- Bottom Sheet Filter Panel -->
+                <div class="filter-sheet-overlay d-md-none" id="filterSheetOverlay"></div>
+                <div class="filter-bottom-sheet d-md-none" id="filterBottomSheet">
+                    <div class="filter-sheet-header">
+                        <h5 class="fw-bold m-0">Filters</h5>
+                        <div class="d-flex align-items-center gap-3">
+                            <button class="btn btn-link text-success p-0 text-decoration-none small fw-bold"
+                                id="clearAllMobileFilters">Clear All</button>
+                            <button class="btn-close" id="closeMobileFilterSheet"></button>
+                        </div>
+                    </div>
+                    <div class="filter-sheet-body">
+                        <div class="filter-group">
+                            <h6 class="filter-group-title">Category</h6>
+                            <div id="mobileSheetCategories" class="d-flex flex-column gap-1">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                        <div class="filter-group mt-4">
+                            <h6 class="filter-group-title">Offers</h6>
+                            <div id="mobileSheetOffers" class="d-flex flex-column gap-1">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-none d-md-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0 text-dark">All Products</h4>
+                    <div class="d-flex align-items-center">
+                        <span class="small me-2 text-muted">Sort by:</span>
+                        <select id="sortSelect" class="form-select form-select-sm w-auto border shadow-sm fw-bold px-3"
+                            style="border-radius: 8px;">
+                            <option value="relevance">Relevance</option>
+                            <option value="lowToHigh">Price: Low to High</option>
+                            <option value="highToLow">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row row-cols-2 row-cols-md-4 g-2 g-md-4" id="productGrid"> </div>
 
 
                 <!-- Pagination -->
@@ -1444,7 +2071,7 @@
                     }
 
                     const stockBadge = isOutOfStock
-                        ? `<span class="badge bg-secondary position-absolute top-0 end-0 m-2">Out of Stock</span>`
+                        ? `<span class="badge bg-danger position-absolute top-0 end-0 m-2">Out of Stock</span>`
                         : '';
 
                     const btnDisabled = isOutOfStock ? 'disabled' : '';
@@ -1452,28 +2079,36 @@
 
                     grid.innerHTML += `
                             <div class="col">
-                                <div class="card product-card h-100 position-relative">
+                                <div class="card product-card position-relative">
                                     ${stockBadge}
                                     ${discountBadge}
                                     <a href="single-product.html?id=${p._id}">
                                         <img src="${p.image && (p.image.startsWith('http') || p.image.startsWith('/')) ? p.image : (p.image ? '/' + p.image : 'https://placehold.co/300')}" 
-                                            class="card-img-top p-3" 
+                                            class="card-img-top" 
                                             alt="${p.name}"
                                             style="opacity:${isOutOfStock ? 0.6 : 1}"
                                             onerror="this.src='https://placehold.co/300'">
                                     </a>
-                                    <div class="card-body p-2">
-                                        ${companyHtml}
+                                    <div class="card-body">
+                                        <!-- Brand/Company -->
+                                        <div class="company-name-mobile d-md-none">${p.company || ''}</div>
+                                        <div class="small text-muted mb-1 d-none d-md-block">${p.company || '&nbsp;'}</div>
+                                        
+                                        <!-- Product Info -->
                                         <h6 class="product-title text-center">${p.name}</h6>
                                         <p class="product-weight text-center">${quantityText}</p>
-                                        <div class="mb-3 text-start ps-2 mt-auto">
+                                        
+                                        <!-- Price Section Content -->
+                                        <div class="mb-3 text-center text-md-start ps-md-2 price-section-mobile">
                                             ${priceHtml}
                                         </div>
-                                        <div class="d-flex gap-2 align-items-center">
+                                        
+                                        <!-- Buttons Section -->
+                                        <div class="d-flex gap-2 align-items-center button-section-mobile mt-auto">
                                             <button class="btn btn-wishlist" data-product-id="${p._id}">
                                                 <i class="far fa-heart"></i>
                                             </button>
-                                            <button class="btn btn-add-cart" data-product-id="${p._id}" ${btnDisabled}>
+                                            <button class="btn btn-add-cart w-100" data-product-id="${p._id}" ${btnDisabled}>
                                                 ${btnText}
                                             </button>
                                         </div>
@@ -1509,7 +2144,9 @@
             // Previous
             pagination.innerHTML += `
                     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage - 1}); return false;">Previous</a>
+                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage - 1}); return false;" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
                     </li>
                 `;
 
@@ -1523,7 +2160,9 @@
             // Next
             pagination.innerHTML += `
                     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage + 1}); return false;">Next</a>
+                        <a class="page-link" href="#" onclick="loadUserProducts(${currentPage + 1}); return false;" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
                     </li>
                 `;
         }
@@ -1746,15 +2385,139 @@
         });
 
 
-        //SORT 
+        // SORT Logic (Sync both mobile and desktop)
         const sortSelect = document.getElementById("sortSelect");
+        const mobileSortSelect = document.getElementById("mobileSortSelect");
+
+        function handleSortChange(value) {
+            if (sortSelect) sortSelect.value = value;
+            if (mobileSortSelect) mobileSortSelect.value = value;
+            loadUserProducts(1, value);
+        }
 
         if (sortSelect) {
-            sortSelect.addEventListener("change", function () {
-                const value = this.value;
-                loadUserProducts(1, value);
-            });
+            sortSelect.addEventListener("change", function () { handleSortChange(this.value); });
         }
+        if (mobileSortSelect) {
+            mobileSortSelect.addEventListener("change", function () { handleSortChange(this.value); });
+        }
+
+        /* =========================
+           MOBILE BOTTOM SHEET LOGIC
+        ========================= */
+        const filterSheet = document.getElementById('filterBottomSheet');
+        const filterOverlay = document.getElementById('filterSheetOverlay');
+        const openSheetBtn = document.getElementById('openMobileFilterSheet');
+        const closeSheetBtn = document.getElementById('closeMobileFilterSheet');
+        const applyBtn = document.getElementById('applyMobileFilters');
+        const resetBtn = document.getElementById('resetMobileFilters');
+        const clearAllBtn = document.getElementById('clearAllMobileFilters');
+
+        function toggleFilterSheet(show) {
+            if (show) {
+                filterSheet.classList.add('show');
+                filterOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                filterSheet.classList.remove('show');
+                filterOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        if (openSheetBtn) openSheetBtn.onclick = () => toggleFilterSheet(true);
+        if (closeSheetBtn) closeSheetBtn.onclick = () => toggleFilterSheet(false);
+        if (filterOverlay) filterOverlay.onclick = () => toggleFilterSheet(false);
+
+        // Populate Mobile Bottom Sheet Content
+        async function syncMobileFiltersContent() {
+            try {
+                const catsRes = await fetch('/api/categories');
+                const cats = await catsRes.json();
+                const offersRes = await fetch('/api/offers/active');
+                const offers = await offersRes.json();
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const activeCat = urlParams.get('category');
+
+                // Category List
+                const catContainer = document.getElementById('mobileSheetCategories');
+                if (catContainer) {
+                    let html = `<div class="filter-option">
+                        <input type="radio" name="mobile_cat" id="m_cat_all" value="" ${!activeCat ? 'checked' : ''}>
+                        <label for="m_cat_all">All Products</label>
+                    </div>`;
+                    cats.forEach(c => {
+                        html += `<div class="filter-option">
+                            <input type="radio" name="mobile_cat" id="m_cat_${c._id}" value="${c._id}" ${activeCat === c._id ? 'checked' : ''}>
+                            <label for="m_cat_${c._id}">${c.name}</label>
+                        </div>`;
+                    });
+                    catContainer.innerHTML = html;
+                }
+
+                // Offers List
+                const offerContainer = document.getElementById('mobileSheetOffers');
+                if (offerContainer) {
+                    let html = "";
+                    offers.forEach(o => {
+                        html += `<div class="filter-option">
+                            <input type="radio" name="mobile_offer" id="m_off_${o._id}" value="${o.category || o.link || ''}">
+                            <label for="m_off_${o._id}">${o.title}</label>
+                        </div>`;
+                    });
+                    offerContainer.innerHTML = html || "<p class='text-muted small'>No active offers</p>";
+                }
+
+                // updateFilterChips(); // Removed as requested
+            } catch (err) { console.error(err); }
+        }
+
+        function updateFilterChips() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeCatId = urlParams.get('category');
+            const chipContainer = document.getElementById('activeFilterChips');
+
+            if (!activeCatId || !chipContainer) {
+                if (chipContainer) chipContainer.style.setProperty('display', 'none', 'important');
+                return;
+            }
+
+            // Find current category name (from radio labels)
+            const activeLabel = document.querySelector(`label[for="m_cat_${activeCatId}"]`)?.innerText || "Filtered";
+
+            chipContainer.innerHTML = `
+                <div class="filter-chip">
+                    Category: ${activeLabel}
+                    <i class="fas fa-times" onclick="window.location.href='product.html'"></i>
+                </div>
+            `;
+            chipContainer.style.setProperty('display', 'flex', 'important');
+        }
+
+        // Event delegation for instant apply (Mobile Sheet)
+        document.addEventListener('change', (e) => {
+            if (e.target.name === 'mobile_cat') {
+                const val = e.target.value;
+                if (val) window.location.href = `product.html?category=${val}`;
+                else window.location.href = `product.html`;
+            }
+            if (e.target.name === 'mobile_offer') {
+                const val = e.target.value;
+                if (val) {
+                    if (val.includes('category=')) window.location.href = val;
+                    else window.location.href = `product.html?category=${val}`;
+                } else {
+                    window.location.href = 'product.html';
+                }
+            }
+        });
+
+        if (clearAllBtn) {
+            clearAllBtn.onclick = () => { window.location.href = 'product.html'; };
+        }
+
+        syncMobileFiltersContent();
 
 
         loadUserProducts(1);

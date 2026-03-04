@@ -68,16 +68,16 @@
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
 
-            
+
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
 
-            
-            
-            
-            
+
+
+
+
         }
 
         .header-logo {
@@ -175,20 +175,201 @@
             background-color: var(--primary-green) !important;
         }
 
-        @media (max-width: 991px) {
-
-            .header-top .col-md-4,
-            .header-top .col-md-5 {
-                text-align: center;
-                margin-bottom: 15px;
+        @media (max-width: 768px) {
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
             }
 
-            .header-bottom .d-flex {
-                flex-wrap: wrap;
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
+
+            .header-bottom .row>div {
+                display: contents !important;
+            }
+
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
                 justify-content: center !important;
-                gap: 15px;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
+
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
+
+            /* --- Navigation Row Below Logo --- */
+
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
+
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
+
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
+
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
+
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
+
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
             }
         }
+
 
 
         .header-curve {
@@ -548,6 +729,181 @@
             justify-content: center;
             text-transform: uppercase;
         }
+
+        /* Mobile Drawer Sidebar Styles */
+        @media (max-width: 768px) {
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1045;
+                display: none;
+                backdrop-filter: blur(2px);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .account-sidebar-column {
+                position: fixed !important;
+                top: 0 !important;
+                left: -100% !important;
+                width: 300px !important;
+                height: 100vh !important;
+                background: white !important;
+                z-index: 1050 !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: 10px 0 25px rgba(0, 0, 0, 0.1) !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .account-sidebar-column.active {
+                left: 0 !important;
+            }
+
+            .drawer-header {
+                padding: 18px 20px !important;
+                border-bottom: 1px solid #f1f1f1 !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                background: #fff !important;
+            }
+
+            .drawer-title {
+                font-size: 1.15rem !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                margin: 0 !important;
+            }
+
+            .sidebar-close-btn {
+                position: static !important;
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 50% !important;
+                background: #f8f9fa !important;
+                border: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #666 !important;
+                transition: all 0.2s !important;
+            }
+
+            .sidebar-close-btn:hover {
+                background: #e9ecef !important;
+                color: #333 !important;
+            }
+
+            .account-sidebar {
+                position: relative !important;
+                top: 0 !important;
+                flex: 1 !important;
+                height: auto !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                overflow-y: auto !important;
+                padding: 20px 0 !important;
+                background: #fff !important;
+            }
+
+            .sidebar-section-title {
+                padding: 0 20px !important;
+                margin: 25px 0 12px 0 !important;
+                font-size: 0.75rem !important;
+                font-weight: 700 !important;
+                color: #94a3b8 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 1px !important;
+            }
+
+            .account-sidebar ul {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .account-sidebar ul li {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .account-sidebar ul li a {
+                padding: 14px 24px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 15px !important;
+                font-size: 0.95rem !important;
+                font-weight: 500 !important;
+                color: #4b5563 !important;
+                transition: all 0.2s !important;
+                position: relative !important;
+                border: none !important;
+                transform: none !important;
+            }
+
+            .account-sidebar ul li a i {
+                width: 20px !important;
+                text-align: center !important;
+                font-size: 1.1rem !important;
+                color: #94a3b8 !important;
+            }
+
+            .account-sidebar ul li a.active-mobile {
+                background: rgba(16, 185, 129, 0.08) !important;
+                color: #10b981 !important;
+                font-weight: 600 !important;
+            }
+
+            .account-sidebar ul li a.active-mobile i {
+                color: #10b981 !important;
+            }
+
+            .account-sidebar ul li a.active-mobile::before {
+                content: "" !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                width: 4px !important;
+                background: #10b981 !important;
+                border-radius: 0 4px 4px 0 !important;
+            }
+
+            .mobile-menu-trigger {
+                display: flex !important;
+                align-items: center;
+                gap: 12px;
+                background: #fff;
+                padding: 14px 20px;
+                border-radius: 16px;
+                margin-bottom: 25px;
+                cursor: pointer;
+                border: 1px solid #f1f1f1;
+                width: 100%;
+                color: #2c3e50;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+                transition: all 0.2s;
+            }
+
+            .mobile-menu-trigger:active {
+                transform: scale(0.98);
+                background: #f8f9fa;
+            }
+        }
+
+        .sidebar-close-btn,
+        .mobile-menu-trigger {
+            display: none;
+        }
     </style>
     <!-- SweetAlert2 -->
 
@@ -591,7 +947,60 @@
 
         @media (max-width: 768px) {
             .custom-exact-footer .footer-content {
-                padding-top: 120px;
+                padding-top: 15vw;
+            }
+
+            .custom-exact-footer .footer-top-wave svg {
+                height: auto !important;
+                min-height: unset !important;
+                max-height: unset !important;
+                aspect-ratio: 1440 / 160 !important;
+            }
+
+            /* 1. Center the KM Store Section (First Column) */
+            .custom-exact-footer .footer-content .row>div:nth-child(1) {
+                text-align: center !important;
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-bottom: 30px !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(1) .d-flex {
+                justify-content: center !important;
+            }
+
+            /* 2. Place Account, Links, and Help Center on one row */
+            .custom-exact-footer .footer-content .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(2),
+            .custom-exact-footer .footer-content .row>div:nth-child(3),
+            .custom-exact-footer .footer-content .row>div:nth-child(4) {
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+                padding: 0 5px !important;
+                text-align: center !important;
+            }
+
+            /* Scale down text slightly so they fit cleanly side-by-side */
+            .custom-exact-footer .footer-content .row h6 {
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                margin-bottom: 10px !important;
+            }
+
+            .custom-exact-footer .footer-content .row .small,
+            .custom-exact-footer .footer-content .row .footer-link {
+                font-size: 0.7rem !important;
+            }
+
+            /* Format the email/phone text from wrapping too cleanly */
+            .custom-exact-footer .footer-content .row>div:nth-child(4) .small {
+                word-break: break-all !important;
             }
         }
 
@@ -995,6 +1404,20 @@
 
         // Run Initialization
         initNavbarLogic();
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('accountSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            // Prevent body scroll when sidebar is open
+            if (sidebar.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
     </script>
 
 
@@ -1012,59 +1435,79 @@
 
     <!-- Main Content -->
     <section class="container-fluid px-4 px-lg-5 my-5">
+        <!-- Mobile Menu Trigger -->
+        <div class="mobile-menu-trigger" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+            <span>Account Menu</span>
+        </div>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 mb-4">
+            <div class="col-md-3 mb-4 account-sidebar-column" id="accountSidebar">
+                <div class="drawer-header d-lg-none">
+                    <h5 class="drawer-title">Account</h5>
+                    <button class="sidebar-close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+                </div>
+
                 <div class="account-sidebar bg-white shadow-sm p-4 p-md-5"
                     style="border-radius: 24px; position: sticky; top: 120px; z-index: 10;">
-                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
-                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-user-circle me-2"
-                            style="color: #10b981;"></i>Manage Account</h6>
-                    <ul class="list-unstyled ms-1 mb-4">
-                        <li class="mb-3"><a href="account.html"
-                                class="text-decoration-none fw-bold d-flex align-items-center"
-                                style="color: #10b981; transform: translateX(5px);">My Profile</a></li>
-                        <li class="mb-3"><a href="address-book.html"
+
+                    <h6 class="sidebar-section-title fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i
+                            class="fas fa-user-circle d-none d-md-inline-block me-2" style="color: #10b981;"></i>Manage
+                        Account</h6>
+                    <ul class="list-unstyled ms-md-1 mb-4">
+                        <li class="mb-md-3"><a href="account.html"
+                                class="active-mobile text-decoration-none fw-bold d-flex align-items-center"
+                                style="color: #10b981; transform: translateX(5px);"><i
+                                    class="fas fa-user d-lg-none me-3"></i>My Profile</a></li>
+                        <li class="mb-md-3"><a href="address-book.html"
                                 class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
                                 style="transition: all 0.2s;"
-                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
-                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Address
+                                onmouseover="if(window.innerWidth > 768) { this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)' }"
+                                onmouseout="if(window.innerWidth > 768) { this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none' }"><i
+                                    class="fas fa-map-marker-alt d-lg-none me-3"></i>Address
                                 Book</a></li>
-                        <li class="mb-3"><a href="payment-options.html"
+                        <li class="mb-md-3"><a href="payment-options.html"
                                 class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
                                 style="transition: all 0.2s;"
-                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
-                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">Payment
+                                onmouseover="if(window.innerWidth > 768) { this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)' }"
+                                onmouseout="if(window.innerWidth > 768) { this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none' }"><i
+                                    class="fas fa-credit-card d-lg-none me-3"></i>Payment
                                 Options</a></li>
                     </ul>
 
-                    <hr class="my-4 text-muted opacity-25">
+                    <hr class="my-4 text-muted opacity-25 d-none d-md-block">
 
-                    <h6 class="fw-bold mb-4 text-dark text-uppercase"
-                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i class="fas fa-box-open me-2"
-                            style="color: #10b981;"></i>Orders History</h6>
-                    <ul class="list-unstyled ms-1 mb-4">
-                        <li class="mb-3"><a href="my-orders.html"
+                    <h6 class="sidebar-section-title fw-bold mb-4 text-dark text-uppercase"
+                        style="letter-spacing: 0.5px; font-size: 0.85rem;"><i
+                            class="fas fa-box-open d-none d-md-inline-block me-2" style="color: #10b981;"></i>Orders
+                        History</h6>
+                    <ul class="list-unstyled ms-md-1 mb-4">
+                        <li class="mb-md-3"><a href="my-orders.html"
                                 class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
                                 style="transition: all 0.2s;"
-                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
-                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                onmouseover="if(window.innerWidth > 768) { this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)' }"
+                                onmouseout="if(window.innerWidth > 768) { this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none' }"><i
+                                    class="fas fa-box d-lg-none me-3"></i>My
                                 Orders</a></li>
-                        <li class="mb-3"><a href="my-returns.html"
+                        <li class="mb-md-3"><a href="my-returns.html"
                                 class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
                                 style="transition: all 0.2s;"
-                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
-                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                onmouseover="if(window.innerWidth > 768) { this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)' }"
+                                onmouseout="if(window.innerWidth > 768) { this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none' }"><i
+                                    class="fas fa-undo d-lg-none me-3"></i>My
                                 Returns</a></li>
-                        <li class="mb-3"><a href="my-cancellations.html"
+                        <li class="mb-md-3"><a href="my-cancellations.html"
                                 class="text-decoration-none fw-medium text-secondary d-flex align-items-center"
                                 style="transition: all 0.2s;"
-                                onmouseover="this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)'"
-                                onmouseout="this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none'">My
+                                onmouseover="if(window.innerWidth > 768) { this.className='text-decoration-none fw-bold d-flex align-items-center'; this.style.color='#10b981'; this.style.transform='translateX(5px)' }"
+                                onmouseout="if(window.innerWidth > 768) { this.className='text-decoration-none fw-medium text-secondary d-flex align-items-center'; this.style.color=''; this.style.transform='none' }"><i
+                                    class="fas fa-times-circle d-lg-none me-3"></i>My
                                 Cancellations</a></li>
                     </ul>
-
-                    
                 </div>
             </div>
 

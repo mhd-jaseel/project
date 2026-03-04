@@ -559,7 +559,100 @@
 
         @media (max-width: 768px) {
             .custom-exact-footer .footer-content {
-                padding-top: 120px;
+                padding-top: 15vw;
+            }
+
+            .custom-exact-footer .footer-top-wave svg {
+                height: auto !important;
+                min-height: unset !important;
+                max-height: unset !important;
+                aspect-ratio: 1440 / 160 !important;
+            }
+
+            /* 1. Center the KM Store Section (First Column) */
+            .custom-exact-footer .footer-content .row>div:nth-child(1) {
+                text-align: center !important;
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-bottom: 30px !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(1) .d-flex {
+                justify-content: center !important;
+            }
+
+            /* 2. Place Account, Links, and Help Center on one row */
+            .custom-exact-footer .footer-content .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(2),
+            .custom-exact-footer .footer-content .row>div:nth-child(3),
+            .custom-exact-footer .footer-content .row>div:nth-child(4) {
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+                padding: 0 5px !important;
+                text-align: center !important;
+            }
+
+            /* Scaled text for side-by-side fit */
+            .custom-exact-footer .footer-content .row h6 {
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                margin-bottom: 10px !important;
+            }
+
+            .custom-exact-footer .footer-content .row .small,
+            .custom-exact-footer .footer-content .row .footer-link {
+                font-size: 0.7rem !important;
+            }
+
+            /* Email/phone word-break */
+            .custom-exact-footer .footer-content .row>div:nth-child(4) .small {
+                word-break: break-all !important;
+            }
+        }
+
+        /* Mobile Layout Reordering for Single Product Page */
+        @media (max-width: 768px) {
+            #main-product-row {
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .d-contents-mobile {
+                display: contents !important;
+            }
+
+            #image-section-mobile {
+                order: 1 !important;
+            }
+
+            #product-name {
+                order: 2 !important;
+            }
+
+            #weight-status-section {
+                order: 3 !important;
+            }
+
+            #product-price {
+                order: 4 !important;
+            }
+
+            #actions-section-mobile {
+                order: 5 !important;
+            }
+
+            #description-section-mobile {
+                order: 6 !important;
+            }
+
+            #features-section-mobile {
+                order: 7 !important;
             }
         }
 
@@ -599,27 +692,280 @@
 
     <style>
         /* Improved Header - Minimalist Style */
-        .header-minimal { background-color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .header-top { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+
         .header-bottom {
             position: sticky;
             top: 0;
-            z-index: 1000; background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);       border-bottom-left-radius: 20px;
+            z-index: 1000;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
+            ;
+            border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            
-            
-            
-            
+
+
+
+
+
         }
-        .header-logo { font-size: 24px; font-weight: 700; color: #2c3e50; text-decoration: none !important; display: flex; align-items: center; }
-        .header-logo i { color: var(--primary-green); }
-        .header-nav-link { color: #444; font-weight: 500; text-decoration: none; padding: 5px 15px; transition: color 0.2s; font-size: 15px; }
-        .header-nav-link:hover, .header-nav-link.active { color: var(--primary-green); }
-        .header-action-btn { color: #2c3e50; font-size: 18px; text-decoration: none !important; padding: 5px 12px; transition: color 0.2s; position: relative; display: inline-flex; align-items: center; gap: 5px; }
-        .header-action-btn:hover { color: var(--primary-green); }
-        .header-action-label { font-size: 14px; font-weight: 500; }
-        .header-badge { position: absolute; top: -2px; right: 2px; font-size: 10px; padding: 2px 5px; background-color: var(--primary-green) !important; }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo i {
+            color: var(--primary-green);
+        }
+
+        .header-nav-link {
+            color: #444;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 5px;
+            background-color: var(--primary-green) !important;
+        }
+
+        @media (max-width: 768px) {
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
+
+            .header-bottom .row>div {
+                display: contents !important;
+            }
+
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
+
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
+
+            /* --- Navigation Row Below Logo --- */
+
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
+
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
+
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
+
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
+
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
+
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
+            }
+        }
     </style>
 </head>
 
@@ -996,28 +1342,28 @@
 
     <!-- Product Details Section -->
     <section class="container-fluid px-4 px-lg-5 mb-5">
-        <div class="row bg-white rounded-4 p-4 p-md-5 shadow-sm">
+        <div class="row bg-white rounded-4 p-4 p-md-5 shadow-sm" id="main-product-row">
             <!-- Product Images -->
-            <div class="col-md-6 mb-4 mb-md-0">
-                <div class="text-center mb-4">
+            <div class="col-md-6 mb-4 mb-md-0 d-contents-mobile">
+                <div id="image-section-mobile" class="text-center mb-4">
                     <img src="" alt="Product Image" class="img-fluid rounded mb-3 main-product-img"
                         id="main-product-img">
-                </div>
-                <div class="d-flex justify-content-center gap-3" id="image-thumbnails">
-                    <!-- Thumbnails injected by JS -->
+                    <div class="d-flex justify-content-center gap-3" id="image-thumbnails">
+                        <!-- Thumbnails injected by JS -->
+                    </div>
                 </div>
             </div>
 
             <!-- Product Info -->
-            <div class="col-md-6">
+            <div class="col-md-6 d-contents-mobile">
                 <h2 class="fw-bold mb-2" id="product-name">Loading...</h2>
-                <div class="mb-3">
+                <div class="mb-3" id="weight-status-section">
                     <span class="text-muted border-end pe-2 me-2" id="product-weight"></span>
                     <span class="text-success fw-bold" id="product-status"></span>
                 </div>
                 <h3 class="fw-bold mb-4" id="product-price"></h3>
 
-                <div class="d-flex align-items-center mb-4 gap-3">
+                <div id="actions-section-mobile" class="d-flex align-items-center mb-4 gap-3">
                     <!-- Quantity Selector -->
                     <div class="quantity-selector d-flex align-items-center border rounded">
                         <button class="btn btn-light rounded-0 border-0 px-3 py-2">-</button>
@@ -1030,43 +1376,45 @@
 
                 </div>
 
-                <hr class="my-4 text-muted">
+                <div id="features-section-mobile">
+                    <hr class="my-4 text-muted">
 
-                <!-- Value Props -->
-                <div class="d-flex gap-3 mb-4">
-                    <div class="d-flex align-items-start gap-3">
-                        <i class="fas fa-truck-fast text-primary-custom fs-4 mt-1"></i>
-                        <div>
-                            <h6 class="fw-bold mb-1">Free delivery</h6>
-                            <p class="text-muted small mb-0">Do purchase over ₹2000 and get free delivery anywhere</p>
+                    <!-- Value Props -->
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-truck-fast text-primary-custom fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Free delivery</h6>
+                                <p class="text-muted small mb-0">Do purchase over ₹2000 and get free delivery anywhere
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex gap-3 mb-4">
-                    <div class="d-flex align-items-start gap-3">
-                        <i class="fas fa-tags text-primary-custom fs-4 mt-1"></i>
-                        <div>
-                            <h6 class="fw-bold mb-1">Best Prices & Deals</h6>
-                            <p class="text-muted small mb-0">Don't miss our daily amazing deals and prices</p>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-tags text-primary-custom fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Best Prices & Deals</h6>
+                                <p class="text-muted small mb-0">Don't miss our daily amazing deals and prices</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex gap-3 mb-4">
-                    <div class="d-flex align-items-start gap-3">
-                        <i class="fas fa-rotate-left text-primary-custom fs-4 mt-1"></i>
-                        <div>
-                            <h6 class="fw-bold mb-1">Refundable</h6>
-                            <p class="text-muted small mb-0">If your items have damage we agree to refund it</p>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fas fa-rotate-left text-primary-custom fs-4 mt-1"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Refundable</h6>
+                                <p class="text-muted small mb-0">If your items have damage we agree to refund it</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
-        </div>
 
-        <!-- Product Description -->
-        <div class="row mt-4">
-            <div class="col-12">
+            <!-- Product Description Integrated for Reordering -->
+            <div class="col-12 mt-4 d-contents-mobile" id="description-section-mobile">
+                <hr class="d-md-none my-3 text-muted">
                 <h5 class="fw-bold mb-3">PRODUCT DETAILS</h5>
                 <h6 class="fw-bold">Description</h6>
                 <p class="text-muted small" id="product-desc-text">
@@ -1076,8 +1424,6 @@
                     <button class="btn btn-link text-primary-custom text-decoration-none small" id="view-more-btn"
                         onclick="toggleText()">view more</button>
                 </div>
-
-
             </div>
         </div>
     </section>

@@ -44,249 +44,273 @@
             color: var(--primary-color) !important;
         }
 
-        /* Header */
-        header {
-            position: relative;
+        /* Improved Header - Minimalist Style */
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
         }
 
-        /* New Luxury Header Styles (Matches Prompt Image) */
-        .header-main {
-            background-color: #f7f7f7;
-            padding: 12px 0;
-            border-bottom: 1px solid #ebebeb;
+        .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
         }
 
         .header-logo {
-            font-size: 1.8rem;
+            font-size: 24px;
             font-weight: 700;
-            color: #333 !important;
+            color: #2c3e50;
+            text-decoration: none !important;
             display: flex;
             align-items: center;
-            text-decoration: none !important;
         }
 
         .header-logo i {
-            color: #27ae60;
-            margin-right: 8px;
+            color: var(--primary-green);
         }
 
-        .custom-search-group {
-            max-width: 450px;
-            margin-left: auto;
-            display: flex;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .custom-search-input {
-            border: none !important;
-            padding: 8px 15px;
-            flex-grow: 1;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
-        }
-
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
-            transition: background 0.2s;
-        }
-
-        .custom-search-btn:hover {
-            background-color: #1e8449;
-        }
-
-        .header-nav-container {
-            background-color: #fff;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .header-nav-container .nav-link {
-            color: #444 !important;
+        .header-nav-link {
+            color: #444;
             font-weight: 500;
-            padding: 8px 15px !important;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .header-nav-container .nav-link:hover {
-            color: #27ae60 !important;
-        }
-
-        .header-action-icons {
-            display: flex;
-            gap: 22px;
-            align-items: center;
-            justify-content: flex-end;
-            height: 100%;
-        }
-
-        .header-action-icons a {
-            color: #2c3e50;
-            font-size: 1.25rem;
             text-decoration: none;
-            position: relative;
-            transition: transform 0.2s, color 0.2s;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
         }
 
-        .header-action-icons a:hover {
-            color: #27ae60;
-            transform: translateY(-2px);
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .header-badge {
             position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: #e74c3c;
-            color: #fff;
-            font-size: 0.65rem;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
             padding: 2px 5px;
-            border-radius: 50%;
-            min-width: 18px;
-            text-align: center;
-            line-height: normal;
+            background-color: var(--primary-green) !important;
         }
 
-        .header-curve {
-            display: none;
-            /* Removed for this specific design */
-        }
+        @media (max-width: 768px) {
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
 
-        /* New Luxury Header Styles (Matches Prompt Image) */
-        .header-main {
-            background-color: #f7f7f7;
-            padding: 12px 0;
-            border-bottom: 1px solid #ebebeb;
-        }
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
 
-        .header-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333 !important;
-            display: flex;
-            align-items: center;
-            text-decoration: none !important;
-        }
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
 
-        .header-logo i {
-            color: #27ae60;
-            margin-right: 8px;
-        }
+            .header-bottom .row>div {
+                display: contents !important;
+            }
 
-        .custom-search-group {
-            max-width: 450px;
-            margin-left: auto;
-            display: flex;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
 
-        .custom-search-input {
-            border: none !important;
-            padding: 8px 15px;
-            flex-grow: 1;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
-        }
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
 
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
-            transition: background 0.2s;
-        }
+            /* --- Navigation Row Below Logo --- */
 
-        .custom-search-btn:hover {
-            background-color: #1e8449;
-        }
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
 
-        .header-nav-container {
-            background-color: #fff;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
 
-        .header-nav-container .nav-link {
-            color: #444 !important;
-            font-weight: 500;
-            padding: 8px 15px !important;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
 
-        .header-nav-container .nav-link:hover {
-            color: #27ae60 !important;
-        }
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
 
-        .header-action-icons {
-            display: flex;
-            gap: 22px;
-            align-items: center;
-            justify-content: flex-end;
-            height: 100%;
-        }
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
 
-        .header-action-icons a {
-            color: #2c3e50;
-            font-size: 1.25rem;
-            text-decoration: none;
-            position: relative;
-            transition: transform 0.2s, color 0.2s;
-        }
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
 
-        .header-action-icons a:hover {
-            color: #27ae60;
-            transform: translateY(-2px);
-        }
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
 
-        .header-badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: #e74c3c;
-            color: #fff;
-            font-size: 0.65rem;
-            padding: 2px 5px;
-            border-radius: 50%;
-            min-width: 18px;
-            text-align: center;
-            line-height: normal;
-        }
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
 
-        .header-curve {
-            display: none;
-            /* Removed for this specific design */
-        }
-            /* Space for the curve */
-        }
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
 
-        .header-curve {
-            position: absolute;
-            bottom: -1px;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-        }
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
 
-        .header-curve svg {
-            display: block;
-            width: calc(100% + 1.3px);
-            height: 60px;
-        }
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
 
-        .header-curve path {
-            fill: var(--bg-light);
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
+            }
         }
 
         .navbar-brand {
@@ -294,6 +318,131 @@
             font-size: 1.5rem;
             color: #ffffff !important;
         }
+
+        /* Exact Image Matches */
+        .custom-exact-footer {
+            background-color: #27ae60;
+            position: relative;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 0px;
+            overflow: hidden;
+        }
+
+        .custom-exact-footer .footer-top-wave {
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .custom-exact-footer .footer-top-wave svg {
+            display: block;
+            width: 100%;
+            height: 12vw;
+            min-height: 100px;
+            max-height: 180px;
+        }
+
+        .custom-exact-footer .footer-content {
+            position: relative;
+            z-index: 3;
+            padding-top: 12%;
+            padding-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .custom-exact-footer .footer-content {
+                padding-top: 15vw;
+            }
+
+            .custom-exact-footer .footer-top-wave svg {
+                height: auto !important;
+                min-height: unset !important;
+                max-height: unset !important;
+                aspect-ratio: 1440 / 160 !important;
+            }
+
+            /* 1. Center the KM Store Section (First Column) */
+            .custom-exact-footer .footer-content .row > div:nth-child(1) {
+                text-align: center !important;
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-bottom: 30px !important;
+            }
+            .custom-exact-footer .footer-content .row > div:nth-child(1) .d-flex {
+                justify-content: center !important;
+            }
+
+            /* 2. Place Account, Links, and Help Center on one row */
+            .custom-exact-footer .footer-content .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+            }
+
+            .custom-exact-footer .footer-content .row > div:nth-child(2),
+            .custom-exact-footer .footer-content .row > div:nth-child(3),
+            .custom-exact-footer .footer-content .row > div:nth-child(4) {
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+                padding: 0 5px !important;
+                text-align: center !important;
+            }
+
+            /* Scale down text slightly so they fit cleanly side-by-side */
+            .custom-exact-footer .footer-content .row h6 {
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                margin-bottom: 10px !important;
+            }
+
+            .custom-exact-footer .footer-content .row .small, 
+            .custom-exact-footer .footer-content .row .footer-link {
+                font-size: 0.7rem !important;
+            }
+
+            /* Format the email/phone text from wrapping too cleanly */
+            .custom-exact-footer .footer-content .row > div:nth-child(4) .small {
+                word-break: break-all !important;
+            }
+        }
+
+        .custom-exact-footer h5,
+        .custom-exact-footer h6 {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .custom-exact-footer .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .custom-exact-footer .footer-link:hover {
+            color: #3498DB;
+        }
+
+        .custom-exact-footer .social-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .custom-exact-footer .social-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
 
         /* Cards */
         .card {
@@ -416,30 +565,6 @@
         }
     </style>
 
-    <style>
-        /* Improved Header - Minimalist Style */
-        .header-minimal { background-color: #ffffff; font-family: 'Poppins', sans-serif; }
-        .header-top { background-color: #f8f9fa; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .header-bottom {
-            position: sticky;
-            top: 0;
-            z-index: 1000; background-color: #ffffff; padding: 10px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);       border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        
-            
-            
-            
-            
-        }
-        .header-logo { font-size: 24px; font-weight: 700; color: #2c3e50; text-decoration: none !important; display: flex; align-items: center; }
-        .header-logo i { color: var(--primary-green); }
-        .header-nav-link { color: #444; font-weight: 500; text-decoration: none; padding: 5px 15px; transition: color 0.2s; font-size: 15px; }
-        .header-nav-link:hover, .header-nav-link.active { color: var(--primary-green); }
-        .header-action-btn { color: #2c3e50; font-size: 18px; text-decoration: none !important; padding: 5px 12px; transition: color 0.2s; position: relative; display: inline-flex; align-items: center; gap: 5px; }
-        .header-action-btn:hover { color: var(--primary-green); }
-        .header-action-label { font-size: 14px; font-weight: 500; }
-        .header-badge { position: absolute; top: -2px; right: 2px; font-size: 10px; padding: 2px 5px; background-color: var(--primary-green) !important; }
-    </style>
 </head>
 
 <body>
@@ -1018,6 +1143,198 @@
         </div>
     </div>
 
+
+
+    <!-- Footer -->
+    <footer class="custom-exact-footer">
+        <div class="footer-top-wave">
+            <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
+                <path fill="none" stroke="#E2F2EB" stroke-width="6"
+                    d="M0,77 C100,107 150,117 250,117 C350,117 500,47 650,47 C800,47 900,107 1050,107 C1200,107 1350,57 1440,57" />
+                <path fill="#ffffff"
+                    d="M0,70 C100,100 150,110 250,110 C350,110 500,40 650,40 C800,40 900,100 1050,100 C1200,100 1350,50 1440,50 L1440,0 L0,0 Z" />
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M220,110 C180,120 150,100 100,80 C70,70 40,80 0,70" />
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M300,110 C290,90 270,70 300,50 C320,40 330,60 310,70 C290,80 300,100 320,110" />
+                <path fill="#85bc4a" d="M250,110 C230,120 220,95 240,95 C250,95 260,100 250,110 Z" />
+                <g transform="translate(300, 100)">
+                    <circle cx="-5" cy="-8" r="9" fill="#FDFDFB" />
+                    <circle cx="8" cy="-5" r="9" fill="#FDFDFB" />
+                    <circle cx="-5" cy="8" r="9" fill="#FDFDFB" />
+                    <circle cx="5" cy="8" r="9" fill="#FDFDFB" />
+                    <circle cx="0" cy="0" r="4.5" fill="#F3D75D" />
+                </g>
+                <g transform="translate(630, 45)">
+                    <path fill="#85bc4a" d="M10,-10 C5,-25 20,-30 25,-15 C30,0 15,5 10,-10 Z"
+                        transform="rotate(45 10 -10)" />
+                    <path fill="#A3D169" d="M-5,5 C-15,-5 -20,10 -10,15 C0,20 5,10 -5,5 Z" />
+                    <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                    <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                    <circle cx="-5" cy="7" r="8" fill="#FDFDFB" />
+                    <circle cx="5" cy="7" r="8" fill="#FDFDFB" />
+                    <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+                </g>
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M1160,80 C1220,100 1280,100 1350,90 C1380,85 1410,95 1440,90" />
+                <path fill="none" stroke="#8DC052" stroke-width="2"
+                    d="M1350,90 C1360,110 1380,115 1400,100 C1410,90 1390,85 1370,95" />
+                <path fill="#85bc4a" d="M1310,75 C1320,55 1345,60 1335,80 C1325,100 1300,95 1310,75 Z" />
+                <path fill="#97c95c" d="M1355,80 C1375,75 1380,90 1365,95 C1350,100 1335,85 1355,80 Z" />
+                <g transform="translate(1160, 65)">
+                    <path fill="#85bc4a" d="M-10,20 C-30,20 -30,0 -15,-5 C-5,-10 0,5 -10,20 Z" />
+                    <g transform="translate(5, 15) scale(1.6)">
+                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                        <circle cx="0" cy="0" r="4" fill="#F3D75D" />
+                    </g>
+                    <g transform="translate(50, 25) scale(0.9)">
+                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
+                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
+                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
+                        <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+        <div class="container-fluid px-4 px-lg-5 footer-content">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
+                    <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly
+                        from farmers to your kitchen.</p>
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr"
+                            class="social-icon" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Account</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="account.html" class="footer-link">Profile</a></li>
+                        <li class="mb-2"><a href="my-orders.html" class="footer-link">Orders</a></li>
+                        <li class="mb-2"><a href="address-book.html" class="footer-link">Addresses</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Useful Links</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="about.html" class="footer-link">About Us</a></li>
+                        <li class="mb-2"><a href="contact.html" class="footer-link">Contact</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link" data-bs-toggle="modal"
+                                data-bs-target="#faqModal">FAQ</a></li>
+                        <li class="mb-2"><a href="#" class="footer-link" data-bs-toggle="modal"
+                                data-bs-target="#termsModal">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Help Center</h6>
+                    <p class="small mb-1" style="color: #b0d8d0;"><i class="fas fa-envelope me-2"></i>
+                        support@kmstore.com</p>
+                    <p class="small" style="color: #b0d8d0;"><i class="fas fa-phone-alt me-2"></i> +1 234 567 890</p>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center small" style="color: #6ebcae;">
+                &copy; 2024 KM Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- FAQ Modal -->
+    <div class="modal fade" id="faqModal" tabindex="-1" aria-labelledby="faqModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary-custom" id="faqModalLabel"><i
+                            class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-4 pb-5 px-4">
+                    <div class="accordion accordion-flush" id="faqAccordion">
+                        <div class="accordion-item border-bottom mb-3">
+                            <h2 class="accordion-header" id="faqOne">
+                                <button
+                                    class="accordion-button collapsed bg-transparent shadow-none text-dark fw-semibold px-0"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                    aria-expanded="false" aria-controls="collapseOne">What is your return
+                                    policy?</button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="faqOne"
+                                data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted small px-0 pt-0 pb-3">Products are eligible for
+                                    return only if a request is made within 1 hour after delivery. Certain items like
+                                    perishable goods or custom-made products are non-returnable.</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-bottom mb-3">
+                            <h2 class="accordion-header" id="faqTwo">
+                                <button
+                                    class="accordion-button collapsed bg-transparent shadow-none text-dark fw-semibold px-0"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo">How can I track my order?</button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo"
+                                data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted small px-0 pt-0 pb-3">Once your order has been
+                                    dispatched, you will receive an email and an SMS containing your tracking
+                                    information.</div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0">
+                            <h2 class="accordion-header" id="faqThree">
+                                <button
+                                    class="accordion-button collapsed bg-transparent shadow-none text-dark fw-semibold px-0"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                    aria-expanded="false" aria-controls="collapseThree">Do you offer cash on delivery
+                                    (COD)?</button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree"
+                                data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted small px-0 pt-0 pb-2">Yes, we offer cash on
+                                    delivery on almost all our items depending on your location.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom bg-light">
+                    <h5 class="modal-title fw-bold text-primary-custom" id="termsModalLabel"><i
+                            class="fas fa-file-contract me-2"></i>Terms and Conditions</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start px-4 py-4" style="font-size: 0.95rem;">
+                    <p class="text-muted mb-4">By accessing and using this Website, you agree to comply with and be
+                        legally bound by the following Terms and Conditions.</p>
+                    <h6 class="fw-bold mt-4 text-dark">1. Products & Pricing</h6>
+                    <ul class="text-muted">
+                        <li>All products are subject to availability.</li>
+                        <li>Prices are listed in INR (₹) and may change without prior notice.</li>
+                    </ul>
+                    <h6 class="fw-bold mt-4 text-dark">2. Return Policy</h6>
+                    <ul class="text-muted">
+                        <li>Products cannot be returned after 1 hour from delivery time.</li>
+                        <li>Perishable items are non-returnable.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Coupon Modal -->
     <div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1059,6 +1376,7 @@
             await fetchWallet();
             await fetchCoupons();
         });
+
 
         // -----------------------
         // 1. Fetch & Display Cart

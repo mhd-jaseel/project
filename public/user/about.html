@@ -68,16 +68,14 @@
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            
-            
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
-        
-            
-            
-            
-            
+
+
+
+
+
         }
 
         .header-logo {
@@ -175,20 +173,201 @@
             background-color: var(--primary-green) !important;
         }
 
-        @media (max-width: 991px) {
-
-            .header-top .col-md-4,
-            .header-top .col-md-5 {
-                text-align: center;
-                margin-bottom: 15px;
+        @media (max-width: 768px) {
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
             }
 
-            .header-bottom .d-flex {
-                flex-wrap: wrap;
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
+
+            .header-bottom .row>div {
+                display: contents !important;
+            }
+
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
                 justify-content: center !important;
-                gap: 15px;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
+
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
+
+            /* --- Navigation Row Below Logo --- */
+
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
+
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
+
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
+
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
+
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
+
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
             }
         }
+
 
 
         /* Hero Section */
@@ -533,6 +712,129 @@
         .account-sidebar a:hover {
             color: var(--primary-green) !important;
         }
+
+        @media (max-width: 768px) {
+
+            /* Mobile About Page adjustments */
+            /* Hero Content Scale */
+            .display-5 {
+                font-size: 2rem !important;
+                margin-top: 10px !important;
+            }
+
+            p.lead {
+                font-size: 0.9rem !important;
+            }
+
+            p.text-muted {
+                font-size: 0.8rem !important;
+            }
+
+            h5.text-success {
+                font-size: 0.95rem !important;
+            }
+
+            /* Checklist adjustments */
+            .fw-semibold {
+                font-size: 0.8rem !important;
+            }
+
+            .fs-4 {
+                font-size: 1.1rem !important;
+            }
+
+            /* Image positioning fixes */
+            .position-relative>.bg-success {
+                width: 70px !important;
+                height: 70px !important;
+                font-size: 1rem !important;
+                top: -10px !important;
+                left: -10px !important;
+            }
+
+            /* Stats scaling */
+            .bg-light h2.display-5 {
+                font-size: 1.8rem !important;
+                margin-top: 5px !important;
+            }
+
+            .bg-light p.text-muted {
+                font-size: 0.8rem !important;
+            }
+
+            .py-5 {
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+
+            /* Shift Header above Image on Mobile */
+            .about-hero-row {
+                display: flex !important;
+                flex-direction: column !important;
+                /* Keep the row level centering for image but text inside body is left */
+            }
+
+            .about-welcome-text {
+                order: 1 !important;
+                margin-bottom: 0.5rem !important;
+                text-align: center !important;
+            }
+
+            .about-image-col {
+                order: 2 !important;
+                margin-bottom: 1.5rem !important;
+                text-align: center !important;
+            }
+
+            .about-main-title {
+                order: 3 !important;
+                margin-bottom: 1.5rem !important;
+                text-align: left !important;
+            }
+
+            .about-body-text {
+                order: 4 !important;
+                text-align: left !important;
+                /* Change back to left align as requested */
+            }
+
+            .about-body-text p {
+                text-align: left !important;
+            }
+
+            /* Center Checklist on Mobile */
+            .about-body-text .row {
+                justify-content: flex-start !important;
+                /* Align checklist to left */
+            }
+
+            .about-body-text .col-6 {
+                display: flex !important;
+                justify-content: flex-start !important;
+            }
+
+            .about-body-text .d-flex {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                max-width: 160px !important;
+                /* Keep icons/text aligned to each other while row is centered */
+            }
+
+            /* Team Scaling */
+            .card-body h5 {
+                font-size: 0.95rem !important;
+            }
+
+            .card-body p {
+                font-size: 0.75rem !important;
+            }
+
+            /* Team Square Images on Mobile */
+            .card-img-top {
+                aspect-ratio: 1 / 1 !important;
+                object-fit: cover !important;
+            }
+        }
     </style>
 
     <style>
@@ -574,7 +876,60 @@
 
         @media (max-width: 768px) {
             .custom-exact-footer .footer-content {
-                padding-top: 120px;
+                padding-top: 15vw;
+            }
+
+            .custom-exact-footer .footer-top-wave svg {
+                height: auto !important;
+                min-height: unset !important;
+                max-height: unset !important;
+                aspect-ratio: 1440 / 160 !important;
+            }
+
+            /* 1. Center the KM Store Section (First Column) */
+            .custom-exact-footer .footer-content .row>div:nth-child(1) {
+                text-align: center !important;
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-bottom: 30px !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(1) .d-flex {
+                justify-content: center !important;
+            }
+
+            /* 2. Place Account, Links, and Help Center on one row */
+            .custom-exact-footer .footer-content .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: flex-start !important;
+            }
+
+            .custom-exact-footer .footer-content .row>div:nth-child(2),
+            .custom-exact-footer .footer-content .row>div:nth-child(3),
+            .custom-exact-footer .footer-content .row>div:nth-child(4) {
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+                padding: 0 5px !important;
+                text-align: center !important;
+            }
+
+            /* Scale down text slightly so they fit cleanly side-by-side */
+            .custom-exact-footer .footer-content .row h6 {
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+                margin-bottom: 10px !important;
+            }
+
+            .custom-exact-footer .footer-content .row .small,
+            .custom-exact-footer .footer-content .row .footer-link {
+                font-size: 0.7rem !important;
+            }
+
+            /* Format the email/phone text from wrapping too cleanly */
+            .custom-exact-footer .footer-content .row>div:nth-child(4) .small {
+                word-break: break-all !important;
             }
         }
 
@@ -640,7 +995,8 @@
                                             href="/user/product.html">Products</a></li>
                                     <li class="nav-item"><a class="header-nav-link"
                                             href="/user/contact.html">Contact</a></li>
-                                    <li class="nav-item"><a class="header-nav-link active" href="/user/about.html">About</a>
+                                    <li class="nav-item"><a class="header-nav-link active"
+                                            href="/user/about.html">About</a>
                                     </li>
                                 </ul>
                             </div>
@@ -996,8 +1352,8 @@
 
     <!-- About Section -->
     <section class="container-fluid px-4 px-lg-5 mb-5">
-        <div class="row align-items-center mb-5">
-            <div class="col-md-6 order-md-2">
+        <div class="row align-items-center mb-5 about-hero-row">
+            <div class="col-md-6 order-md-2 about-image-col">
                 <div class="position-relative">
                     <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold fs-4 position-absolute start-0 top-0 translate-middle"
                         style="width:100px; height:100px; z-index: 10;">
@@ -1007,59 +1363,67 @@
                         class="img-fluid rounded-4 shadow" alt="About Image">
                 </div>
             </div>
-            <div class="col-md-6 order-md-1">
-                <h5 class="text-success fw-bold text-uppercase">Welcome to KM Store</h5>
-                <h1 class="fw-bold mb-3 display-5">Your go-to Supermarket for all daily needs!</h1>
-                <p class="text-muted lead">We are a dedicated team of retail professionals committed to bringing you the
-                    widest variety of groceries, household essentials, and fresh produce all under one roof.</p>
-                <p class="text-muted">Established in 2014, KM Store has been serving the community with a vast range of
-                    high-quality products. Our mission is to provide a convenient shopping experience with the best
-                    prices, ensuring you find everything you need for your home.</p>
-
-                <div class="row mt-4">
-                    <div class="col-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fs-4 me-2"></i>
-                            <span class="fw-semibold">100% Organic Food</span>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fs-4 me-2"></i>
-                            <span class="fw-semibold">Premium Quality</span>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fs-4 me-2"></i>
-                            <span class="fw-semibold">Express Delivery</span>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success fs-4 me-2"></i>
-                            <span class="fw-semibold">Customer Support</span>
-                        </div>
-                    </div>
+            <div class="col-md-6 order-md-1 about-text-col">
+                <div class="about-welcome-text col-12 px-0">
+                    <h5 class="text-success fw-bold text-uppercase">Welcome to KM Store</h5>
                 </div>
-            </div>
-        </div>
+                <div class="about-main-title col-12 px-0">
+                    <h1 class="fw-bold mb-3 display-5">Your go-to Supermarket for all daily needs!</h1>
+                </div>
+                <div class="about-body-text col-12 px-0 mt-4 mt-md-0">
+                    <p class="text-muted lead">We are a dedicated team of retail professionals committed to bringing you
+                        the
+                        widest variety of groceries, household essentials, and fresh produce all under one roof.</p>
+                    <p class="text-muted">Established in 2014, KM Store has been serving the community with a vast range
+                        of
+                        high-quality products. Our mission is to provide a convenient shopping experience with the best
+                        prices, ensuring you find everything you need for your home.</p>
+
+                    <div class="row mt-4">
+                        <div class="col-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success fs-4 me-2"></i>
+                                <span class="fw-semibold">100% Organic Food</span>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success fs-4 me-2"></i>
+                                <span class="fw-semibold">Premium Quality</span>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success fs-4 me-2"></i>
+                                <span class="fw-semibold">Express Delivery</span>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success fs-4 me-2"></i>
+                                <span class="fw-semibold">Customer Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- Closes about-body-text -->
+            </div> <!-- Closes about-text-col -->
+        </div> <!-- Closes about-hero-row -->
 
         <!-- Stats Section -->
         <div class="row text-center bg-light rounded-4 py-5 mb-5 g-4">
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <h2 class="display-5 fw-bold text-success">15k+</h2>
                 <p class="text-muted fw-semibold">Happy Customers</p>
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <h2 class="display-5 fw-bold text-success">500+</h2>
                 <p class="text-muted fw-semibold">Brands Available</p>
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <h2 class="display-5 fw-bold text-success">25+</h2>
                 <p class="text-muted fw-semibold">Years of Experience</p>
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <h2 class="display-5 fw-bold text-success">50+</h2>
                 <p class="text-muted fw-semibold">Awards Won</p>
             </div>
@@ -1070,7 +1434,7 @@
             <h5 class="text-success fw-bold text-uppercase">Our Team</h5>
             <h2 class="fw-bold mb-5">Meet Our Management Team</h2>
             <div class="row g-4">
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm h-100">
                         <img src="../project images/jasee.jpeg" class="card-img-top rounded-top" alt="Team">
                         <div class="card-body text-center">
@@ -1079,7 +1443,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm h-100">
                         <img src="../project images/nishad.jpeg" class="card-img-top rounded-top" alt="Team">
                         <div class="card-body text-center">
@@ -1088,7 +1452,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm h-100">
                         <img src="../project images/anzil.jpeg" class="card-img-top rounded-top" alt="Team">
                         <div class="card-body text-center">
@@ -1097,7 +1461,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <div class="card border-0 shadow-sm h-100">
                         <img src="../project images/arathi.jpeg" class="card-img-top rounded-top" alt="Team">
                         <div class="card-body text-center">

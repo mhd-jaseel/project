@@ -16,7 +16,6 @@
     <style>
         :root {
             --primary-green: #2ecc71;
-            /* Adjust to match image */
             --dark-green: #27ae60;
             --light-green-bg: #eafaf1;
             --yellow-accent: #f1c40f;
@@ -30,742 +29,365 @@
             color: var(--text-dark);
         }
 
-        /* Custom Colors */
-        .bg-primary-custom {
-            background-color: var(--dark-green) !important;
+        /* Improved Header - Minimalist Style */
+        .header-minimal {
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
         }
 
-        .text-primary-custom {
-            color: var(--primary-green) !important;
+        .header-bottom {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #ffffff;
+            padding: 10px 0;
+            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo i {
+            color: var(--primary-green);
+        }
+
+        .header-nav-link {
+            color: #444;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 15px;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .header-nav-link:hover,
+        .header-nav-link.active {
+            color: var(--primary-green);
+        }
+
+        .header-action-btn {
+            color: #2c3e50;
+            font-size: 18px;
+            text-decoration: none !important;
+            padding: 5px 12px;
+            transition: color 0.2s;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header-action-btn:hover {
+            color: var(--primary-green);
+        }
+
+        .header-action-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            font-size: 10px;
+            padding: 2px 5px;
+            background-color: var(--primary-green) !important;
+        }
+
+        @media (max-width: 768px) {
+            .header-bottom {
+                padding: 6px 0 !important;
+                border-radius: 0 0 15px 15px !important;
+                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
+            .header-bottom .container-fluid {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+
+            .header-bottom .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                position: relative !important;
+            }
+
+            .header-bottom .row>div {
+                display: contents !important;
+            }
+
+            /* Logo: Centered and at the top */
+            .header-logo {
+                display: flex !important;
+                order: -1 !important;
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 2px 0 8px 0 !important;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                color: #2c3e50 !important;
+                text-decoration: none !important;
+            }
+
+            .header-logo i {
+                font-size: 16px !important;
+                margin-right: 6px !important;
+            }
+
+            /* --- Navigation Row Below Logo --- */
+
+            /* Burger Icon Nav Container */
+            .navbar {
+                order: 1 !important;
+                position: relative !important;
+                margin-left: 2px !important;
+            }
+
+            .navbar-toggler {
+                padding: 4px !important;
+                border: none !important;
+                color: #333 !important;
+                display: block !important;
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                width: 1.1em !important;
+                height: 1.1em !important;
+            }
+
+            /* Burger Dropdown: Aligned to the burger icon */
+            #navbarNav {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                width: 180px !important;
+                background: white !important;
+                z-index: 1050 !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                margin-top: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #navbarNav .navbar-nav {
+                padding: 6px 0 !important;
+            }
+
+            #navbarNav .nav-link {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                border-bottom: 1px solid #f8f9fa !important;
+                font-weight: 500 !important;
+            }
+
+            /* Search Bar: Centered and Flexible */
+            .header-search-container {
+                order: 2 !important;
+                flex: 1 !important;
+                margin: 0 6px !important;
+                min-width: 0 !important;
+                padding: 0 !important;
+            }
+
+            .header-search-form {
+                border-radius: 20px !important;
+                height: 32px !important;
+                background: #f1f3f5 !important;
+                border: 1px solid #e9ecef !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-input {
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                background: transparent !important;
+                height: 100% !important;
+                box-shadow: none !important;
+            }
+
+            .header-search-btn {
+                padding: 0 8px !important;
+                background: transparent !important;
+                color: #2ecc71 !important;
+                font-size: 11px !important;
+                height: 100% !important;
+            }
+
+            /* Action Buttons (Wishlist, Cart) */
+            .header-action-btn {
+                padding: 5px !important;
+                font-size: 17px !important;
+                color: #444 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                margin: 0 !important;
+            }
+
+            #headerWishlistBtn {
+                order: 3 !important;
+            }
+
+            #headerCartBtn {
+                order: 4 !important;
+            }
+
+            /* Account Dropdown Section */
+            #auth-actions {
+                order: 5 !important;
+                position: relative !important;
+                display: inline-flex !important;
+                margin-right: 2px !important;
+            }
+
+            #auth-actions .dropdown-menu {
+                position: absolute !important;
+                width: 170px !important;
+                left: auto !important;
+                right: 0 !important;
+                top: 100% !important;
+                margin-top: 10px !important;
+                border-radius: 12px !important;
+                border: 1px solid #efefef !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+                padding: 10px 0 !important;
+                z-index: 1100 !important;
+            }
+
+            #auth-actions .dropdown-item {
+                font-size: 13px !important;
+                padding: 8px 20px !important;
+                font-weight: 500 !important;
+            }
+
+            .header-action-label {
+                display: none !important;
+            }
+
+            /* Notification Badges */
+            .header-badge {
+                top: -2px !important;
+                right: -2px !important;
+                font-size: 9px !important;
+                padding: 2px 4px !important;
+                min-width: 15px !important;
+                height: 15px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: #2ecc71 !important;
+                border: 1px solid white !important;
+            }
         }
 
         .btn-primary-custom {
             background-color: var(--primary-green);
             border-color: var(--primary-green);
+            color: white;
         }
 
         .btn-primary-custom:hover {
             background-color: var(--dark-green);
             border-color: var(--dark-green);
-        }
-
-        /* Header */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: white;
-            
-            
-            
-            
-        }
-
-        /* New Luxury Header Styles (Matches Prompt Image) */
-        .header-main {
-            background-color: #f7f7f7;
-            padding: 12px 0;
-            border-bottom: 1px solid #ebebeb;
-        }
-
-        .header-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333 !important;
-            display: flex;
-            align-items: center;
-            text-decoration: none !important;
-        }
-
-        .header-logo i {
-            color: #27ae60;
-            margin-right: 8px;
-        }
-
-        .custom-search-group {
-            max-width: 450px;
-            margin-left: auto;
-            display: flex;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .custom-search-input {
-            border: none !important;
-            padding: 8px 15px;
-            flex-grow: 1;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
-        }
-
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
-            transition: background 0.2s;
-        }
-
-        .custom-search-btn:hover {
-            background-color: #1e8449;
-        }
-
-        .header-nav-container {
-            background-color: #fff;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .header-nav-container .nav-link {
-            color: #444 !important;
-            font-weight: 500;
-            padding: 8px 15px !important;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .header-nav-container .nav-link:hover {
-            color: #27ae60 !important;
-        }
-
-        .header-action-icons {
-            display: flex;
-            gap: 22px;
-            align-items: center;
-            justify-content: flex-end;
-            height: 100%;
-        }
-
-        .header-action-icons a {
-            color: #2c3e50;
-            font-size: 1.25rem;
-            text-decoration: none;
-            position: relative;
-            transition: transform 0.2s, color 0.2s;
-        }
-
-        .header-action-icons a:hover {
-            color: #27ae60;
-            transform: translateY(-2px);
-        }
-
-        .header-badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: #e74c3c;
-            color: #fff;
-            font-size: 0.65rem;
-            padding: 2px 5px;
-            border-radius: 50%;
-            min-width: 18px;
-            text-align: center;
-            line-height: normal;
-        }
-
-        .header-curve {
-            display: none;
-            /* Removed for this specific design */
-        }
-
-        /* New Luxury Header Styles (Matches Prompt Image) */
-        .header-main {
-            background-color: #f7f7f7;
-            padding: 12px 0;
-            border-bottom: 1px solid #ebebeb;
-        }
-
-        .header-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333 !important;
-            display: flex;
-            align-items: center;
-            text-decoration: none !important;
-        }
-
-        .header-logo i {
-            color: #27ae60;
-            margin-right: 8px;
-        }
-
-        .custom-search-group {
-            max-width: 450px;
-            margin-left: auto;
-            display: flex;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .custom-search-input {
-            border: none !important;
-            padding: 8px 15px;
-            flex-grow: 1;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
-        }
-
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
-            transition: background 0.2s;
-        }
-
-        .custom-search-btn:hover {
-            background-color: #1e8449;
-        }
-
-        .header-nav-container {
-            background-color: #fff;
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .header-nav-container .nav-link {
-            color: #444 !important;
-            font-weight: 500;
-            padding: 8px 15px !important;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .header-nav-container .nav-link:hover {
-            color: #27ae60 !important;
-        }
-
-        .header-action-icons {
-            display: flex;
-            gap: 22px;
-            align-items: center;
-            justify-content: flex-end;
-            height: 100%;
-        }
-
-        .header-action-icons a {
-            color: #2c3e50;
-            font-size: 1.25rem;
-            text-decoration: none;
-            position: relative;
-            transition: transform 0.2s, color 0.2s;
-        }
-
-        .header-action-icons a:hover {
-            color: #27ae60;
-            transform: translateY(-2px);
-        }
-
-        .header-badge {
-            position: absolute;
-            top: -8px;
-            right: -10px;
-            background-color: #e74c3c;
-            color: #fff;
-            font-size: 0.65rem;
-            padding: 2px 5px;
-            border-radius: 50%;
-            min-width: 18px;
-            text-align: center;
-            line-height: normal;
-        }
-
-        .header-curve {
-            display: none;
-            /* Removed for this specific design */
-        }
-            /* Space for the curve */
-        }
-
-        .header-curve {
-            position: absolute;
-            bottom: -1px;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-        }
-
-        .header-curve svg {
-            display: block;
-            width: calc(100% + 1.3px);
-            height: 60px;
-        }
-
-        .header-curve path {
-            fill: #ffffff;
-        }
-
-        /* Hero Section */
-        .bg-light-accent {
-            background-color: #ECF0F1;
-            /* Lighter mint green */
-        }
-
-        .accent-circle {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            background-color: #3498DB;
-            border-radius: 50%;
-            bottom: -50px;
-            right: -50px;
-            z-index: 0;
-        }
-
-        .hero-img {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Categories */
-        .category-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #ECF0F1;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .category-circle:hover {
-            transform: scale(1.05);
-        }
-
-        /* Product Cards */
-        .product-card {
-            border-radius: 15px;
-            /* Softer rounded corners */
-            transition: box-shadow 0.3s ease;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #f0f0f0;
-            /* Subtle border */
-        }
-
-        .product-card:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        .product-card img.card-img-top {
-            height: 180px;
-            /* Fixed height for consistency */
-            object-fit: contain;
-        }
-
-        .product-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.2rem;
-            color: #000;
-        }
-
-        .product-weight {
-            color: #777;
-            font-size: 0.9rem;
-        }
-
-        .product-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #000;
-        }
-
-        /* Wishlist Styles */
-        .wishlist-card {
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .wishlist-card:hover {
-            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
-        }
-
-        .wishlist-img-wrapper {
-            height: 200px;
-            /* Fixed height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .wishlist-img-wrapper img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        .btn-remove-wishlist {
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .btn-remove-wishlist:hover {
-            background-color: #f8d7da;
-            color: #dc3545;
-        }
-
-        .btn-add-cart-wishlist {
-            background-color: black;
-            color: white;
-            border: none;
-            transition: all 0.3s;
-        }
-
-        .btn-add-cart-wishlist:hover {
-            background-color: #333;
             color: white;
         }
 
-        /* Checkout Styles */
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #db4444;
-            /* Match the red accent */
-        }
-
-        .checkout-item-img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-        }
-
-        .product-price-old {
-            text-decoration: line-through;
-            color: #bbb;
-            font-size: 0.9rem;
-            margin-left: 8px;
-        }
-
-        /* Badges */
-        .badge-best-deal {
-            background-color: #ECF0F1;
-            /* Light green from image */
-            color: #2c3e50;
-            font-weight: 500;
-            border-radius: 4px 0 10px 0;
-            /* Stylized corner if needed, or simple rounded */
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            z-index: 2;
-        }
-
-        /* Action Buttons */
-        .btn-wishlist {
-            width: 45px;
-            height: 45px;
-            border: 1px solid var(--primary-green);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            background: #fff;
-            transition: all 0.2s;
-        }
-
-        .btn-wishlist:hover {
-            background-color: #F0F8FF;
-        }
-
-        .btn-add-cart {
-            background-color: var(--primary-green);
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 0;
-            width: 100%;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-cart:hover {
-            background-color: var(--dark-green);
-            color: white;
-        }
-
-        /* Single Product Page Styles */
-        .thumbnail-img {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .thumbnail-img:hover {
-            border-color: var(--primary-green) !important;
-        }
-
-        .quantity-selector input:focus {
-            box-shadow: none;
-            outline: none;
-        }
-
-        .btn-add-cart-lg {
-            background-color: var(--primary-green);
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            transition: background-color 0.2s;
-        }
-
-        .btn-add-cart-lg:hover {
-            background-color: var(--dark-green);
-            color: white;
-        }
-
-
-        /* Features Info Section */
-        .icon-circle {
-            width: 64px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa !important;
-            /* Very light green */
-            color: var(--dark-green) !important;
-        }
-
-        /* Scrollbar hiding for horizontal scrolls if added later */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 4px;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: #f8f9fa;
-            border-radius: 12px;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--primary-green);
-            border-color: var(--primary-green);
-        }
-
-        .form-check-label {
-            cursor: pointer;
-        }
-
-
-
-
-        .btn-outline-custom {
-            color: var(--dark-green);
-            border-color: var(--primary-green);
-            background-color: #fff;
-        }
-
-        .btn-outline-custom:hover {
-            background-color: var(--primary-green);
-            color: white;
-        }
-
-        /* Cart Page Styles */
-        .cart-img-wrapper {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-        }
-
-        .cart-img-wrapper img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-        }
-
-        .quantity-selector-sm {
-            width: fit-content;
-        }
-
-        .table> :not(caption)>*>* {
-            background-color: transparent;
-            /* Fix default BS table bg */
-        }
-
-        thead th {
-            font-weight: 500;
-            color: #555;
-            font-size: 0.9rem;
-        }
-
-        /* Account Page Styles */
-        .active-link {
+        .text-primary-custom {
             color: var(--primary-green) !important;
-            font-weight: 600;
-        }
-
-        .account-sidebar a:hover {
-            color: var(--primary-green) !important;
-        }
-    </style>
-    <!-- SweetAlert2 -->
-    
-
-    <style>
-        /* Exact Image Matches */
-        .custom-exact-footer {
-            background-color: #27ae60;
-            position: relative;
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            margin-top: 100px;
-            overflow: hidden;
-        }
-
-        .custom-exact-footer .footer-top-wave {
-            position: absolute;
-            top: -1px;
-            left: 0;
-            width: 100%;
-            z-index: 2;
-        }
-
-        .custom-exact-footer .footer-top-wave svg {
-            display: block;
-            width: 100%;
-            height: 12vw;
-            min-height: 100px;
-            max-height: 180px;
-        }
-
-
-
-        .custom-exact-footer .footer-content {
-            position: relative;
-            z-index: 3;
-            padding-top: 12%;
-            /* Based on wave height */
-            padding-bottom: 50px;
-        }
-
-        @media (max-width: 768px) {
-            .custom-exact-footer .footer-content {
-                padding-top: 120px;
-            }
-        }
-
-        .custom-exact-footer h5,
-        .custom-exact-footer h6 {
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .custom-exact-footer .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .custom-exact-footer .footer-link:hover {
-            color: #3498DB;
-        }
-
-        .custom-exact-footer .social-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-            text-decoration: none;
-        }
-
-        .custom-exact-footer .social-icon:hover {
-            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 
 <body class="bg-light d-flex flex-column min-vh-100">
 
-    <!-- Header Section -->
-    <header>
-        <!-- Top Row: Logo & Search -->
-        <div class="bg-light-header header-top">
-            <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-between">
-                <!-- Logo -->
-                <a href="/user/homepage.html" class="navbar-brand-custom">
-                    <i class="fas fa-shopping-basket"></i>Groco
-                </a>
-
-                <!-- Search -->
-                <div class="flex-grow-1 px-4 d-none d-md-block">
-                    <form id="globalSearchForm" class="header-search-container d-flex">
-                        <input type="text" id="globalSearchInput" class="form-control" placeholder="search here..."
-                            autocomplete="off">
-                        <button class="btn btn-green-custom" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                    <div id="searchSuggestions" class="list-group position-absolute shadow"
-                        style="width: 400px; z-index: 1000; display: none;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Nav Links & Icons -->
-        <div class="header-bottom">
-            <div class="container-fluid px-4 px-lg-5 d-flex align-items-center justify-content-between">
-                <nav class="navbar navbar-expand-lg p-0">
-                    <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link nav-link-custom" href="/user/homepage.html">Home</a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom"
-                                    href="/user/product.html">Category</a></li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom"
-                                    href="/user/product.html">Product</a></li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom" href="#">Deal</a></li>
-                            <li class="nav-item"><a class="nav-link nav-link-custom"
-                                    href="/user/contact.html">Contact</a></li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <div class="header-action-icons">
-                    <a href="/user/cart.html" id="headerCartBtn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count-badge" class="badge-custom" style="display: none;">0</span>
-                    </a>
-                    <a href="/user/wishlist.html" id="headerWishlistBtn">
-                        <i class="fas fa-heart"></i>
-                        <span id="wishlist-count-badge" class="badge-custom" style="display: none;">0</span>
-                    </a>
-                    <span id="auth-actions">
-                        <!-- Dynamic Auth Content -->
-                        <a href="/user/login.html" id="headerLoginBtn">
-                            <i class="fas fa-user-circle"></i>
+    <header class="header-minimal">
+        <div class="header-bottom py-2">
+            <div class="container-fluid px-4 px-lg-5">
+                <div class="row align-items-center">
+                    <div
+                        class="col-lg-5 col-12 d-flex justify-content-between justify-content-lg-start align-items-center order-1 order-lg-1 gap-lg-4">
+                        <a href="/user/homepage.html" class="header-logo text-nowrap"
+                            style="font-size: 20px; letter-spacing: 0.5px;">
+                            <i class="fas fa-leaf me-2"></i>KM Store
                         </a>
-                    </span>
+                        <nav class="navbar navbar-expand-lg p-0">
+                            <button class="navbar-toggler border-0 p-0" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarNav">
+                                <span class="navbar-toggler-icon" style="width: 1.2em; height: 1.2em;"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarNav">
+                                <ul class="navbar-nav gap-2 gap-lg-3">
+                                    <li class="nav-item"><a class="header-nav-link" href="/user/homepage.html">Home</a>
+                                    </li>
+                                    <li class="nav-item"><a class="header-nav-link"
+                                            href="/user/product.html">Products</a></li>
+                                    <li class="nav-item"><a class="header-nav-link"
+                                            href="/user/contact.html">Contact</a></li>
+                                    <li class="nav-item"><a class="header-nav-link" href="/user/about.html">About</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+
+                    <div class="col-lg-4 col-12 d-flex justify-content-center order-3 order-lg-2 px-3 mt-3 mt-lg-0">
+                        <form id="globalSearchForm" class="header-search-container w-100 position-relative"
+                            style="max-width: 500px; margin: 0;">
+                            <div class="header-search-form"
+                                style="display: flex; background: #fff; border: 1px solid #ddd; border-radius: 25px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                <input type="text" id="globalSearchInput" class="header-search-input"
+                                    placeholder="search here..." autocomplete="off"
+                                    style="border: none !important; padding: 8px 20px; flex-grow: 1; font-size: 14px; outline: none !important; box-shadow: none !important;">
+                                <button class="header-search-btn" type="submit"
+                                    style="background-color: var(--primary-green) !important; color: white !important; border: none !important; padding: 8px 20px !important; font-size: 13px !important; transition: background 0.2s;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div id="searchSuggestions" class="list-group position-absolute w-100 shadow"
+                                style="top: 100%; left: 0; z-index: 1000; display: none; border-radius: 8px; margin-top: 5px;">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div
+                        class="col-lg-3 col-12 d-flex align-items-center justify-content-center justify-content-lg-end gap-3 order-2 order-lg-3 mt-3 mt-lg-0">
+                        <a href="/user/wishlist.html" class="header-action-btn" id="headerWishlistBtn">
+                            <i class="fas fa-heart"></i>
+                            <span class="header-action-label d-none d-xl-inline">Wishlist</span>
+                            <span id="wishlist-count-badge" class="badge rounded-pill header-badge"
+                                style="display: none;">0</span>
+                        </a>
+                        <a href="/user/cart.html" class="header-action-btn" id="headerCartBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="header-action-label d-none d-xl-inline">Cart</span>
+                            <span id="cart-count-badge" class="badge rounded-pill header-badge"
+                                style="display: none;">0</span>
+                        </a>
+                        <span id="auth-actions">
+                            <a href="/user/login.html" class="header-action-btn" id="headerLoginBtn">
+                                <i class="fas fa-user-circle"></i>
+                                <span class="header-action-label d-none d-xl-inline">Login</span>
+                            </a>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -779,22 +401,22 @@
                     <i class="fas fa-shield-alt fa-2x text-primary-custom"></i>
                 </div>
                 <h3 class="fw-bold text-dark">Verification</h3>
-                <p class="text-muted small">Enter the 4-digit code sent to your email.</p>
+                <p class="text-muted small">Enter the 6-digit code sent to your email.</p>
             </div>
 
             <form id="verification-form">
                 <div class="d-flex justify-content-center gap-2 mb-4">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
-                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none" maxlength="1"
+                    <input type="text" class="form-control text-center fs-4 fw-bold shadow-none otp-input" maxlength="1"
                         style="width: 40px; height: 50px;">
                 </div>
 
@@ -813,140 +435,11 @@
         </div>
     </div>
 
-        <!-- Footer -->
-
-
-<footer class="custom-exact-footer">
-        <div class="footer-top-wave">
-            <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
-                <!-- Light shadow/green stroke -->
-                <path fill="none" stroke="#E2F2EB" stroke-width="6"
-                    d="M0,77 C100,107 150,117 250,117 C350,117 500,47 650,47 C800,47 900,107 1050,107 C1200,107 1350,57 1440,57" />
-
-                <!-- Main White Wave -->
-                <path fill="#ffffff"
-                    d="M0,70 C100,100 150,110 250,110 C350,110 500,40 650,40 C800,40 900,100 1050,100 C1200,100 1350,50 1440,50 L1440,0 L0,0 Z" />
-
-                <!-- Vines left -->
-                <path fill="none" stroke="#8DC052" stroke-width="2"
-                    d="M220,110 C180,120 150,100 100,80 C70,70 40,80 0,70" />
-                <!-- Curly vine left -->
-                <path fill="none" stroke="#8DC052" stroke-width="2"
-                    d="M300,110 C290,90 270,70 300,50 C320,40 330,60 310,70 C290,80 300,100 320,110" />
-
-                <!-- Leaves left -->
-                <path fill="#85bc4a" d="M250,110 C230,120 220,95 240,95 C250,95 260,100 250,110 Z" />
-
-                <!-- Left Flower -->
-                <g transform="translate(300, 100)">
-                    <circle cx="-5" cy="-8" r="9" fill="#FDFDFB" />
-                    <circle cx="8" cy="-5" r="9" fill="#FDFDFB" />
-                    <circle cx="-5" cy="8" r="9" fill="#FDFDFB" />
-                    <circle cx="5" cy="8" r="9" fill="#FDFDFB" />
-                    <circle cx="0" cy="0" r="4.5" fill="#F3D75D" />
-                </g>
-
-                <!-- Middle Sub-elements -->
-                <g transform="translate(630, 45)">
-                    <path fill="#85bc4a" d="M10,-10 C5,-25 20,-30 25,-15 C30,0 15,5 10,-10 Z"
-                        transform="rotate(45 10 -10)" />
-                    <path fill="#A3D169" d="M-5,5 C-15,-5 -20,10 -10,15 C0,20 5,10 -5,5 Z" />
-                    <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-                    <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-                    <circle cx="-5" cy="7" r="8" fill="#FDFDFB" />
-                    <circle cx="5" cy="7" r="8" fill="#FDFDFB" />
-                    <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
-                </g>
-
-                <!-- Vines right -->
-                <path fill="none" stroke="#8DC052" stroke-width="2"
-                    d="M1160,80 C1220,100 1280,100 1350,90 C1380,85 1410,95 1440,90" />
-                <path fill="none" stroke="#8DC052" stroke-width="2"
-                    d="M1350,90 C1360,110 1380,115 1400,100 C1410,90 1390,85 1370,95" />
-
-                <!-- Right Leaves -->
-                <path fill="#85bc4a" d="M1310,75 C1320,55 1345,60 1335,80 C1325,100 1300,95 1310,75 Z" />
-                <path fill="#97c95c" d="M1355,80 C1375,75 1380,90 1365,95 C1350,100 1335,85 1355,80 Z" />
-
-                <!-- Right Flowers -->
-                <g transform="translate(1160, 65)">
-                    <!-- Small Left Leaf under petal -->
-                    <path fill="#85bc4a" d="M-10,20 C-30,20 -30,0 -15,-5 C-5,-10 0,5 -10,20 Z" />
-
-                    <!-- Large Flower -->
-                    <g transform="translate(5, 15) scale(1.6)">
-                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
-                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
-                        <circle cx="0" cy="0" r="4" fill="#F3D75D" />
-                    </g>
-
-                    <!-- Small Flower -->
-                    <g transform="translate(50, 25) scale(0.9)">
-                        <circle cx="-6" cy="-8" r="8" fill="#FDFDFB" />
-                        <circle cx="6" cy="-5" r="8" fill="#FDFDFB" />
-                        <circle cx="-6" cy="7" r="8" fill="#FDFDFB" />
-                        <circle cx="6" cy="6" r="8" fill="#FDFDFB" />
-                        <circle cx="-1" cy="0" r="4" fill="#F3D75D" />
-                    </g>
-                </g>
-            </svg>
-        </div>
-
-
-
-        <div class="container-fluid px-4 px-lg-5 footer-content">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3" style="color: #D6EAF8;">KM Store</h5>
-                    <p class="small" style="color: #b0d8d0;">Best products at your doorstep. Fresh and organic directly
-                        from farmers to your kitchen.</p>
-                    <div class="d-flex gap-3 mt-4">
-                        <a href="https://www.instagram.com/jaseel.____?igsh=bTBuZzVrc2FkcDIw&utm_source=qr"
-                            class="social-icon" target="_blank">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h6 class="fw-bold mb-3">Account</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="account.html" class="footer-link">Profile</a></li>
-                        <li class="mb-2"><a href="my-orders.html" class="footer-link">Orders</a></li>
-                        <li class="mb-2"><a href="address-book.html" class="footer-link">Addresses</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h6 class="fw-bold mb-3">Useful Links</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="about.html" class="footer-link">About Us</a></li>
-                        <li class="mb-2"><a href="contact.html" class="footer-link">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h6 class="fw-bold mb-3">Help Center</h6>
-                    <p class="small mb-1" style="color: #b0d8d0;"><i class="fas fa-envelope me-2"></i>
-                        support@kmstore.com</p>
-                    <p class="small" style="color: #b0d8d0;"><i class="fas fa-phone-alt me-2"></i> +1 234 567 890</p>
-                </div>
-            </div>
-            <hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);">
-            <div class="text-center small" style="color: #6ebcae;">
-                &copy; 2024 KM Store. All rights reserved.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    
-    
-
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Simple auto-focus script for OTP inputs
-        const inputs = document.querySelectorAll('.form-control[maxlength="1"]');
+        const inputs = document.querySelectorAll('.otp-input');
         inputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
                 if (e.target.value.length === 1 && index < inputs.length - 1) {
@@ -960,21 +453,17 @@
             });
         });
 
-        // URL Params
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email');
         const purpose = urlParams.get('purpose');
 
-        // Update UI based on purpose
         if (purpose === 'forgot-password') {
             document.querySelector('h3').textContent = 'Reset Password';
-            document.querySelector('.text-muted.small').textContent = 'Enter the code sent to your email to reset password.';
+            document.querySelector('.text-muted.small').textContent = 'Enter the 6-digit code sent to your email to reset password.';
         }
 
         document.getElementById('verification-form').addEventListener('submit', async function (e) {
             e.preventDefault();
-
-            // Collect OTP
             let otp = '';
             inputs.forEach(input => otp += input.value);
 
@@ -1001,9 +490,7 @@
                         window.location.href = 'login.html';
                     });
                 } else if (purpose === 'forgot-password') {
-                    Swal.fire('Success', 'Code verified!', 'success').then(() => {
-                        window.location.href = `reset-password.html?resetToken=${data.resetToken}`;
-                    });
+                    window.location.href = `reset-password.html?email=${encodeURIComponent(email)}&otp=${otp}`;
                 }
             } catch (err) {
                 console.error(err);
@@ -1011,9 +498,6 @@
             }
         });
     </script>
-
-    
-    
 </body>
 
 </html>
