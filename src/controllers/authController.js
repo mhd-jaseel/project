@@ -8,12 +8,17 @@ const crypto = require("crypto"); //Used to generate secure random tokens (reset
 // Mail setup  // Configure email service and authentication for sending mails
 
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || "gmail",//Use email service from env file, otherwise Gmail
+  service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: (process.env.EMAIL_USER || "").trim(),
+    pass: (process.env.EMAIL_PASS || "").trim()
   }
-});// Object used to send emails
+});
+
+
+
+
+
 
 
 // Helper function to generate a secure 6-digit numeric OTP
@@ -141,7 +146,7 @@ exports.login = async (req, res) => {
   }
 };
 
- //Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
+//Controller function to verify OTPCalled from frontend after user enters OTP    Called from frontend after user enters OTP
 // Verify the OTP provided by the user to complete registration or password reset
 exports.verifyOTP = async (req, res) => {
   try {

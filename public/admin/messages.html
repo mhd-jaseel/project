@@ -98,7 +98,7 @@
         }
 
         .main-content {
-            margin-left: 260px;
+            margin-left: 0;
             padding: 0;
             min-height: 100vh;
             transition: all 0.3s;
@@ -138,6 +138,24 @@
             font-size: 0.6rem;
         }
 
+        .back-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--text-muted);
+            border: 1px solid #e4e6ef;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
         .content-wrapper {
             padding: 30px;
             flex-grow: 1;
@@ -172,47 +190,18 @@
 
 <body>
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="brand">
-            <i class="fas fa-leaf me-2 text-success"></i>KM Admin
-        </div>
-        <a href="dashboard.html" class="nav-link">
-            <i class="fas fa-th-large"></i> Dashboard
-        </a>
-
-        <a href="order-management.html" class="nav-link">
-            <i class="fas fa-shopping-bag"></i> Order Management
-        </a>
-        <a href="customers.html" class="nav-link">
-            <i class="fas fa-users"></i> Customers
-        </a>
-        <a href="sales-offers.html" class="nav-link">
-            <i class="fas fa-percentage"></i> Sales Offers
-        </a>
-        <a href="categories.html" class="nav-link">
-            <i class="fas fa-th-list"></i> Categories
-        </a>
-        <a href="all-products.html" class="nav-link">
-            <i class="fas fa-boxes"></i> All Products
-        </a>
-
-        <div class="mt-auto p-4">
-            <a href="#" id="adminLogoutBtn" class="btn btn-outline-danger w-100 btn-sm">
-                <i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-        </div>
-    </nav>
 
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Header -->
         <header class="top-header">
-            <div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="dashboard.html" class="back-btn rounded-circle text-decoration-none">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
                 <h4 class="fw-bold m-0 text-success">Contact Messages</h4>
             </div>
-
-
         </header>
 
         <!-- Content Content -->
@@ -297,12 +286,15 @@
             window.location.href = "/user/login.html";
         }
 
-        document.getElementById("adminLogoutBtn").addEventListener("click", () => {
-            localStorage.removeItem("adminToken");
-            localStorage.removeItem("token");
-            localStorage.removeItem("role");
-            window.location.href = "/user/login.html";
-        });
+        const logoutBtn = document.getElementById("adminLogoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("token");
+                localStorage.removeItem("role");
+                window.location.href = "/user/login.html";
+            });
+        }
 
 
 
@@ -431,8 +423,15 @@
                     bootstrap.Modal.getInstance(document.getElementById('replyModal')).hide();
                     fetchMessages();
                 } else {
-                    Swal.fire('Error', 'Failed to send reply', 'error');
+                    const errorData = await res.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorData.message || 'Failed to send reply',
+                        footer: errorData.details ? `<div style="font-size: 0.8em; color: #dc3545;">Detail: ${errorData.details}</div>` : ''
+                    });
                 }
+
             } catch (error) {
                 console.error(error);
                 Swal.fire('Error', 'Server error', 'error');

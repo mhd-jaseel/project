@@ -857,6 +857,83 @@
             }
         }
     </style>
+
+
+    <script>
+        // Global Auth / Block Check
+        (async function() {
+            const token = localStorage.getItem('userToken');
+            if (!token) return; 
+
+            try {
+                const res = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
+                if (res.status === 403) {
+                    const data = await res.json();
+                    if (data.isBlocked) {
+                        const styleTag = document.createElement('style');
+                        styleTag.innerHTML = 'body { margin: 0; padding: 0; overflow: hidden; }';
+                        document.head.appendChild(styleTag);
+                        
+                        document.body.innerHTML = `
+                            <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
+                                <div>
+                                    <h1 style="color: #e74c3c; margin-bottom: 20px;">Admin has blocked your account.</h1>
+                                    <p style="font-size: 1.1rem; color: #555; margin-bottom: 30px;">You no longer have permission to access this system.<br>If you believe this is a mistake, please contact the admin.</p>
+                                    <button id="showEmailBtn" style="background: #2ecc71; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; margin-bottom: 20px;">Contact Admin</button>
+                                    
+                                    <form id="adminEmailForm" style="display: none; max-width: 400px; margin: 0 auto; text-align: left; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <div style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Subject</label>
+                                            <input type="text" id="adminSubj" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                        </div>
+                                        <div style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Message</label>
+                                            <textarea id="adminMsg" rows="4" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
+                                        </div>
+                                        <button type="submit" style="width: 100%; background: #2ecc71; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;">Send Message</button>
+                                    </form>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('showEmailBtn').addEventListener('click', function() {
+                            this.style.display = 'none';
+                            document.getElementById('adminEmailForm').style.display = 'block';
+                        });
+                        
+                        document.getElementById('adminEmailForm').addEventListener('submit', async function(e) {
+                             e.preventDefault();
+                             const subject = document.getElementById('adminSubj').value;
+                             const message = document.getElementById('adminMsg').value;
+                             try {
+                                  await fetch('/api/contact/send', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
+                                  });
+                             } catch(error) {}
+                             
+                             document.body.innerHTML = `
+                                 <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
+                                     <h1 style="color: #2ecc71;">Message Sent!</h1>
+                                     <p>Redirecting to signup...</p>
+                                 </div>
+                             `;
+                             
+                             localStorage.removeItem('userToken');
+                             localStorage.removeItem('user');
+                             localStorage.removeItem('role');
+                             
+                             setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
+                        });
+                        
+                        throw new Error('User is blocked');
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
+
 </head>
 
 <body>
@@ -1363,6 +1440,73 @@
         </div>
     </section>
 
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header bg-primary-custom text-white">
+                    <h5 class="modal-title fw-bold" id="orderDetailsModalLabel">
+                        Order Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+
+                    <!-- ORDER INFO -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted small">ORDER ID</h6>
+                            <p class="fw-bold" id="modalOrderId" data-id="">
+                                #123456
+                            </p>
+
+                        </div>
+
+                        <div class="col-md-6 text-md-end">
+                            <h6 class="fw-bold text-muted small">DATE</h6>
+                            <p class="fw-bold" id="modalOrderDate">
+                                Jan 01, 2024
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ITEMS -->
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">Items</h6>
+
+                    <ul class="list-group list-group-flush mb-4" id="modalOrderItems">
+                        <!-- Dynamic Items -->
+                    </ul>
+
+                    <!-- TOTAL -->
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                        <h5 class="fw-bold">Total</h5>
+                        <h5 class="fw-bold text-primary-custom" id="modalOrderTotal">
+                            ₹0
+                        </h5>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="mt-4 text-end" id="modalInvoiceAction">
+                        <button class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                        <button class="btn btn-success" id="btnDownloadInvoice">
+                            <i class="fas fa-file-invoice me-2"></i>
+                            Download Invoice
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="custom-exact-footer">
         <div class="footer-top-wave">
@@ -1726,7 +1870,178 @@
 
         window.handleViewDetailsClick = (element) => {
             const id = element.dataset.orderId;
-            window.location.href = `my-orders.html?orderId=${id}`;
+            const date = element.dataset.orderDate;
+            const total = parseFloat(element.dataset.orderTotal || 0);
+            const subtotal = parseFloat(element.dataset.orderSubtotal || 0);
+            const discount = parseFloat(element.dataset.orderDiscount || 0);
+            const delivery = parseFloat(element.dataset.orderDelivery || 0);
+            const handling = parseFloat(element.dataset.orderHandling || 0);
+            const orderStatus = element.dataset.orderStatus;
+            const deliveredAt = element.dataset.orderDelivered;
+            const paymentMethod = element.dataset.orderPayment;
+            const itemsStr = element.dataset.orderItems;
+            openOrderModal(id, date, total, itemsStr, subtotal, discount, delivery, handling, orderStatus, deliveredAt, paymentMethod);
+        };
+
+        window.openOrderModal = (id, date, total, itemsStr, subtotal, discount, delivery, handling, orderStatus, deliveredAt, paymentMethod) => {
+            const items = JSON.parse(decodeURIComponent(itemsStr));
+            let cancelledTotal = 0;
+            let returnedTotal = 0;
+            let grossTotal = 0;
+
+            document.getElementById('modalOrderId').innerText = '#' + id.substring(0, 8).toUpperCase();
+            document.getElementById('modalOrderId').dataset.id = id;
+            document.getElementById('modalOrderDate').innerText = new Date(date).toLocaleDateString();
+            document.getElementById('modalOrderTotal').innerText = '₹' + total;
+
+            const list = document.getElementById('modalOrderItems');
+            list.innerHTML = '';
+
+            // Check Return Window
+            let isReturnWindowExpired = false;
+            if (deliveredAt) {
+                const deliveryTime = new Date(deliveredAt).getTime();
+                const currentTime = new Date().getTime();
+                const diffHours = (currentTime - deliveryTime) / (1000 * 60 * 60);
+                if (diffHours > 1) {
+                    isReturnWindowExpired = true;
+                }
+            }
+
+            items.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                grossTotal += itemTotal;
+                if (item.itemStatus === 'Cancelled') {
+                    cancelledTotal += itemTotal;
+                }
+                if (item.itemStatus === 'Returned') {
+                    returnedTotal += itemTotal;
+                }
+
+                let statusBadge = '';
+                let actionBtn = '';
+                let rowClass = 'list-group-item d-flex justify-content-between align-items-center px-0';
+                let priceHtml = `<span class="text-dark small fw-bold">₹${itemTotal.toFixed(2)}</span>`;
+                let nameHtml = `<h6 class="mb-0 text-dark small fw-bold">${item.name || 'Product'}</h6>`;
+
+                // Item Status Badge
+                if (item.itemStatus === 'Cancelled') {
+                    statusBadge = '<span class="status-badge status-danger ms-2">Cancelled</span>';
+                    rowClass += ' bg-light';
+                    priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
+                    nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
+                } else if (item.itemStatus === 'Return Requested') {
+                    statusBadge = '<span class="status-badge status-warning ms-2">Return Requested</span>';
+                } else if (item.itemStatus === 'Returned') {
+                    statusBadge = '<span class="status-badge status-secondary ms-2">Returned</span>';
+                    priceHtml = `<span class="text-muted text-decoration-line-through small">₹${itemTotal.toFixed(2)}</span>`;
+                    nameHtml = `<h6 class="mb-0 text-muted text-decoration-line-through small fw-bold">${item.name || 'Product'}</h6>`;
+                }
+
+                // Item Image prioritization
+                let rawItemImage = item.image;
+                if (item.product && item.product.image) {
+                    rawItemImage = item.product.image;
+                }
+                const itemImgSrc = (rawItemImage && (rawItemImage.startsWith('http') || rawItemImage.startsWith('/'))) ? rawItemImage : (rawItemImage ? '/' + rawItemImage : 'https://placehold.co/50');
+
+                const listEl = document.createElement('li');
+                listEl.className = rowClass;
+                listEl.innerHTML = `
+                    <div class="d-flex align-items-center">
+                         <img src="${itemImgSrc}" 
+                             onerror="this.src='https://placehold.co/50'"
+                             style="width:50px;height:50px;object-fit:contain" class="me-3 border rounded ${item.itemStatus === 'Cancelled' || item.itemStatus === 'Returned' ? 'opacity-50' : ''}">
+                        <div>
+                            ${nameHtml}
+                            <small class="text-muted">Qty: ${item.quantity} x ₹${parseFloat(item.price).toFixed(2)}</small>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        ${priceHtml}
+                        <div class="mt-1">${actionBtn}</div>
+                    </div>
+                `;
+                list.appendChild(listEl);
+            });
+
+            let actualDiscount = discount;
+
+            let totalRefunded = 0;
+            let cancelledRefund = 0;
+            let returnedRefund = 0;
+
+            items.forEach(itm => {
+                const itemTotal = itm.price * itm.quantity;
+                if (itm.itemStatus === 'Cancelled') {
+                    const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                    cancelledRefund += (itemTotal - itemShare);
+                } else if (itm.itemStatus === 'Returned') {
+                    const itemShare = (itemTotal / grossTotal) * actualDiscount;
+                    returnedRefund += (itemTotal - itemShare);
+                }
+            });
+            totalRefunded = cancelledRefund + returnedRefund;
+
+            const amountAfterCharges = grossTotal + delivery + handling - actualDiscount;
+            const finalDisplayTotal = total;
+
+            // Summary Section
+            let summaryDiv = document.getElementById('orderSummaryDetails');
+            if (!summaryDiv) {
+                summaryDiv = document.createElement('div');
+                summaryDiv.id = 'orderSummaryDetails';
+                summaryDiv.className = 'mt-3 pt-3 border-top';
+                const totalContainer = document.getElementById('modalOrderTotal').parentElement;
+                totalContainer.parentElement.insertBefore(summaryDiv, totalContainer);
+            }
+
+            summaryDiv.innerHTML = `
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Subtotal (Gross)</span>
+                    <span>₹${grossTotal.toFixed(2)}</span>
+                </div>
+                ${actualDiscount > 0 ? `
+                <div class="d-flex justify-content-between small mb-2 text-success">
+                    <span>Coupon Discount</span>
+                    <span>-₹${actualDiscount.toFixed(2)}</span>
+                </div>` : ''
+                }
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Delivery Charge</span>
+                    <span>+₹${parseFloat(delivery).toFixed(2)}</span>
+                </div>
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Handling Fee</span>
+                    <span>+₹${parseFloat(handling).toFixed(2)}</span>
+                </div>
+                <div class="d-flex justify-content-between small fw-bold mb-3 pb-3 border-bottom text-muted">
+                    <span>Amount After Charges</span>
+                    <span>₹${amountAfterCharges.toFixed(2)}</span>
+                </div>
+                ${(cancelledTotal > 0 && orderStatus !== 'Cancelled') ? `
+                <div class="d-flex justify-content-between small mb-2 text-danger">
+                    <span>Cancelled Item<br><small class="text-muted">(Original: ₹${cancelledTotal.toFixed(2)})</small></span>
+                    <span class="d-flex flex-column align-items-end"><span class="text-muted small">Actual Refund</span>-₹${cancelledRefund.toFixed(2)}</span>
+                </div>` : ''
+                }
+                ${returnedTotal > 0 ? `
+                <div class="d-flex justify-content-between small mb-2 text-secondary">
+                    <span>Returned Item<br><small class="text-muted">(Original: ₹${returnedTotal.toFixed(2)})</small></span>
+                    <span class="d-flex flex-column align-items-end"><span class="text-muted small">Actual Refund</span>-₹${returnedRefund.toFixed(2)}</span>
+                </div>` : ''
+                }
+            `;
+            document.getElementById('modalOrderTotal').parentElement.querySelector('h5').innerText = "Final Amount ";
+            document.getElementById('modalOrderTotal').innerText = '₹' + finalDisplayTotal.toFixed(2);
+
+            const invoiceBtn = document.getElementById('btnDownloadInvoice');
+            if (invoiceBtn) {
+                invoiceBtn.style.display = (orderStatus === 'Delivered') ? 'inline-block' : 'none';
+            }
+
+            new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
         };
     </script>
 

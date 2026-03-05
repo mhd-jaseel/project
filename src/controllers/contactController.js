@@ -1,6 +1,7 @@
 const ContactMessage = require('../models/ContactMessage');
 const nodemailer = require('nodemailer');
 
+
 // Send a message (Public)
 // Save a contact message sent by a user from the contact page
 exports.sendMessage = async (req, res) => {
@@ -72,30 +73,44 @@ exports.replyMessage = async (req, res) => {
             return res.status(400).json({ message: 'Subject, message, and recipient are required' });
         }
 
-        // Configure Nodemailer transporter
+        // Initialize transporter inside for fresh env vars and easier debugging
+        // Use 'service: gmail' for best compatibility as verified by the test script
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // Or use specific host/port from env
+            service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
+                user: (process.env.EMAIL_USER || "").trim(),
+                pass: (process.env.EMAIL_PASS || "").trim(),
             },
         });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: (process.env.EMAIL_USER || "").trim(),
             to,
-            subject: `Re: ${subject}`,
-            text: message, // or html: message
+            subject: subject.startsWith('Re:') ? subject : `Re: ${subject}`,
+            text: message,
         };
 
+        try {
+            await transporter.verify();
+        } catch (verifyError) {
+            console.error("Email Service: Verification failed:", verifyError.message);
+            throw new Error(`Authentication with Gmail failed: ${verifyError.message}`);
+        }
+
         await transporter.sendMail(mailOptions);
+
+
 
         // Update isReplied status
         await ContactMessage.findByIdAndUpdate(id, { isReplied: true });
 
         res.status(200).json({ message: 'Reply sent successfully' });
     } catch (error) {
-        console.error('Error replying to message:', error);
-        res.status(500).json({ message: 'Failed to send reply' });
+        console.error('Error replying to message details:', error);
+        res.status(500).json({
+            message: 'Failed to send reply',
+            details: error.message
+        });
     }
 };
+
