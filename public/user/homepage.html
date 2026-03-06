@@ -1184,8 +1184,9 @@
 
         .brand-track {
             display: flex;
-            width: fit-content;
-            animation: scroll 30s linear infinite;
+            animation: scroll 25s linear infinite;
+            will-change: transform;
+            gap: 40px;
         }
 
         .brand-item {
@@ -1210,7 +1211,7 @@
             }
 
             100% {
-                transform: translateX(-50%);
+                transform: translateX(-100%);
             }
         }
 
@@ -1243,12 +1244,12 @@
         }
     </style>
 
-    
+
     <script>
         // Global Auth / Block Check
-        (async function() {
+        (async function () {
             const token = localStorage.getItem('userToken');
-            if (!token) return; 
+            if (!token) return;
 
             try {
                 const res = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
@@ -1258,7 +1259,7 @@
                         const styleTag = document.createElement('style');
                         styleTag.innerHTML = 'body { margin: 0; padding: 0; overflow: hidden; }';
                         document.head.appendChild(styleTag);
-                        
+
                         document.body.innerHTML = `
                             <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
                                 <div>
@@ -1280,42 +1281,42 @@
                                 </div>
                             </div>
                         `;
-                        
-                        document.getElementById('showEmailBtn').addEventListener('click', function() {
+
+                        document.getElementById('showEmailBtn').addEventListener('click', function () {
                             this.style.display = 'none';
                             document.getElementById('adminEmailForm').style.display = 'block';
                         });
-                        
-                        document.getElementById('adminEmailForm').addEventListener('submit', async function(e) {
-                             e.preventDefault();
-                             const subject = document.getElementById('adminSubj').value;
-                             const message = document.getElementById('adminMsg').value;
-                             try {
-                                  await fetch('/api/contact/send', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
-                                  });
-                             } catch(error) {}
-                             
-                             document.body.innerHTML = `
+
+                        document.getElementById('adminEmailForm').addEventListener('submit', async function (e) {
+                            e.preventDefault();
+                            const subject = document.getElementById('adminSubj').value;
+                            const message = document.getElementById('adminMsg').value;
+                            try {
+                                await fetch('/api/contact/send', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
+                                });
+                            } catch (error) { }
+
+                            document.body.innerHTML = `
                                  <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
                                      <h1 style="color: #2ecc71;">Message Sent!</h1>
                                      <p>Redirecting to signup...</p>
                                  </div>
                              `;
-                             
-                             localStorage.removeItem('userToken');
-                             localStorage.removeItem('user');
-                             localStorage.removeItem('role');
-                             
-                             setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
+
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('role');
+
+                            setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
                         });
-                        
+
                         throw new Error('User is blocked');
                     }
                 }
-            } catch(e) {}
+            } catch (e) { }
         })();
     </script>
 
@@ -1891,7 +1892,7 @@
 
                 if (brands.length > 0) {
                     // Duplicate brands to create seamless infinite scroll
-                    let displayBrands = [...brands, ...brands];
+                    let displayBrands = [...brands, ...brands, ...brands]; 
                     if (brands.length < 5) displayBrands = [...displayBrands, ...brands, ...brands];
 
                     track.innerHTML = displayBrands.map(brand => `
