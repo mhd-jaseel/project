@@ -1,10 +1,15 @@
-// ===============================
-// IMPORTS
-// ===============================
+
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(`User-agent: *
+Allow: /
+
+Sitemap: https://kmsupermarket.online/sitemap.xml`);
+});
 
 require("./config/passport"); // Passport config
 

@@ -29,6 +29,17 @@
             color: var(--text-dark);
             overflow-y: scroll;
             /* same scrolling option in every page */
+            padding-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 85px;
+            }
+
+            .hero-section {
+                margin-top: 10px !important;
+            }
         }
 
         /* Custom Colors */
@@ -64,8 +75,10 @@
         }
 
         .header-bottom {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
@@ -535,9 +548,7 @@
                 width: 28px !important;
                 min-width: 28px !important;
                 max-width: 28px !important;
-                height: 28px !important;
                 min-height: 28px !important;
-                max-height: 28px !important;
                 border-radius: 6px !important;
                 padding: 0 !important;
                 margin: 0 !important;
@@ -555,15 +566,13 @@
             }
 
             .btn-add-cart {
-                height: 28px !important;
                 min-height: 28px !important;
-                max-height: 28px !important;
                 padding: 0 4px !important;
                 margin: 0 !important;
                 font-size: 0.55rem !important;
                 /* Slightly smaller to ensure out of stock fits */
                 border-radius: 6px !important;
-                white-space: nowrap !important;
+                white-space: normal !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
@@ -572,8 +581,8 @@
                 border: 1px solid transparent !important;
                 /* MATCH geometry of wishlist border */
                 box-sizing: border-box !important;
-                line-height: normal !important;
-                overflow: hidden !important;
+                line-height: 1 !important;
+                overflow: visible !important;
             }
 
             .card-body.p-2 {
@@ -1892,7 +1901,7 @@
 
                 if (brands.length > 0) {
                     // Duplicate brands to create seamless infinite scroll
-                    let displayBrands = [...brands, ...brands, ...brands]; 
+                    let displayBrands = [...brands, ...brands, ...brands];
                     if (brands.length < 5) displayBrands = [...displayBrands, ...brands, ...brands];
 
                     track.innerHTML = displayBrands.map(brand => `
@@ -2436,7 +2445,7 @@
                     <div class="mb-3 text-start ps-2 mt-auto">
                         ${priceHtml}
                     </div>
-                    <div class="d-flex gap-2 align-items-center">
+                    <div class="d-flex gap-2 align-items-stretch">
                         <button class="btn btn-wishlist" data-product-id="${p._id}"><i
                                 class="far fa-heart"></i></button>
                         <button class="btn btn-add-cart w-100" data-product-id="${p._id}" ${isOutOfStock

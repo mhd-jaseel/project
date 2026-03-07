@@ -28,6 +28,13 @@
             font-family: 'Poppins', sans-serif;
             background-color: #ffffff;
             color: var(--text-dark);
+            padding-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 85px;
+            }
         }
 
         /* Custom Colors */
@@ -66,8 +73,10 @@
         }
 
         .header-bottom {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
@@ -634,9 +643,9 @@
 
     <script>
         // Global Auth / Block Check
-        (async function() {
+        (async function () {
             const token = localStorage.getItem('userToken');
-            if (!token) return; 
+            if (!token) return;
 
             try {
                 const res = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
@@ -646,7 +655,7 @@
                         const styleTag = document.createElement('style');
                         styleTag.innerHTML = 'body { margin: 0; padding: 0; overflow: hidden; }';
                         document.head.appendChild(styleTag);
-                        
+
                         document.body.innerHTML = `
                             <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
                                 <div>
@@ -668,42 +677,42 @@
                                 </div>
                             </div>
                         `;
-                        
-                        document.getElementById('showEmailBtn').addEventListener('click', function() {
+
+                        document.getElementById('showEmailBtn').addEventListener('click', function () {
                             this.style.display = 'none';
                             document.getElementById('adminEmailForm').style.display = 'block';
                         });
-                        
-                        document.getElementById('adminEmailForm').addEventListener('submit', async function(e) {
-                             e.preventDefault();
-                             const subject = document.getElementById('adminSubj').value;
-                             const message = document.getElementById('adminMsg').value;
-                             try {
-                                  await fetch('/api/contact/send', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
-                                  });
-                             } catch(error) {}
-                             
-                             document.body.innerHTML = `
+
+                        document.getElementById('adminEmailForm').addEventListener('submit', async function (e) {
+                            e.preventDefault();
+                            const subject = document.getElementById('adminSubj').value;
+                            const message = document.getElementById('adminMsg').value;
+                            try {
+                                await fetch('/api/contact/send', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
+                                });
+                            } catch (error) { }
+
+                            document.body.innerHTML = `
                                  <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
                                      <h1 style="color: #2ecc71;">Message Sent!</h1>
                                      <p>Redirecting to signup...</p>
                                  </div>
                              `;
-                             
-                             localStorage.removeItem('userToken');
-                             localStorage.removeItem('user');
-                             localStorage.removeItem('role');
-                             
-                             setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
+
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('role');
+
+                            setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
                         });
-                        
+
                         throw new Error('User is blocked');
                     }
                 }
-            } catch(e) {}
+            } catch (e) { }
         })();
     </script>
 

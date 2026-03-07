@@ -33,6 +33,13 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
+            padding-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 85px;
+            }
         }
 
         /* Custom Colors */
@@ -51,8 +58,10 @@
         }
 
         .header-bottom {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             background-color: #ffffff;
             padding: 10px 0;
@@ -365,13 +374,14 @@
             }
 
             /* 1. Center the KM Store Section (First Column) */
-            .custom-exact-footer .footer-content .row > div:nth-child(1) {
+            .custom-exact-footer .footer-content .row>div:nth-child(1) {
                 text-align: center !important;
                 width: 100% !important;
                 flex: 0 0 100% !important;
                 margin-bottom: 30px !important;
             }
-            .custom-exact-footer .footer-content .row > div:nth-child(1) .d-flex {
+
+            .custom-exact-footer .footer-content .row>div:nth-child(1) .d-flex {
                 justify-content: center !important;
             }
 
@@ -383,9 +393,9 @@
                 align-items: flex-start !important;
             }
 
-            .custom-exact-footer .footer-content .row > div:nth-child(2),
-            .custom-exact-footer .footer-content .row > div:nth-child(3),
-            .custom-exact-footer .footer-content .row > div:nth-child(4) {
+            .custom-exact-footer .footer-content .row>div:nth-child(2),
+            .custom-exact-footer .footer-content .row>div:nth-child(3),
+            .custom-exact-footer .footer-content .row>div:nth-child(4) {
                 flex: 0 0 33% !important;
                 max-width: 33% !important;
                 padding: 0 5px !important;
@@ -399,13 +409,13 @@
                 margin-bottom: 10px !important;
             }
 
-            .custom-exact-footer .footer-content .row .small, 
+            .custom-exact-footer .footer-content .row .small,
             .custom-exact-footer .footer-content .row .footer-link {
                 font-size: 0.7rem !important;
             }
 
             /* Format the email/phone text from wrapping too cleanly */
-            .custom-exact-footer .footer-content .row > div:nth-child(4) .small {
+            .custom-exact-footer .footer-content .row>div:nth-child(4) .small {
                 word-break: break-all !important;
             }
         }
@@ -569,9 +579,9 @@
 
     <script>
         // Global Auth / Block Check
-        (async function() {
+        (async function () {
             const token = localStorage.getItem('userToken');
-            if (!token) return; 
+            if (!token) return;
 
             try {
                 const res = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
@@ -581,7 +591,7 @@
                         const styleTag = document.createElement('style');
                         styleTag.innerHTML = 'body { margin: 0; padding: 0; overflow: hidden; }';
                         document.head.appendChild(styleTag);
-                        
+
                         document.body.innerHTML = `
                             <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
                                 <div>
@@ -603,42 +613,42 @@
                                 </div>
                             </div>
                         `;
-                        
-                        document.getElementById('showEmailBtn').addEventListener('click', function() {
+
+                        document.getElementById('showEmailBtn').addEventListener('click', function () {
                             this.style.display = 'none';
                             document.getElementById('adminEmailForm').style.display = 'block';
                         });
-                        
-                        document.getElementById('adminEmailForm').addEventListener('submit', async function(e) {
-                             e.preventDefault();
-                             const subject = document.getElementById('adminSubj').value;
-                             const message = document.getElementById('adminMsg').value;
-                             try {
-                                  await fetch('/api/contact/send', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
-                                  });
-                             } catch(error) {}
-                             
-                             document.body.innerHTML = `
+
+                        document.getElementById('adminEmailForm').addEventListener('submit', async function (e) {
+                            e.preventDefault();
+                            const subject = document.getElementById('adminSubj').value;
+                            const message = document.getElementById('adminMsg').value;
+                            try {
+                                await fetch('/api/contact/send', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ name: data.name || 'User', email: data.email || 'Blocked', subject, message })
+                                });
+                            } catch (error) { }
+
+                            document.body.innerHTML = `
                                  <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
                                      <h1 style="color: #2ecc71;">Message Sent!</h1>
                                      <p>Redirecting to signup...</p>
                                  </div>
                              `;
-                             
-                             localStorage.removeItem('userToken');
-                             localStorage.removeItem('user');
-                             localStorage.removeItem('role');
-                             
-                             setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
+
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('role');
+
+                            setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
                         });
-                        
+
                         throw new Error('User is blocked');
                     }
                 }
-            } catch(e) {}
+            } catch (e) { }
         })();
     </script>
 
