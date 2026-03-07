@@ -20,6 +20,10 @@ Sitemap: https://kmsupermarket.online/sitemap.xml`);
 });
 
 
+app.get("/sitemap.xml", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/sitemap.xml"));
+});
+
 
 // ===============================
 // MIDDLEWARE
@@ -73,7 +77,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.static(path.join(__dirname, "../public/user")));
 
 
-
+// ==========================
 // HTML ROUTES
 // ==========================
 
@@ -84,6 +88,14 @@ app.get("/", (req, res) => {
 
 app.get("/user/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/user/login.html"));
+});
+
+app.get("/products", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/user/product.html"));
+});
+
+app.get("/contact", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/user/contact.html"));
 });
 
 // ADMIN ROUTES
