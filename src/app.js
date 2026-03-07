@@ -1,4 +1,3 @@
-
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
@@ -6,11 +5,12 @@ const passport = require("passport");
 
 require("./config/passport"); // Passport config
 
-
 // ===============================
 // APP INITIALIZATION
 // ===============================
 const app = express();
+
+// Robots.txt
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
   res.send(`User-agent: *
@@ -19,7 +19,7 @@ Allow: /
 Sitemap: https://kmsupermarket.online/sitemap.xml`);
 });
 
-
+// Sitemap
 app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/sitemap.xml"));
 });
@@ -69,7 +69,6 @@ app.use("/api/offers", require("./routes/offerRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 
 
-
 // ===============================
 // STATIC FRONTEND FILES
 // ===============================
@@ -81,24 +80,35 @@ app.use(express.static(path.join(__dirname, "../public/user")));
 // HTML ROUTES
 // ==========================
 
-// USER ROUTES
+// HOME PAGE
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/user/homepage.html"));
 });
 
-app.get("/user/login", (req, res) => {
+// LOGIN PAGE (SEO friendly)
+app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/user/login.html"));
 });
 
+// Redirect old login URL
+app.get("/user/login", (req, res) => {
+  res.redirect("/login");
+});
+
+// PRODUCTS PAGE
 app.get("/products", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/user/product.html"));
 });
 
+// CONTACT PAGE
 app.get("/contact", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/user/contact.html"));
 });
 
+
+// ==========================
 // ADMIN ROUTES
+// ==========================
 app.get("/admin/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/admin/login.html"));
 });
@@ -106,6 +116,9 @@ app.get("/admin/login", (req, res) => {
 app.get("/admin/add-product", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/admin/add-product.html"));
 });
-// EXPORT
 
+
+// ==========================
+// EXPORT
+// ==========================
 module.exports = app;
