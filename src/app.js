@@ -118,7 +118,5 @@ app.get("/admin/add-product", (req, res) => {
 });
 
 
-// ==========================
-// EXPORT
-// ==========================
+
 module.exports = app;
