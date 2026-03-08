@@ -4,8 +4,7 @@ const Product = require('../models/Product');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
 const PDFDocument = require("pdfkit")
-const mongoose = require("mongoose")
-// Helper: Parse weight string to grams/ml (base unit)
+const mongoose = require("mongoose");
 // Helper function to convert weight strings like "1kg" into base units like 1000
 const parseWeight = (str) => {
     if (!str) return 0;
@@ -34,7 +33,7 @@ const parseWeight = (str) => {
     return val;
 };
 
-// Place Order
+
 // Process and save a new order after validating items and stock
 exports.placeOrder = async (req, res) => {
     try {
