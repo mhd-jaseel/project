@@ -23,10 +23,20 @@ const generateOTP = () =>
 // Handle successful Google login and return user details with a token
 exports.googleLoginSuccess = async (req, res) => {
   try {
-    const user = req.user;
+    // Fetch fresh user to ensure current role and block status
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.status(400).json({ message: "Google authentication failed" });
+    }
+
+    if (user.isBlocked) {
+      return res.send(`
+        <script>
+          alert("Your account has been blocked. Please contact support.");
+          window.location.href = "/user/login.html";
+        </script>
+      `);
     }
 
     // Generate JWT
@@ -35,11 +45,17 @@ exports.googleLoginSuccess = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
+
     const redirectUrl = user.role === "admin" ? "/admin/dashboard.html" : "/";
-    // Redirect to homepage with token
+    const tokenKey = user.role === "admin" ? "adminToken" : "userToken";
+
+    // Redirect to correct dashboard with proper token and role
     res.send(`
     <script>
-        localStorage.setItem("userToken", "${token}");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("adminToken");
+        localStorage.setItem("role", "${user.role}");
+        localStorage.setItem("${tokenKey}", "${token}");
         window.location.href ="${redirectUrl}";
     </script>
    `);

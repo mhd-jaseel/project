@@ -545,7 +545,8 @@
 
         //admin logout logic
         document.getElementById("adminLogoutBtn").addEventListener("click", () => {
-            localStorage.removeItem("token");
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("userToken");
             localStorage.removeItem("role");
             window.location.href = "/user/login.html";
         });
