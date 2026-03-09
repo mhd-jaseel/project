@@ -35,12 +35,12 @@ exports.googleLoginSuccess = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
+    const redirectUrl = user.role === "admin" ? "/admin/dashboard" : "/";
     // Redirect to homepage with token
     res.send(`
     <script>
         localStorage.setItem("userToken", "${token}");
-        window.location.href = "/";
+        window.location.href ="${redirectUrl}";
     </script>
    `);
 
