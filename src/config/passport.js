@@ -11,31 +11,39 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleId: profile.id });
 
-        const profilePic = (profile.photos && profile.photos.length > 0) ? profile.photos[0].value : "";
+        const email = profile.emails[0].value;
+        const profilePic = profile.photos?.[0]?.value || "";
 
-        if (!user) {
-          user = await User.create({
-            googleId: profile.id,
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            profilePicture: profilePic,
-            role: "user"
-          });
-        } else {
-          // Update profile picture if user exists and has a new one from Google, 
-          // but only if the current one is empty or also from google (to avoid overwriting custom uploads if desired, 
-          // though usually social login implies syncing). 
-          // For now, let's update it if the current one is empty or if we want to sync.
-          // Let's just update it to ensure it shows up as requested.
+        // Check if user already exists with this email
+        let user = await User.findOne({ email });
+
+        if (user) {
+          // If the user exists but has no googleId, attach it
+          if (!user.googleId) {
+            user.googleId = profile.id;
+          }
+
           if (profilePic) {
             user.profilePicture = profilePic;
-            await user.save();
           }
+
+          await user.save();
+          return done(null, user);
         }
 
+        // If user does not exist → create new user
+        user = await User.create({
+          googleId: profile.id,
+          name: profile.displayName,
+          email,
+          profilePicture: profilePic,
+          role: "user",
+          isEmailVerified: true
+        });
+
         return done(null, user);
+
       } catch (error) {
         return done(error, null);
       }
