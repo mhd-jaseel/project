@@ -10,7 +10,9 @@ router.get('/active', bannerController.getActiveBanners);
 
 // Admin Routes
 router.get('/all', protect, role('admin'), bannerController.getAllBanners);
+router.get('/:bannerId', protect, role('admin'), bannerController.getBannerById);
 router.post('/add', protect, role('admin'), upload.single('image'), bannerController.addBanner);
+router.put('/:bannerId', protect, role('admin'), upload.single('image'), bannerController.updateBanner);
 router.put('/:bannerId/toggle', protect, role('admin'), bannerController.toggleBannerStatus);
 router.delete('/:bannerId', protect, role('admin'), bannerController.deleteBanner);
 

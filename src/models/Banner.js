@@ -19,7 +19,7 @@ const bannerSchema = new mongoose.Schema({
     },
     link: {
         type: String, // Optional: Link to a product or category page
-        default: '#'
+        default: ''
     },
     buttonText: {
         type: String,

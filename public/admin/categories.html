@@ -337,6 +337,13 @@
                                             style="max-height: 100px; max-width: 100%; border-radius: 5px;">
                                     </div>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Image Size (%)</label>
+                                    <input type="range" class="form-range" id="editImageSizeRange" min="20" max="150"
+                                        value="100">
+                                    <div class="text-center small" id="editImageSizeValue">100%</div>
+                                </div>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -434,8 +441,8 @@
                         <i class="fas fa-edit"></i>
                     </button>
 
-                    <!-- DELETE BUTTON -->
-                    ${cat.name.toLowerCase() === 'uncategorized' ? '' : `
+                    <!-- DELETE BUTTON (Hidden for Uncategorized) -->
+                    ${cat.name.trim().toLowerCase() === 'uncategorized' ? '' : `
                     <button
                         class="btn btn-sm btn-light text-danger"
                         onclick="deleteCategory('${cat._id}', this)">
@@ -462,7 +469,19 @@
             if (!category) return;
 
             document.getElementById('editCategoryId').value = category._id;
-            document.getElementById('editCategoryName').value = category.name;
+            const nameInput = document.getElementById('editCategoryName');
+            nameInput.value = category.name;
+
+            // Lock Name field only for "Uncategorized"
+            if (category.name.trim().toLowerCase() === 'uncategorized') {
+                nameInput.readOnly = true;
+                nameInput.style.background = "#f5f5f5";
+                nameInput.style.cursor = "not-allowed";
+            } else {
+                nameInput.readOnly = false;
+                nameInput.style.background = "";
+                nameInput.style.cursor = "";
+            }
 
             const imgPreview = document.getElementById('currentImagePreview');
             if (category.image) {
@@ -471,6 +490,9 @@
             } else {
                 document.getElementById('currentImagePreviewContainer').style.display = 'none';
             }
+
+            document.getElementById('editImageSizeRange').value = category.imageSize || 100;
+            document.getElementById('editImageSizeValue').textContent = (category.imageSize || 100) + '%';
 
             // Initialize and show modal
             const modalEl = document.getElementById('editCategoryModal');
@@ -533,6 +555,7 @@
 
             const formData = new FormData();
             formData.append("name", name);
+            formData.append("imageSize", document.getElementById('editImageSizeRange').value);
             if (imageInput.files.length > 0) {
                 formData.append("image", imageInput.files[0]);
             }
@@ -649,6 +672,10 @@
 
             // redirect to products page with category
             window.location.href = `all-products.html?category=${categoryId}`;
+        });
+
+        document.getElementById('editImageSizeRange').addEventListener('input', function (e) {
+            document.getElementById('editImageSizeValue').textContent = e.target.value + '%';
         });
     </script>
 

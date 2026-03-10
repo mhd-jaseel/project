@@ -10,6 +10,10 @@ const categorySchema = new mongoose.Schema(
     },
     image: {
       type: String
+    },
+    imageSize: {
+      type: Number,
+      default: 100
     }
   },
   { timestamps: true }

@@ -350,8 +350,18 @@
                             <input type="text" class="form-control" name="buttonText" value="Shop Now">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Link (Optional)</label>
-                            <input type="text" class="form-control" name="link" placeholder="e.g. product.html">
+                            <label class="form-label fw-bold">Link Type (Optional)</label>
+                            <select class="form-select mb-2" id="linkTypeSelect"
+                                onchange="handleLinkTypeChange(this, 'add')">
+                                <option value="default">Default (All Products)</option>
+                                <option value="category">Category Page</option>
+                                <option value="product">Specific Product</option>
+                                <option value="custom">Custom Link</option>
+                            </select>
+                            <div id="linkValueContainer_add">
+                                <input type="text" class="form-control" name="link" id="linkInput_add"
+                                    placeholder="product.html" value="product.html">
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-6">
@@ -391,6 +401,9 @@
 
     </div>
     </div>
+
+    <!-- Custom Modal Container -->
+    <div id="edit-modals-container"></div>
 
 
 
@@ -456,11 +469,85 @@
                                     <small class="text-muted">${new Date(banner.createdAt).toLocaleDateString()}</small>
                                 </div>
                                 <div class="d-flex justify-content-end gap-2">
+                                    <button onclick="editBanner('${banner._id}')" class="btn btn-sm btn-outline-primary">Edit</button>
                                     <button onclick="toggleBanner('${banner._id}')" 
                                         class="btn btn-sm ${banner.isActive ? 'btn-outline-warning' : 'btn-outline-success'}">
                                         ${banner.isActive ? 'Disable' : 'Enable'}
                                     </button>
                                     <button onclick="deleteBanner('${banner._id}')" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Generate individual modals for each banner to ensure isolated image handling
+                const modalsContainer = document.getElementById('edit-modals-container');
+                modalsContainer.innerHTML = banners.map(banner => `
+                    <div class="modal fade" id="editBannerModal-${banner._id}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-warning text-dark">
+                                    <h5 class="modal-title fw-bold">Edit Banner</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form onsubmit="handleBannerUpdate(event, '${banner._id}')">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Banner Image (Optional)</label>
+                                            <input type="file" class="form-control" name="image" id="editBannerImageInput-${banner._id}"
+                                                accept="image/*" onchange="previewBannerImage(this, '${banner._id}')">
+                                            <div class="form-text">Leave blank to keep current image</div>
+                                            <div class="mt-3 text-center">
+                                                <img src="${banner.imageUrl}" id="editImagePreview-${banner._id}" 
+                                                    class="img-fluid rounded border shadow-sm"
+                                                    style="max-height: 150px;" alt="Banner Preview">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Title (Optional)</label>
+                                            <input type="text" class="form-control" name="title" value="${banner.title || ''}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Subtitle (Optional)</label>
+                                            <input type="text" class="form-control" name="subtitle" value="${banner.subtitle || ''}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Button Text</label>
+                                            <input type="text" class="form-control" name="buttonText" value="${banner.buttonText || 'Shop Now'}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Link</label>
+                                            <input type="text" class="form-control" name="link" value="${banner.link || 'product.html'}">
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold">Bg Color</label>
+                                                <input type="color" class="form-control form-control-color w-100" name="bgColor" value="${banner.bgColor || '#004d40'}">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold">Text Color</label>
+                                                <input type="color" class="form-control form-control-color w-100" name="textColor" value="${banner.textColor || '#ffffff'}">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold">Btn Color</label>
+                                                <input type="color" class="form-control form-control-color w-100" name="buttonColor" value="${banner.buttonColor || '#bef67a'}">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label fw-bold">Image Size (%)</label>
+                                                <input type="range" class="form-range" name="imageSize" min="20" max="150" value="${banner.imageSize || 100}"
+                                                    oninput="document.getElementById('editImageSizeValue-${banner._id}').textContent = this.value + '%'">
+                                                <div class="text-center small" id="editImageSizeValue-${banner._id}">${banner.imageSize || 100}%</div>
+                                            </div>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" name="isActive" ${banner.isActive ? 'checked' : ''}>
+                                            <label class="form-check-label">Active</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning w-100 fw-bold">Update Banner</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -523,6 +610,87 @@
             }
         });
 
+        // Helper for Link Type Choice
+        let globalCategories = [];
+        let globalProducts = [];
+
+        async function handleLinkTypeChange(select, mode) {
+            const type = select.value;
+            const container = document.getElementById(`linkValueContainer_${mode}`);
+            const inputId = mode === 'edit' ? 'editLink' : 'linkInput_add';
+
+            if (type === 'default') {
+                container.innerHTML = `<input type="text" class="form-control" name="link" id="${inputId}" value="product.html" readonly>`;
+            } else if (type === 'category') {
+                if (globalCategories.length === 0) {
+                    const res = await fetch('/api/categories');
+                    globalCategories = await res.json();
+                }
+                let html = `<select class="form-select" name="link" id="${inputId}">`;
+                globalCategories.forEach(c => {
+                    html += `<option value="product.html?category=${c._id}">${c.name}</option>`;
+                });
+                html += `</select>`;
+                container.innerHTML = html;
+            } else if (type === 'product') {
+                if (globalProducts.length === 0) {
+                    const res = await fetch('/api/products?limit=100');
+                    const data = await res.json();
+                    globalProducts = data.products || data;
+                }
+                let html = `<select class="form-select" name="link" id="${inputId}">`;
+                globalProducts.forEach(p => {
+                    html += `<option value="single-product.html?id=${p._id}">${p.name}</option>`;
+                });
+                html += `</select>`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<input type="text" class="form-control" name="link" id="${inputId}" placeholder="e.g. product.html">`;
+            }
+        }
+
+        function editBanner(id) {
+            new bootstrap.Modal(document.getElementById(`editBannerModal-${id}`)).show();
+        }
+
+        function previewBannerImage(input, id) {
+            const file = input.files[0];
+            const preview = document.getElementById(`editImagePreview-${id}`);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => preview.src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function handleBannerUpdate(e, id) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            // Set isActive properly since checkbox behavior in FormData can be tricky
+            const isActive = form.querySelector('[name="isActive"]').checked;
+            formData.set('isActive', isActive);
+
+            try {
+                const res = await fetch(`/api/banners/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                if (res.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById(`editBannerModal-${id}`)).hide();
+                    fetchBanners();
+                    alert('Banner updated successfully');
+                } else {
+                    alert('Failed to update banner');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            }
+        }
+
         async function toggleBanner(id) {
             if (!confirm('Change banner status?')) return;
             try {
@@ -544,6 +712,8 @@
                 if (res.ok) fetchBanners();
             } catch (err) { console.error(err); }
         }
+
+
     </script>
 
 

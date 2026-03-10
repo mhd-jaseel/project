@@ -4,7 +4,7 @@ const Category = require("../models/Category");
 // Create a new product category with an optional image
 exports.addCategory = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, imageSize } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: "Category name is required" });
@@ -29,7 +29,8 @@ exports.addCategory = async (req, res) => {
     // 4. If not duplicate, save the category
     const category = new Category({
       name: name.trim(), // Save with original spacing but trimmed ends
-      image: req.file ? `/uploads/categories/${req.file.filename}` : null
+      image: req.file ? `/uploads/categories/${req.file.filename}` : null,
+      imageSize: imageSize || 100
     });
 
     await category.save();
@@ -73,8 +74,8 @@ exports.getCategories = async (req, res) => {
 // Update the name or image of an existing category
 exports.updateCategory = async (req, res) => {
   try {
-    const { name } = req.body;
-    let updateData = { name };
+    const { name, imageSize } = req.body;
+    let updateData = { name, imageSize: imageSize || 100 };
 
     if (req.file) {
       updateData.image = `/uploads/categories/${req.file.filename}`;

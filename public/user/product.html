@@ -74,10 +74,12 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 1000;
+            z-index: 1100;
+            /* Increased to stay above sticky sidebar */
             background-color: #ffffff;
             padding: 10px 0;
-            box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            /* Refined shadow */
 
 
             border-bottom-left-radius: 20px;
@@ -312,11 +314,15 @@
             }
 
             .header-search-btn {
-                padding: 0 8px !important;
-                background: transparent !important;
-                color: #2ecc71 !important;
-                font-size: 11px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: var(--primary-green) !important;
+                color: white !important;
+                padding: 0 12px !important;
+                border-radius: 0 20px 20px 0 !important;
                 height: 100% !important;
+                font-size: 13px !important;
             }
 
             /* Action Buttons (Wishlist, Cart) */
@@ -378,7 +384,7 @@
                 padding: 2px 4px !important;
                 min-width: 15px !important;
                 height: 15px !important;
-                display: flex !important;
+                display: flex;
                 align-items: center !important;
                 justify-content: center !important;
                 background-color: #2ecc71 !important;
@@ -394,7 +400,8 @@
                 justify-content: space-between;
                 align-items: center;
                 position: sticky;
-                top: 50px;
+                top: 85px;
+                /* Adjust to be below fixed header */
                 z-index: 999;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
             }
@@ -481,6 +488,8 @@
             .filter-sheet-body {
                 flex: 1;
                 overflow-y: auto;
+                min-height: 0;
+                /* Important for flex scrolling in some browsers */
                 padding: 20px;
                 padding-bottom: calc(30px + env(safe-area-inset-bottom));
             }
@@ -1027,6 +1036,10 @@
             border: 1px solid #f1f5f9 !important;
             padding: 30px !important;
             transition: all 0.3s ease;
+            max-height: calc(100vh - 120px);
+            /* Ensure it doesn't exceed viewport */
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
 
         .sidebar h5 {
@@ -1474,7 +1487,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }
@@ -1501,7 +1514,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }
@@ -1739,11 +1752,11 @@
 
 
     <!-- Main Content -->
-    <div class="container my-2 pt-2">
+    <div class="container-fluid px-4 px-lg-5 my-2 pt-2">
         <div class="row">
             <!-- Sidebar Filters -->
             <div class="col-md-3">
-                <div class="sidebar p-3 mb-4 sticky-top d-none d-md-block" style="top: 20px;">
+                <div class="sidebar p-3 mb-4 sticky-top d-none d-md-block" style="top: 110px;">
                     <h5 class="fw-bold mb-3 border-bottom pb-2">Filters</h5>
                     <!-- Category Filter -->
                     <div id="sidebar-categories" class="mb-4"></div>

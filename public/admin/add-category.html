@@ -315,6 +315,13 @@
                                 <input type="file" class="form-control" id="categoryImage" accept="image/*" required>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label text-muted small">Image Size (%)</label>
+                                <input type="range" class="form-range" id="imageSizeRange" min="20" max="150"
+                                    value="100">
+                                <div class="text-center small" id="imageSizeValue">100%</div>
+                            </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary-custom" id="btnSaveCategory">
                                     Save Category
@@ -422,6 +429,7 @@
 
                 const formData = new FormData();
                 formData.append("name", originalName);
+                formData.append("imageSize", document.getElementById("imageSizeRange").value);
 
                 if (imageInput.files.length > 0) {
                     formData.append("image", imageInput.files[0]);
@@ -483,6 +491,10 @@
         }
 
         loadExistingCategories();
+
+        document.getElementById('imageSizeRange').addEventListener('input', function (e) {
+            document.getElementById('imageSizeValue').textContent = e.target.value + '%';
+        });
     </script>
 
 

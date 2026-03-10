@@ -347,11 +347,15 @@
             }
 
             .header-search-btn {
-                padding: 0 8px !important;
-                background: transparent !important;
-                color: #2ecc71 !important;
-                font-size: 11px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: var(--primary-green) !important;
+                color: white !important;
+                padding: 0 12px !important;
+                border-radius: 0 20px 20px 0 !important;
                 height: 100% !important;
+                font-size: 13px !important;
             }
 
             /* Action Buttons (Wishlist, Cart) */
@@ -413,7 +417,7 @@
                 padding: 2px 4px !important;
                 min-width: 15px !important;
                 height: 15px !important;
-                display: flex !important;
+                display: flex;
                 align-items: center !important;
                 justify-content: center !important;
                 background-color: #2ecc71 !important;
@@ -1088,7 +1092,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }
@@ -1115,7 +1119,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }

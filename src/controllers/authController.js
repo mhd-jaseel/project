@@ -67,9 +67,6 @@ exports.googleLoginSuccess = async (req, res) => {
   }
 };
 
-/* ======================
-   REGISTER (SIGNUP)
-====================== */
 // Register a new user and send an OTP for email verification
 exports.register = async (req, res) => {
   try {
@@ -115,9 +112,6 @@ exports.register = async (req, res) => {
   }
 };
 
-/* ======================
-   LOGIN
-====================== */
 // Log in a user by verifying their email and password
 exports.login = async (req, res) => {
   try {
@@ -206,9 +200,7 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-/* ======================
-   FORGOT PASSWORD
-====================== */
+
 // Initiate the password reset process by sending an OTP to the user's email
 exports.forgotPassword = async (req, res) => {
   try {
@@ -241,9 +233,6 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-/* ======================
-   RESET PASSWORD
-====================== */
 //This runs after OTP verification in forgot-password flow.
 // Reset the user's password after successful OTP verification
 exports.resetPassword = async (req, res) => {
@@ -276,9 +265,6 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-/* ======================
-   GET WALLET
-====================== */
 //get logged-in user's wallet balance
 // Get the current wallet balance for the logged-in user
 exports.getWalletBalance = async (req, res) => {
@@ -291,9 +277,7 @@ exports.getWalletBalance = async (req, res) => {
 };
 
 
-/* ======================
-   GET PROFILE
-====================== */
+
 // Retrieve the profile details of the logged-in user
 exports.getProfile = async (req, res) => {
   try {
@@ -305,9 +289,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-/* ======================
-   UPDATE PROFILE
-====================== */
+
 // Update the profile information for the logged-in user
 exports.updateProfile = async (req, res) => {
   try {
@@ -344,9 +326,7 @@ exports.updateProfile = async (req, res) => {
 };
 
 
-/* ======================
-   CHANGE EMAIL
-====================== */
+
 // Change the user's registered email address
 exports.changeEmail = async (req, res) => {
   try {
@@ -383,9 +363,7 @@ exports.changeEmail = async (req, res) => {
   }
 };
 
-/* ======================
-   CHANGE PASSWORD
-====================== */
+
 // Change the user's password after verifying the old password
 exports.changePassword = async (req, res) => {
   try {

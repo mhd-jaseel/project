@@ -367,6 +367,31 @@
             border-color: var(--primary-color);
         }
 
+        .remove-img-btn {
+            width: 20px;
+            height: 20px;
+            background: #f1416c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            z-index: 10;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .remove-img-btn:hover {
+            background: #d9214e;
+            transform: scale(1.1);
+        }
+
         .edit-img-slot img {
             max-height: 100px;
             object-fit: contain;
@@ -603,7 +628,7 @@
                                         <!-- Main Image Slot -->
                                         <div class="col-md-4">
                                             <div
-                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center position-relative">
                                                 <span class="badge bg-success slot-label mb-2">Main Card Image</span>
                                                 <div class="position-relative w-100" style="height: 100px;">
                                                     <img id="currentProductImage" src="https://via.placeholder.com/100"
@@ -613,6 +638,10 @@
                                                         <i class="fas fa-edit me-1"></i> Change
                                                     </div>
                                                 </div>
+                                                <button type="button" class="remove-img-btn"
+                                                    onclick="removeImage('main')" title="Remove Image">
+                                                    <i class="fas fa-times" style="font-size: 10px;"></i>
+                                                </button>
                                                 <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductImage" accept="image/*">
                                                 <small class="text-muted mt-2 d-none d-md-block"
@@ -622,7 +651,7 @@
                                         <!-- Extra Image 1 Slot -->
                                         <div class="col-md-4">
                                             <div
-                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center position-relative">
                                                 <span class="badge bg-secondary slot-label mb-2">Details Image 1</span>
                                                 <div class="position-relative w-100" style="height: 100px;">
                                                     <img id="currentExtraImage1" src="https://via.placeholder.com/100"
@@ -632,6 +661,10 @@
                                                         <i class="fas fa-edit me-1"></i> Change
                                                     </div>
                                                 </div>
+                                                <button type="button" class="remove-img-btn"
+                                                    onclick="removeImage('extra1')" title="Remove Image">
+                                                    <i class="fas fa-times" style="font-size: 10px;"></i>
+                                                </button>
                                                 <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductExtraImage1" accept="image/*">
                                                 <small class="text-muted mt-2 d-none d-md-block"
@@ -641,7 +674,7 @@
                                         <!-- Extra Image 2 Slot -->
                                         <div class="col-md-4">
                                             <div
-                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                                                class="edit-img-slot p-2 text-center h-100 d-flex flex-column align-items-center justify-content-center position-relative">
                                                 <span class="badge bg-secondary slot-label mb-2">Details Image 2</span>
                                                 <div class="position-relative w-100" style="height: 100px;">
                                                     <img id="currentExtraImage2" src="https://via.placeholder.com/100"
@@ -651,6 +684,10 @@
                                                         <i class="fas fa-edit me-1"></i> Change
                                                     </div>
                                                 </div>
+                                                <button type="button" class="remove-img-btn"
+                                                    onclick="removeImage('extra2')" title="Remove Image">
+                                                    <i class="fas fa-times" style="font-size: 10px;"></i>
+                                                </button>
                                                 <input type="file" class="form-control form-control-sm d-none"
                                                     id="editProductExtraImage2" accept="image/*">
                                                 <small class="text-muted mt-2 d-none d-md-block"
@@ -1032,7 +1069,24 @@
         /* =========================
            EDIT PRODUCT LOGIC
         ========================= */
+        let removedImages = { main: false, extra1: false, extra2: false };
+
+        function removeImage(type) {
+            removedImages[type] = true;
+            if (type === 'main') {
+                document.getElementById('currentProductImage').src = "https://via.placeholder.com/100?text=Removed";
+                document.getElementById('editProductImage').value = ""; // Clear file input
+            } else if (type === 'extra1') {
+                document.getElementById('currentExtraImage1').src = "https://via.placeholder.com/100?text=Removed";
+                document.getElementById('editProductExtraImage1').value = "";
+            } else if (type === 'extra2') {
+                document.getElementById('currentExtraImage2').src = "https://via.placeholder.com/100?text=Removed";
+                document.getElementById('editProductExtraImage2').value = "";
+            }
+        }
+
         function openEditModal(id) {
+            removedImages = { main: false, extra1: false, extra2: false };
             console.log("Attempting to open edit modal for ID:", id);
 
             if (!allProducts || allProducts.length === 0) {
@@ -1198,7 +1252,13 @@
                         input.addEventListener('change', function () {
                             if (this.files && this.files[0]) {
                                 const reader = new FileReader();
-                                reader.onload = (e) => img.src = e.target.result;
+                                reader.onload = (e) => {
+                                    img.src = e.target.result;
+                                    // Reset removal flag if a new file is chosen
+                                    if (inputId === 'editProductImage') removedImages.main = false;
+                                    if (inputId === 'editProductExtraImage1') removedImages.extra1 = false;
+                                    if (inputId === 'editProductExtraImage2') removedImages.extra2 = false;
+                                };
                                 reader.readAsDataURL(this.files[0]);
                             }
                         });
@@ -1329,6 +1389,11 @@
             if (totalStock) formData.append("totalStock", totalStock);
             // Status is auto-calculated by backend now
             formData.append("description", description);
+
+            // Removal flags
+            if (removedImages.main) formData.append("removeImage", "true");
+            if (removedImages.extra1) formData.append("removeExtraImage1", "true");
+            if (removedImages.extra2) formData.append("removeExtraImage2", "true");
 
             if (imageInput.files.length > 0) {
                 formData.append("image", imageInput.files[0]);

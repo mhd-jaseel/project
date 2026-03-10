@@ -425,9 +425,11 @@ exports.updateProduct = async (req, res) => {
       updateData.status = 'In Stock';
     }
 
-    // Update main image if provided
+    // Update main image if provided or remove if requested
     if (req.files && req.files['image'] && req.files['image'][0]) {
       updateData.image = `/uploads/products/${req.files['image'][0].filename}`;
+    } else if (req.body.removeImage === 'true') {
+      updateData.image = null;
     }
 
     // Update extra images (Specific Slots)
@@ -440,10 +442,14 @@ exports.updateProduct = async (req, res) => {
 
     if (req.files && req.files['extraImage1'] && req.files['extraImage1'][0]) {
       currentImages[0] = `/uploads/products/${req.files['extraImage1'][0].filename}`;
+    } else if (req.body.removeExtraImage1 === 'true') {
+      currentImages[0] = "";
     }
 
     if (req.files && req.files['extraImage2'] && req.files['extraImage2'][0]) {
       currentImages[1] = `/uploads/products/${req.files['extraImage2'][0].filename}`;
+    } else if (req.body.removeExtraImage2 === 'true') {
+      currentImages[1] = "";
     }
 
     // Filter out padding empty strings if strict, but allow replacing specifically

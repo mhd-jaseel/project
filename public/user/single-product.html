@@ -962,7 +962,7 @@
                 padding: 2px 4px !important;
                 min-width: 15px !important;
                 height: 15px !important;
-                display: flex !important;
+                display: flex;
                 align-items: center !important;
                 justify-content: center !important;
                 background-color: #2ecc71 !important;
@@ -1154,7 +1154,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }
@@ -1181,7 +1181,7 @@
                     if (badge) {
                         if (count > 0) {
                             badge.textContent = count;
-                            badge.style.display = 'inline-block';
+                            badge.style.display = 'flex';
                         } else {
                             badge.style.display = 'none';
                         }

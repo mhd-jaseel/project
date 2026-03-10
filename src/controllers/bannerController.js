@@ -101,6 +101,72 @@ exports.deleteBanner = async (req, res) => {
     }
 };
 
+// Get Single Banner (Admin)
+exports.getBannerById = async (req, res) => {
+    try {
+        const banner = await Banner.findById(req.params.bannerId);
+        if (!banner) return res.status(404).json({ message: 'Banner not found' });
+        res.json(banner);
+    } catch (error) {
+        console.error("Error fetching single banner:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Update Banner
+exports.updateBanner = async (req, res) => {
+    try {
+        const { bannerId } = req.params;
+
+        // Prepare update data from body
+        const { title, subtitle, isActive, link, buttonText, textColor, buttonColor, bgColor, imageSize } = req.body;
+
+        const updateData = {};
+        if (title !== undefined) updateData.title = title;
+        if (subtitle !== undefined) updateData.subtitle = subtitle;
+        if (isActive !== undefined) updateData.isActive = isActive === 'true';
+        if (link !== undefined) updateData.link = link;
+        if (buttonText !== undefined) updateData.buttonText = buttonText;
+        if (textColor !== undefined) updateData.textColor = textColor;
+        if (buttonColor !== undefined) updateData.buttonColor = buttonColor;
+        if (bgColor !== undefined) updateData.bgColor = bgColor;
+        if (imageSize !== undefined) updateData.imageSize = parseInt(imageSize);
+
+        // If new image uploaded
+        if (req.file) {
+            // Get original banner to delete old image
+            const oldBanner = await Banner.findById(bannerId);
+            if (oldBanner && oldBanner.imageUrl) {
+                try {
+                    const oldImagePath = path.join(__dirname, '../../src/uploads/banners', path.basename(oldBanner.imageUrl));
+                    if (fs.existsSync(oldImagePath)) {
+                        fs.unlinkSync(oldImagePath);
+                    }
+                } catch (err) {
+                    console.error("Error deleting old image during update:", err);
+                }
+            }
+            updateData.imageUrl = `/uploads/banners/${req.file.filename}`;
+        }
+
+        const updatedBanner = await Banner.findByIdAndUpdate(
+            bannerId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedBanner) {
+            return res.status(404).json({ message: 'Banner not found' });
+        }
+
+        res.json({ message: 'Banner updated successfully', banner: updatedBanner });
+
+    } catch (error) {
+        console.error("Error updating banner:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 // --- Public Controllers ---
 
 // Get Active Banners
