@@ -400,25 +400,43 @@
 
         @media (max-width: 768px) {
             #categoryContainer {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px 10px;
-                padding: 0 5px;
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 20px 10px !important;
+                padding: 0 5px !important;
             }
 
             #categoryContainer>.col-6 {
-                width: 100%;
-                padding: 0;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #categoryContainer a {
+                width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
             }
 
             .category-circle {
-                max-width: 70px;
-                border-width: 2px;
+                width: 70px !important;
+                height: 70px !important;
+                max-width: 70px !important;
+                min-width: 70px !important;
+                border-width: 2px !important;
+                margin-bottom: 10px !important;
             }
 
             #categoryContainer h6 {
-                font-size: 0.75rem !important;
-                margin-top: 5px;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                margin-top: 0 !important;
+                text-transform: capitalize !important;
+                line-height: 1.3 !important;
+                color: #2c3e50 !important;
             }
         }
 
@@ -483,138 +501,200 @@
             font-weight: 400;
         }
 
-        /* Mobile Layout for Hot Deals/Product Cards */
+        /* Mobile Layout for Hot Deals/Product Cards - Scoped to Product Listing Style */
         @media (max-width: 768px) {
             #hot-deals-track {
                 flex-wrap: nowrap !important;
                 overflow-x: auto !important;
                 scroll-snap-type: x mandatory !important;
+                gap: 0 !important;
                 margin-left: -5px !important;
                 margin-right: -5px !important;
-                padding-bottom: 20px !important;
+                padding-bottom: 15px !important;
+                -webkit-overflow-scrolling: touch !important;
             }
 
             #hot-deals-track>.col-6 {
-                /* Force exactly 3 columns visible across viewport width */
-                flex: 0 0 33.333333% !important;
-                width: 33.333333% !important;
+                flex: 0 0 50% !important;
+                width: 50% !important;
                 padding-left: 5px !important;
                 padding-right: 5px !important;
-                scroll-snap-align: start;
+                scroll-snap-align: start !important;
             }
 
             .product-card {
-                padding: 6px;
-                border-radius: 10px;
-                /* Closer to 1:1.5 aspect ratio implicitly by shrinking contents */
+                padding: 10px !important;
+                border-radius: 12px !important;
+                height: 100% !important;
+                min-height: 380px !important;
+                border: 1px solid #f0f0f0 !important;
+                background: #ffffff !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
 
-            .product-card img.card-img-top {
-                height: 4.5rem;
-                max-height: 75px;
-                padding: 2px !important;
-            }
-
-            .product-title {
-                font-size: 0.65rem;
-                line-height: 1.15;
-                margin-bottom: 2px;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-                white-space: normal;
-            }
-
-            .product-weight {
-                font-size: 0.55rem;
-                margin-bottom: 4px !important;
-            }
-
-            .product-card .text-muted.small {
-                font-size: 0.55rem !important;
-                display: block;
-                width: 100%;
-            }
-
-            .product-price {
-                font-size: 0.8rem;
-            }
-
-            .product-price-old {
-                font-size: 0.6rem;
-                margin-left: 0;
-                display: block;
-            }
-
-            .btn-wishlist {
-                width: 28px !important;
-                min-width: 28px !important;
-                max-width: 28px !important;
-                min-height: 28px !important;
-                border-radius: 6px !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            .product-card a {
+                height: 55% !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                flex-shrink: 0 !important;
-                border: 1px solid var(--primary-green) !important;
-                box-sizing: border-box !important;
+                position: relative !important;
             }
 
-            .btn-wishlist i {
-                font-size: 0.75rem !important;
-                line-height: 1 !important;
+            .product-card .card-img-top {
+                max-height: 90% !important;
+                max-width: 90% !important;
+                object-fit: contain !important;
+                padding: 5px !important;
+                margin: 0 auto !important;
+            }
+
+            .product-card .card-body {
+                padding: 10px 8px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                text-align: center !important;
+                flex: 1 !important;
+            }
+
+            .company-name-mobile {
+                font-size: 11px !important;
+                color: #6c757d !important;
+                margin-bottom: 2px !important;
+                letter-spacing: 0.5px !important;
+                text-align: left !important;
+                width: 100% !important;
+            }
+
+            .product-title {
+                font-size: 13px !important;
+                font-weight: 700 !important;
+                margin-bottom: 2px !important;
+                line-height: 1.5 !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: visible !important;
+                color: #2c3e50 !important;
+            }
+
+            .product-weight {
+                font-size: 11px !important;
+                color: #777 !important;
+                margin-bottom: 5px !important;
+            }
+
+            .price-section-mobile {
+                margin: auto 0 8px 0 !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+
+            .product-price-old {
+                font-size: 11px !important;
+                margin-left: 5px !important;
+            }
+
+            .button-section-mobile {
+                display: flex !important;
+                gap: 6px !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+
+            .btn-wishlist {
+                width: 34px !important;
+                height: 34px !important;
+                min-width: 34px !important;
+                padding: 0 !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
             }
 
             .btn-add-cart {
-                min-height: 28px !important;
-                padding: 0 4px !important;
-                margin: 0 !important;
-                font-size: 0.55rem !important;
-                /* Slightly smaller to ensure out of stock fits */
-                border-radius: 6px !important;
+                flex: 1 !important;
+                height: 34px !important;
+                padding: 0 5px !important;
+                border-radius: 8px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
                 white-space: normal !important;
+                line-height: 1 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 text-align: center !important;
-                flex-grow: 1 !important;
-                border: 1px solid transparent !important;
-                /* MATCH geometry of wishlist border */
-                box-sizing: border-box !important;
-                line-height: 1 !important;
-                overflow: visible !important;
             }
 
-            .card-body.p-2 {
-                padding: 4px 4px 8px 4px !important;
-            }
-
-            /* Keep arrows visible on mobile */
+            /* Show arrows on mobile */
             #hot-deals-prev,
             #hot-deals-next {
                 display: inline-block !important;
             }
+        }
 
-            /* Badges overlay exactly on top of product image bounds */
-            .product-card .badge {
-                font-size: 0.5rem !important;
-                padding: 0.3em 0.5em !important;
-                margin: 6px !important;
-                top: 0 !important;
-                z-index: 10 !important;
+        /* Reduced Card Height for Phone View */
+        @media (max-width: 576px) {
+            .product-card {
+                padding: 6px !important;
+                min-height: 330px !important;
             }
 
-            .product-card .badge.end-0 {
-                right: 0 !important;
+            .product-card a {
+                height: 52% !important;
             }
 
-            .product-card .badge.start-0 {
-                left: 0 !important;
+            .product-card .card-body {
+                padding: 6px 4px !important;
             }
+
+            .product-title {
+                font-size: 12.5px !important;
+                margin-bottom: 1px !important;
+            }
+
+            .product-weight {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .price-section-mobile {
+                margin-bottom: 5px !important;
+                font-size: 13px !important;
+            }
+
+            .button-section-mobile {
+                gap: 4px !important;
+            }
+
+            .btn-wishlist,
+            .btn-add-cart {
+                height: 31px !important;
+                font-size: 11px !important;
+                border-radius: 6px !important;
+            }
+        }
+
+        /* Badges overlay exactly on top of product image bounds */
+        .product-card .badge {
+            font-size: 0.5rem !important;
+            padding: 0.3em 0.5em !important;
+            margin: 6px !important;
+            top: 0 !important;
+            z-index: 10 !important;
+        }
+
+        .product-card .badge.end-0 {
+            right: 0 !important;
+        }
+
+        .product-card .badge.start-0 {
+            left: 0 !important;
         }
 
         /* Action Buttons */
@@ -2434,7 +2514,7 @@
 
                 container.innerHTML += `
         <div class="col-6 col-md-3 mb-4">
-            <div class="card product-card h-100 position-relative">
+            <div class="card product-card position-relative">
                 ${badge}
                 ${discountBadge}
                 <a href="single-product.html?id=${p._id}">
@@ -2442,14 +2522,15 @@
                         class="card-img-top p-3" alt="${p.name}" style="opacity: ${isOutOfStock ? 0.6 : 1}"
                         onerror="this.src='https://placehold.co/300'">
                 </a>
-                <div class="card-body p-2">
-                    ${companyHtml}
+                <div class="card-body">
+                    <div class="company-name-mobile d-md-none">${p.company || ''}</div>
+                    <div class="small text-muted mb-1 d-none d-md-block text-start ps-1">${p.company || '&nbsp;'}</div>
                     <h6 class="product-title text-center">${p.name}</h6>
                     <p class="product-weight text-center">${quantityText}</p>
-                    <div class="mb-3 text-start ps-2 mt-auto">
+                    <div class="mb-3 text-center text-md-start ps-md-2 price-section-mobile mt-auto">
                         ${priceHtml}
                     </div>
-                    <div class="d-flex gap-2 align-items-stretch">
+                    <div class="d-flex gap-2 align-items-stretch button-section-mobile">
                         <button class="btn btn-wishlist" data-product-id="${p._id}"><i
                                 class="far fa-heart"></i></button>
                         <button class="btn btn-add-cart w-100" data-product-id="${p._id}" ${isOutOfStock
@@ -2594,7 +2675,7 @@
 
                         return `
         <div class="col-6 col-md-3 col-lg-2 mb-4 d-flex flex-column align-items-center">
-            <a href="product.html?category=${cat._id}" class="text-decoration-none">
+            <a href="product.html?category=${cat._id}" class="text-decoration-none w-100 d-flex flex-column align-items-center">
                 <div class="category-circle mb-2 overflow-hidden shadow-sm border-white" style="display: flex; align-items: center; justify-content: center; background-color: #ffffff;">
                     <img src="${imageUrl}"
                         alt="${displayName}" style="width: ${cat.imageSize || 100}%; height: ${cat.imageSize || 100}%; object-fit: ${displayName.toLowerCase() === 'uncategorized' ? 'contain' : (cat.imageSize < 100 ? 'contain' : 'cover')};">

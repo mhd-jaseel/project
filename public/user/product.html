@@ -33,7 +33,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding-top: 85px;
+                padding-top: 70px;
             }
         }
 
@@ -195,9 +195,9 @@
             }
 
             .header-bottom {
-                padding: 6px 0 !important;
-                border-radius: 0 0 15px 15px !important;
-                box-shadow: 0 0 10px 10px rgba(12, 12, 12, 0.179) !important;
+                padding: 4px 0 !important;
+                border-radius: 0 !important;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
                 margin: 0 !important;
                 width: 100% !important;
             }
@@ -325,6 +325,11 @@
                 font-size: 13px !important;
             }
 
+            .container-fluid.my-2.pt-2 {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
             /* Action Buttons (Wishlist, Cart) */
             .header-action-btn {
                 padding: 5px !important;
@@ -394,25 +399,31 @@
             /* --- Mobile Filter UI Improvements --- */
             .mobile-filter-bar {
                 background: #ffffff;
-                padding: 12px 16px;
+                padding: 0 16px;
+                height: 52px;
                 border-bottom: 1px solid #f1f5f9;
                 display: flex !important;
                 justify-content: space-between;
                 align-items: center;
                 position: sticky;
-                top: 85px;
-                /* Adjust to be below fixed header */
+                top: 20px;
+                /* Max sticky tuck */
                 z-index: 999;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                margin-top: -30px;
+                /* Pull focused as high as possible */
+                margin-bottom: 27px !important;
+                /* Compensate to prevent cards from jumping */
             }
 
             .mobile-filter-btn {
                 background: #ffffff;
                 border: 1px solid #e2e8f0;
-                padding: 6px 14px;
+                height: 34px;
+                padding: 0 16px;
                 border-radius: 20px;
-                font-size: 12px;
-                font-weight: 600;
+                font-size: 13px;
+                font-weight: 500;
                 color: #2c3e50;
                 display: flex;
                 align-items: center;
@@ -430,13 +441,20 @@
                 border: 1px solid #e2e8f0 !important;
                 border-radius: 20px;
                 background-color: #f8fafc !important;
-                padding: 4px 8px !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
+                height: 34px;
+                padding: 0 30px 0 12px !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
                 color: #2c3e50 !important;
                 outline: none !important;
                 cursor: pointer;
                 transition: all 0.2s ease;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
             }
 
             .mobile-sort-select:focus {
@@ -444,102 +462,108 @@
                 background-color: #fff !important;
             }
 
-            /* Bottom Sheet Filter Panel */
-            .filter-bottom-sheet {
-                position: fixed;
-                bottom: -100%;
-                left: 0;
-                width: 100%;
-                height: 80vh;
-                background: #fff;
-                z-index: 2000;
-                border-top-left-radius: 24px;
-                border-top-right-radius: 24px;
-                transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                display: flex;
-                flex-direction: column;
-                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            #productGrid {
+                margin-top: 50px !important;
             }
+        }
 
-            .filter-bottom-sheet.show {
-                bottom: 0;
-            }
+        /* Bottom Sheet Filter Panel */
+        .filter-bottom-sheet {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 80vh;
+            background: #fff;
+            z-index: 2000;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+        }
 
-            .filter-sheet-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1999;
-                display: none;
-                backdrop-filter: blur(2px);
-            }
+        .filter-bottom-sheet.show {
+            bottom: 0;
+        }
 
-            .filter-sheet-header {
-                padding: 20px;
-                border-bottom: 1px solid #eee;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
+        .filter-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
 
-            .filter-sheet-body {
-                flex: 1;
-                overflow-y: auto;
-                min-height: 0;
-                /* Important for flex scrolling in some browsers */
-                padding: 20px;
-                padding-bottom: calc(30px + env(safe-area-inset-bottom));
-            }
+        .filter-sheet-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            .filter-group-title {
-                font-size: 16px;
-                font-weight: 600;
-                margin-bottom: 15px;
-                color: #2c3e50;
-            }
+        .filter-sheet-body {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            /* Important for flex scrolling in some browsers */
+            padding: 20px;
+            padding-bottom: calc(30px + env(safe-area-inset-bottom));
+        }
 
-            .filter-option {
-                margin-bottom: 12px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 4px 0;
-            }
+        .filter-group-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
 
-            .filter-option input[type="radio"],
-            .filter-option input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                accent-color: var(--primary-green);
-            }
+        .filter-option {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+        }
 
-            /* Filter Chips */
-            .filter-chips-container {
-                display: none !important;
-            }
+        .filter-option input[type="radio"],
+        .filter-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-green);
+        }
 
-            .filter-chip {
-                background: #eafaf1;
-                color: var(--dark-green);
-                padding: 4px 12px;
-                border-radius: 16px;
-                font-size: 12px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                border: 1px solid #d4efdf;
-            }
+        /* Filter Chips */
+        .filter-chips-container {
+            display: none !important;
+        }
 
-            .filter-chip i {
-                cursor: pointer;
-                font-size: 10px;
-            }
+        .filter-chip {
+            background: #eafaf1;
+            color: var(--dark-green);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #d4efdf;
+        }
 
-            /* Action Buttons */
-            /* Mobile Product Card UI Improvements */
+        .filter-chip i {
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        /* Action Buttons */
+        /* Mobile Product Card UI Improvements - Now Scoped to Mobile Only */
+        @media (max-width: 768px) {
             #productGrid .col {
                 padding: 5px !important;
             }
@@ -554,7 +578,6 @@
                 background: #ffffff !important;
                 display: flex !important;
                 flex-direction: column !important;
-                /* aspect-ratio removed to allow content growth */
             }
 
             .product-img-wrapper,
@@ -658,39 +681,82 @@
                 justify-content: center !important;
                 text-align: center !important;
             }
+        }
 
-            .badge.bg-secondary.position-absolute {
-                z-index: 10 !important;
-                font-size: 9px !important;
-                padding: 3px 6px !important;
-                top: 5px !important;
-                right: 5px !important;
-                border-radius: 4px !important;
+        /* Reduced Card Height for Phone View */
+        @media (max-width: 576px) {
+            .product-card {
+                padding: 6px !important;
+                min-height: 330px !important;
             }
 
-            .badge.bg-danger.position-absolute {
-                z-index: 15 !important;
-                font-size: 9px !important;
-                padding: 3px 6px !important;
-                top: 5px !important;
-                left: 5px !important;
-                border-radius: 4px !important;
+            .product-img-wrapper,
+            .product-card a {
+                height: 52% !important;
             }
 
-            /* Out of Stock mobile badge fix */
-            .product-card .badge {
-                z-index: 25 !important;
-                width: auto !important;
-                max-width: fit-content !important;
-                white-space: nowrap !important;
-                border-radius: 20px !important;
-                /* Pill shape */
-                padding: 5px 12px !important;
-                top: 8px !important;
-                right: 8px !important;
-                font-weight: 600 !important;
-                letter-spacing: 0.3px !important;
+            .product-card .card-body {
+                padding: 6px 4px !important;
             }
+
+            .product-title {
+                font-size: 12.5px !important;
+                margin-bottom: 1px !important;
+            }
+
+            .product-weight {
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .price-section-mobile {
+                margin-bottom: 5px !important;
+                font-size: 13px !important;
+            }
+
+            .button-section-mobile {
+                gap: 4px !important;
+            }
+
+            .btn-wishlist,
+            .btn-add-cart {
+                height: 31px !important;
+                font-size: 11px !important;
+                border-radius: 6px !important;
+            }
+        }
+
+        .badge.bg-secondary.position-absolute {
+            z-index: 10 !important;
+            font-size: 9px !important;
+            padding: 3px 6px !important;
+            top: 5px !important;
+            right: 5px !important;
+            border-radius: 4px !important;
+        }
+
+        .badge.bg-danger.position-absolute {
+            z-index: 15 !important;
+            font-size: 9px !important;
+            padding: 3px 6px !important;
+            top: 5px !important;
+            left: 5px !important;
+            border-radius: 4px !important;
+        }
+
+        /* Out of Stock mobile badge fix */
+        .product-card .badge {
+            z-index: 25 !important;
+            width: auto !important;
+            max-width: fit-content !important;
+            white-space: nowrap !important;
+            border-radius: 20px !important;
+            /* Pill shape */
+            padding: 5px 12px !important;
+            top: 8px !important;
+            right: 8px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.3px !important;
         }
 
         /* Modern Pagination Styling - Synced from My Returns */
@@ -1772,9 +1838,10 @@
                     <button class="mobile-filter-btn" id="openMobileFilterSheet">
                         <i class="fas fa-sliders-h"></i> Filters
                     </button>
-                    <div class="d-flex align-items-center">
-                        <span class="small text-muted me-2">Sort by:</span>
-                        <select id="mobileSortSelect" class="mobile-sort-select">
+                    <div class="d-flex align-items-center flex-grow-1 justify-content-end px-2">
+                        <span class="text-muted me-2 text-nowrap" style="font-size: 13px; font-weight: 500;">Sort
+                            by:</span>
+                        <select id="mobileSortSelect" class="mobile-sort-select" style="min-width: 140px;">
                             <option value="relevance">Relevance</option>
                             <option value="lowToHigh">Price: Low to High</option>
                             <option value="highToLow">Price: High to Low</option>
