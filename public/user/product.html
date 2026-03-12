@@ -132,7 +132,7 @@
             color: white !important;
             border: none !important;
             padding: 8px 20px !important;
-            font-size: 16px !important;
+            font-size: 13px !important;
             transition: background 0.2s;
         }
 
@@ -319,7 +319,8 @@
                 justify-content: center !important;
                 background-color: var(--primary-green) !important;
                 color: white !important;
-                padding: 0 12px !important;
+                width: 36px !important;
+                padding: 0 !important;
                 border-radius: 0 20px 20px 0 !important;
                 height: 100% !important;
                 font-size: 13px !important;
@@ -572,7 +573,7 @@
                 padding: 10px !important;
                 border-radius: 12px !important;
                 height: 100% !important;
-                min-height: 380px !important;
+                min-height: 350px !important;
                 /* Minimum height for consistency */
                 border: 1px solid #f0f0f0 !important;
                 background: #ffffff !important;
@@ -638,7 +639,7 @@
             }
 
             .price-section-mobile {
-                margin: auto 0 8px 0 !important;
+                margin: auto 0 4px 0 !important;
                 font-size: 14px !important;
                 font-weight: 700 !important;
                 color: #000 !important;
@@ -687,7 +688,7 @@
         @media (max-width: 576px) {
             .product-card {
                 padding: 6px 6px 0 6px !important;
-                min-height: 260px !important;
+                min-height: 240px !important;
             }
 
             .product-img-wrapper,
@@ -718,6 +719,7 @@
             .button-section-mobile {
                 gap: 4px !important;
                 margin-top: 5px !important;
+                margin-bottom: 0 !important;
             }
 
             .btn-wishlist,
@@ -1494,8 +1496,7 @@
                                 <input type="text" id="globalSearchInput" class="header-search-input"
                                     placeholder="search here..." autocomplete="off"
                                     style="border: none !important; padding: 8px 20px; flex-grow: 1; font-size: 14px; outline: none !important; box-shadow: none !important;">
-                                <button class="header-search-btn" type="submit"
-                                    style="background-color: var(--primary-green) !important; color: white !important; border: none !important; padding: 8px 20px !important; font-size: 13px !important; transition: background 0.2s;">
+                                <button class="header-search-btn" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -2263,7 +2264,7 @@
                                     </a>
                                     <div class="card-body">
                                         <!-- Brand/Company -->
-                                        <div class="company-name-mobile d-md-none">${p.company || ''}</div>
+                                        <div class="company-name-mobile d-md-none">${p.company || '&nbsp;'}</div>
                                         <div class="small text-muted mb-1 d-none d-md-block">${p.company || '&nbsp;'}</div>
                                         
                                         <!-- Product Info -->

@@ -154,21 +154,22 @@
         }
 
         .header-search-container {
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 500px;
+            margin: 0;
         }
 
         .header-search-form {
             display: flex;
             background: #fff;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 25px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .header-search-input {
             border: none !important;
-            padding: 8px 15px;
+            padding: 8px 20px;
             flex-grow: 1;
             font-size: 14px;
             outline: none !important;
@@ -180,7 +181,20 @@
             color: white !important;
             border: none !important;
             padding: 8px 20px !important;
-            font-size: 16px !important;
+            font-size: 13px !important;
+            transition: background 0.2s;
+        }
+
+        .header-search-btn:hover {
+            background-color: var(--dark-green) !important;
+        }
+
+        .header-search-btn {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 20px !important;
+            font-size: 13px !important;
             transition: background 0.2s;
         }
 
@@ -353,11 +367,16 @@
             }
 
             .header-search-btn {
-                padding: 0 8px !important;
-                background: transparent !important;
-                color: #2ecc71 !important;
-                font-size: 11px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: var(--primary-green) !important;
+                color: white !important;
+                width: 36px !important;
+                padding: 0 !important;
+                border-radius: 0 20px 20px 0 !important;
                 height: 100% !important;
+                font-size: 13px !important;
             }
 
             /* Action Buttons (Wishlist, Cart) */
@@ -1328,15 +1347,11 @@
 
                     <!-- Center Search Bar -->
                     <div class="col-lg-4 col-12 d-flex justify-content-center order-3 order-lg-2 px-3 mt-3 mt-lg-0">
-                        <form id="globalSearchForm" class="header-search-container w-100 position-relative"
-                            style="max-width: 500px; margin: 0;">
-                            <div class="header-search-form"
-                                style="display: flex; background: #fff; border: 1px solid #ddd; border-radius: 25px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <form id="globalSearchForm" class="header-search-container w-100 position-relative">
+                            <div class="header-search-form">
                                 <input type="text" id="globalSearchInput" class="header-search-input"
-                                    placeholder="search here..." autocomplete="off"
-                                    style="border: none !important; padding: 8px 20px; flex-grow: 1; font-size: 14px; outline: none !important; box-shadow: none !important;">
-                                <button class="header-search-btn" type="submit"
-                                    style="background-color: var(--primary-green) !important; color: white !important; border: none !important; padding: 8px 20px !important; font-size: 13px !important; transition: background 0.2s;">
+                                    placeholder="search here..." autocomplete="off">
+                                <button class="header-search-btn" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>

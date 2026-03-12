@@ -101,16 +101,17 @@
             width: 100%;
         }
 
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
+        .header-search-btn {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 20px !important;
+            font-size: 13px !important;
             transition: background 0.2s;
         }
 
-        .custom-search-btn:hover {
-            background-color: #1e8449;
+        .header-search-btn:hover {
+            background-color: var(--dark-green) !important;
         }
 
         .header-nav-container {
@@ -211,16 +212,17 @@
             width: 100%;
         }
 
-        .custom-search-btn {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 0 15px;
+        .header-search-btn {
+            background-color: var(--primary-green) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 20px !important;
+            font-size: 13px !important;
             transition: background 0.2s;
         }
 
-        .custom-search-btn:hover {
-            background-color: #1e8449;
+        .header-search-btn:hover {
+            background-color: var(--dark-green) !important;
         }
 
         .header-nav-container {
@@ -896,11 +898,16 @@
             }
 
             .header-search-btn {
-                padding: 0 8px !important;
-                background: transparent !important;
-                color: #2ecc71 !important;
-                font-size: 11px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background-color: var(--primary-green) !important;
+                color: white !important;
+                width: 36px !important;
+                padding: 0 !important;
+                border-radius: 0 20px 20px 0 !important;
                 height: 100% !important;
+                font-size: 13px !important;
             }
 
             /* Action Buttons (Wishlist, Cart) */
@@ -1093,8 +1100,7 @@
                                 <input type="text" id="globalSearchInput" class="header-search-input"
                                     placeholder="search here..." autocomplete="off"
                                     style="border: none !important; padding: 8px 20px; flex-grow: 1; font-size: 14px; outline: none !important; box-shadow: none !important;">
-                                <button class="header-search-btn" type="submit"
-                                    style="background-color: var(--primary-green) !important; color: white !important; border: none !important; padding: 8px 20px !important; font-size: 13px !important; transition: background 0.2s;">
+                                <button class="header-search-btn" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
