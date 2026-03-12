@@ -106,9 +106,7 @@ app.get("/contact", (req, res) => {
 });
 
 
-// ==========================
-// ADMIN ROUTES
-// ==========================
+
 app.get("/admin/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/admin/login.html"));
 });
