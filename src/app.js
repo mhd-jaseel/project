@@ -5,12 +5,10 @@ const passport = require("passport");
 
 require("./config/passport"); // Passport config
 
-// ===============================
-// APP INITIALIZATION
-// ===============================
+
 const app = express();
 
-// Robots.txt
+// Robots.txt (This code allows Google to read  full website)
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
   res.send(`User-agent: *
@@ -19,19 +17,16 @@ Allow: /
 Sitemap: https://kmsupermarket.online/sitemap.xml`);
 });
 
-// Sitemap
+// Sitemap (Helps search engines understand  website structure)
 app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/sitemap.xml"));
 });
 
 
-// ===============================
-// MIDDLEWARE
-// ===============================
 
-// Body Parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body Parser Middleware (to read incoming data)
+app.use(express.json()); // for JSON data (API requests)
+app.use(express.urlencoded({ extended: true })); // for form data
 
 // Session Middleware
 app.use(
@@ -49,9 +44,9 @@ app.use(passport.initialize());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
-// ===============================
+
 // API ROUTES
-// ===============================
+
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
@@ -69,16 +64,14 @@ app.use("/api/offers", require("./routes/offerRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 
 
-// ===============================
-// STATIC FRONTEND FILES
-// ===============================
+
+// STATIC FRONTEND FILES(show frontend files like HTML, CSS, JS to the browser”)
+
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(express.static(path.join(__dirname, "../public/user")));
 
 
-// ==========================
-// HTML ROUTES
-// ==========================
+
 
 // HOME PAGE
 app.get("/", (req, res) => {
